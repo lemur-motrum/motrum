@@ -423,22 +423,74 @@ def crete_pdf_specification(
             )
             i_dop_info += 1
 
+        
+        
+        # if requisites.prepay_persent:
+        #     if requisites.prepay_persent == 100:
+        #         story.append(
+        #             Paragraph(
+        #                 f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
+        #                 normal_style,
+        #             )
+        #         )
+        #     else:
+        #         story.append(
+        #             Paragraph(
+        #                 f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
+        #                 normal_style,
+        #             )
+        #         )
+        #     i_dop_info += 1
+
         if requisites.prepay_persent:
-            if requisites.prepay_persent == 100:
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
-                        normal_style,
-                    )
+            if requisites.prepay_persent  > 0:
+                prepay_persent_text = f"{requisites.prepay_persent}% предоплата"
+        else:
+            prepay_persent_text = ""
+        
+        if requisites.postpay_persent:
+            if requisites.postpay_persent > 0:
+                postpay_persent_text = f"{requisites.postpay_persent}% {requisites.postpay_persent_text}"
+        else:
+            postpay_persent_text = ""
+    
+        if requisites.postpay_persent_2:
+            if requisites.postpay_persent_2 > 0:
+                postpay_persent_text_2 = f"{requisites.postpay_persent_2}% {requisites.postpay_persent_text_2}"
+        else:
+            postpay_persent_text_2 = ""
+        
+        if requisites.postpay_persent_3:
+            if requisites.postpay_persent_3 > 0:
+                postpay_persent_text_3 = f"{requisites.postpay_persent_3}% {requisites.postpay_persent_text_3}"
+        else:
+            postpay_persent_text_3 = ""
+
+        info_payment_text = ""
+        parts_payment = []
+        if prepay_persent_text:
+            parts_payment.append(prepay_persent_text)
+        if postpay_persent_text:
+            parts_payment.append(postpay_persent_text)
+        if postpay_persent_text_2:
+            parts_payment.append(postpay_persent_text_2)
+        if postpay_persent_text_3:
+            parts_payment.append(postpay_persent_text_3)
+        if parts_payment:
+            info_payment_text = "Способ оплаты: " + ", ".join(parts_payment)
+        
+        info_payment = info_payment_text
+
+        if info_payment and info_payment != "":
+            story.append(
+                Paragraph(
+                    f"<br></br>{i_dop_info}. {info_payment}",
+                    normal_style,
                 )
-            else:
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
-                        normal_style,
-                    )
-                )
+            )
             i_dop_info += 1
+
+
 
         if type_delivery:
             story.append(

@@ -627,15 +627,60 @@ def crete_pdf_bill(
         )
         story.append(table_product)
         story_no_sign.append(table_product)
-        if order.prepay_persent:
-            if order.prepay_persent == 100:
-                info_payment = f" Способ оплаты: 100% предоплата."
-
-            else:
-                info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
-
+        
+        
+        if order.requisites.prepay_persent:
+            if order.requisites.prepay_persent  > 0:
+                prepay_persent_text = f"{order.requisites.prepay_persent}% предоплата"
         else:
-            info_payment = ""
+            prepay_persent_text = ""
+        
+        if order.requisites.postpay_persent:
+            if order.requisites.postpay_persent > 0:
+                postpay_persent_text = f"{order.requisites.postpay_persent}% {order.requisites.postpay_persent_text}"
+        else:
+            postpay_persent_text = ""
+       
+        if order.requisites.postpay_persent_2:
+            if order.requisites.postpay_persent_2 > 0:
+                postpay_persent_text_2 = f"{order.requisites.postpay_persent_2}% {order.requisites.postpay_persent_text_2}"
+        else:
+            postpay_persent_text_2 = ""
+        
+        if order.requisites.postpay_persent_3:
+            if order.requisites.postpay_persent_3 > 0:
+                postpay_persent_text_3 = f"{order.requisites.postpay_persent_3}% {order.requisites.postpay_persent_text_3}"
+        else:
+            postpay_persent_text_3 = ""
+   
+        
+        info_payment_text = ""
+        parts_payment = []
+        if prepay_persent_text:
+            parts_payment.append(prepay_persent_text)
+        if postpay_persent_text:
+            parts_payment.append(postpay_persent_text)
+        if postpay_persent_text_2:
+            parts_payment.append(postpay_persent_text_2)
+        if postpay_persent_text_3:
+            parts_payment.append(postpay_persent_text_3)
+        if parts_payment:
+            info_payment_text = "" + ", ".join(parts_payment)
+        
+        info_payment = info_payment_text
+        
+        
+
+        # if order.requisites.prepay_persent:
+        #     if order.requisites.prepay_persent == 100:
+        #         info_payment = f"100% предоплата."
+        #     elif order.requisites.prepay_persent > 0:
+        #         info_payment = f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
+        #     else:
+        #         info_payment = f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
+
+        # else:
+        #     info_payment = ""
 
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
@@ -649,22 +694,22 @@ def crete_pdf_bill(
             "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace(".", ",")
         )
         final_table_all = []
-        final_table_all.append(
-            (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            )
-        )
+        # final_table_all.append(
+        #     (
+               
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #     )
+        # )
         final_table_all.append(
             (
                 Paragraph(info_payment, normal_style),
-                None,
+               
                 None,
                 None,
                 Paragraph("Итого:", bold_left_style),
@@ -676,7 +721,7 @@ def crete_pdf_bill(
 
         final_table_all.append(
             (
-                None,
+                
                 None,
                 None,
                 None,
@@ -689,7 +734,7 @@ def crete_pdf_bill(
 
         final_table_all.append(
             (
-                None,
+                
                 None,
                 None,
                 None,
@@ -703,9 +748,9 @@ def crete_pdf_bill(
         final_table_all_prod = Table(
             final_table_all,
             colWidths=[
-                6 * cm,
-                1 * cm,
-                2.5 * cm,
+                9 * cm,
+                # 1 * cm,
+                0.5 * cm,
                 0 * cm,
                 3 * cm,
                 2.5 * cm,
@@ -713,14 +758,13 @@ def crete_pdf_bill(
                 2 * cm,
             ],
             splitInRow=1,
-            rowHeights=13,
         )
         final_table_all_prod2 = Table(
             final_table_all,
             colWidths=[
-                6 * cm,
-                1 * cm,
-                2.5 * cm,
+                9 * cm,
+                # 1 * cm,
+                0.5 * cm,
                 0 * cm,
                 3 * cm,
                 2.5 * cm,
@@ -728,7 +772,6 @@ def crete_pdf_bill(
                 2 * cm,
             ],
             splitInRow=1,
-            rowHeights=13,
         )
         story.append(final_table_all_prod)
         story_no_sign.append(final_table_all_prod2)

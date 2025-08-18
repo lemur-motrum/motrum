@@ -170,10 +170,46 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
+    
+
 
     postpay_persent = models.FloatField(
         "Процент постоплаты",
         default="0",
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text = models.CharField(
+        "Процент постоплаты текст",
+        default="в течение 5 дней с момента отгрузки со склада Поставщика.",
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    
+    postpay_persent_2 = models.FloatField(
+        "Процент постоплаты 2",
+        default=None,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text_2 = models.CharField(
+        "Процент предоплаты текст 2",
+        default=None,
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_3 = models.FloatField(
+        "Процент постоплаты 3",
+        default=None,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text_3 = models.CharField(
+        "Процент предоплаты текст 3",
+        default=None,
+        max_length=200,
         blank=True,
         null=True,
     )

@@ -122,7 +122,7 @@ def crete_pdf_specification(
         #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
         name_specification = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
-        name_specification_no_signature = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}_без печати..pdf"
+        name_specification_no_signature = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}_без печати.pdf"
         
         fileName = os.path.join(directory, name_specification)
         fileName_no_sign = os.path.join(directory, name_specification_no_signature)

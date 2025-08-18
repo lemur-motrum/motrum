@@ -1595,6 +1595,7 @@ def save_specification(
 
         if pdf:
             specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
             specification._change_reason = "Ручное"
 
             if post_update == False:

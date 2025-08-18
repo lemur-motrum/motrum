@@ -44,6 +44,7 @@ from apps.core.bitrix_api import (
     get_status_order,
     get_upd_clirnt_manager,
     remove_file_bx,
+    save_file_bx,
     save_new_doc_bx,
     save_payment_order_bx,
     save_shipment_order_bx,

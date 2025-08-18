@@ -106,7 +106,7 @@ def crete_pdf_bill(
         # else:
         #     date_now = transform_date(datetime.date.today().isoformat())
         #     date_name_dot = datetime.datetime.today().strftime("%d.%m.%Y")
-
+        print("motrum_info.counter_bill", motrum_info.counter_bill)
         if order.requisites.contract or specifications.total_amount > 99999.99:
             type_bill = "Счет"
             bill_name = motrum_info.counter_bill + 1
@@ -123,17 +123,27 @@ def crete_pdf_bill(
         print("type_save", type_save)
         print("*******************************")
         if type_save == "new":
-            name_bill_text = f"{type_bill} № {bill_name}"
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
             motrum_info.save()
+            
         elif type_save == "update":
-            bill_name = order.bill_name
-            name_bill_text = f"{type_bill} № {bill_name}"
+            if order.bill_name:
+                bill_name = order.bill_name
+            else:
+                motrum_info.save()
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
+            
         elif type_save == "hard_update":
-            name_bill_text = f"{type_bill} № {bill_name}"
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
             motrum_info.save()
         else:
-            bill_name = order.bill_name
-            name_bill_text = f"{type_bill} № {bill_name}"
+            if order.bill_name:
+                bill_name = order.bill_name
+            else:
+                motrum_info.save()
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
+            
+        print("bill_name", bill_name)
         print("name_bill_text", name_bill_text)
         print("*******************************")
 
@@ -385,26 +395,26 @@ def crete_pdf_bill(
         if is_contract or specifications.total_amount > 99999.99:
             story.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет на оплату № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет на оплату № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
         else:
             story.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет-оферта № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет-оферта № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
@@ -450,7 +460,7 @@ def crete_pdf_bill(
         data_info.append(
             (
                 Paragraph(f"Основание:", normal_style),
-                Paragraph(f"Счет {bill_name} от {date_name_dot}", bold_style),
+                Paragraph(f"Счет {order.bill_name_prefix}-{bill_name} от {date_name_dot}", bold_style),
             )
         )
 

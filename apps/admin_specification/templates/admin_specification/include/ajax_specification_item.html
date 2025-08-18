@@ -63,11 +63,11 @@
                         {% endif %}
                 </div>
                 <div class="table_item_value invoice-table_item_value">
-                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Cчет №{{ bill_name }} от {{ bill_date_start }}</a>
+                        <a target="_blank" class="invoice-link" href="{{ bill_file }}">Cчет №{% if bill_name_prefix %}{{bill_name_prefix }}-{% endif %}{{ bill_name }} от {{ bill_date_start }}</a>
                         {% if specification_list.file %}
                                 <a target="_blank"
                                    class="invoice-link"
-                                   href="{{ specification_list.file }}">Cпецификация №{{ specification_list.number }} от {{ specification_list.date_update }} {{ specification_list.pdf.url }} </a>
+                                   href="{{ specification_list.file }}">Cпецификация №{% if specification_list.name_prefix %}{{specification_list.name_prefix }}-{% endif %}{{ specification_list.number }} от {{ specification_list.date }} {{ specification_list.pdf.url }} </a>
                         {% endif %}
                 </div>
                 <div class="table_item_value table_item_value_change_buttons_container">

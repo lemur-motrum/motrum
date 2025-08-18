@@ -821,12 +821,12 @@ def add_info_order(request, order, type_save):
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
                     )
-                    orders_bx = remove_file_bx(
-                        bx,
-                        order.id_bitrix,
-                        "crm.deal.update",
-                        "UF_CRM_1748864769142",
-                    )
+                    # orders_bx = remove_file_bx(
+                    #     bx,
+                    #     order.id_bitrix,
+                    #     "crm.deal.update",
+                    #     "UF_CRM_1748864769142",
+                    # )
                     spes_file = "счет-оферта"
 
                 # СЧЕТ  СДЕЛКИ

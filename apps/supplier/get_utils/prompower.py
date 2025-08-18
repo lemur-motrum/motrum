@@ -674,6 +674,12 @@ def upd_document_pp():
                 except Exception:
                     pass
                 del r
+            if "ofile" in locals():
+                try:
+                    ofile.close()
+                except Exception:
+                    pass
+                del ofile
             if 'url' in locals():
                 del url
             if 'local_file_path' in locals():

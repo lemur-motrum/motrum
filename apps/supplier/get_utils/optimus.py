@@ -46,6 +46,7 @@ items_categ = [
     {
         "texnicheskoe-zrenie-6-teleczentricheskie-obektivyi-od": "Техническое зрение : Телецентрические объективы"
     },  # HIKROBOT
+    {"texnicheskoe-zrenie-1-od": "Техническое зрение: Камеры"},  # HIKROBOT
 ]
 
 
@@ -89,21 +90,23 @@ def add_optimus_product():
     obj = Supplier.objects.get(slug="optimus-drive")
     new_dir = "{0}/{1}/{2}/{3}".format(MEDIA_ROOT, "price", "optimus-drive", "files")
     # первое сохранение категорий
-    category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj).exists()
-    if category_supplier == False:
-        for item_name_categ in items_categ:
-            name = list(item_name_categ.values())[0]
-            slug = list(item_name_categ.keys())[0]
-            try:
-                categ = SupplierCategoryProduct.objects.get(
-                    name=name, slug=slug, supplier=obj
-                )
+    category_supplier = SupplierCategoryProduct.objects.filter(supplier=obj)
+    # .exists()
+    # if category_supplier == False:
+    for item_name_categ in items_categ:
+        print(item_name_categ)
+        name = list(item_name_categ.values())[0]
+        slug = list(item_name_categ.keys())[0]
+        try:
+            categ = SupplierCategoryProduct.objects.get(
+                name=name, slug=slug, supplier=obj
+            )
 
-            except SupplierCategoryProduct.DoesNotExist:
-                categ = SupplierCategoryProduct(
-                    name=name, slug=slug, supplier=obj, autosave_tag=True
-                )
-                categ.save()
+        except SupplierCategoryProduct.DoesNotExist:
+            categ = SupplierCategoryProduct(
+                name=name, slug=slug, supplier=obj, autosave_tag=True
+            )
+            categ.save()
 
     # перебор фаилов и считывание
     file_names = []
@@ -137,7 +140,7 @@ def add_optimus_product():
                     continue
         else:
             error = "file_error"
-            location = "Загрузка фаилов Delta"
+            location = "Загрузка фаилов optimus"
 
             info = f"Новый фаил {file_name}"
             e = error_alert(error, location, info)
@@ -158,7 +161,7 @@ def optimus_written_file(file_name, obj, new_dir):
     from apps.product.models import Price, Product, Stock, ProductImage, ProductProperty
 
     path = f"{new_dir}/{file_name}"
-
+    base_vendor = Vendor.objects.get(slug="optimus-drive")
     # получение названий столюцов
     fieldnames = []
     with open(path, "r", newline="", encoding="windows-1251") as csvfile:
@@ -308,20 +311,158 @@ def optimus_written_file(file_name, obj, new_dir):
                             update_change_reason(image, "Автоматическое")
 
                 # основной товар
-                try:
+                article = Product.objects.filter(
+                    supplier=obj, article_supplier=article_supplier
+                )
+                if article.count() == 1:
+                    article = article[0]
                     article = Product.objects.get(
                         supplier=obj, article_supplier=article_supplier
                     )
                     image = ProductImage.objects.filter(product=article).exists
                     if image == False:
                         save_image(article)
+                    try:
+                        stock_prod = Stock.objects.get(prod=article)
 
-                except Product.DoesNotExist:
+                    except Stock.DoesNotExist:
+                        stock_supplier = None
+                        lot = Lot.objects.get(name="штука")
+
+                        stock_prod = Stock(
+                            prod=article,
+                            lot=lot,
+                            stock_supplier=stock_supplier,
+                            data_update=datetime.datetime.now(),
+                        )
+                        stock_prod._change_reason = "Автоматическое"
+                        stock_prod.save()
+
+                    # свойства из из общей колонки
+                    props_product = ProductProperty.objects.filter(product=article).exists()
+                    if props_product == False:
+
+                        if tds != []:
+                            i = 0
+                            for td in tds:
+                                i += 1
+                                if i > 1:
+                                    if td != []:
+                                        print(td)
+                                        value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                        value_props_no_br = str(td[1]).replace(
+                                            "<br/>", ". "
+                                        )
+                                        name_props = re.sub(
+                                            r"<[^>]+>", "", str(td[0]), flags=re.S
+                                        )
+                                        value_props = re.sub(
+                                            r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                        )
+                                        props_product = ProductProperty(product=article)
+                                        props_product.name = name_props
+
+                                        props_product.value = value_props
+                                        props_product.save()
+                                        update_change_reason(
+                                            props_product, "Автоматическое"
+                                        )
+                    # свойства из отдельных колонок
+                    save_optimus_props(row2, article)
+
+                    # цены товара
+                    try:
+                        price_product = Price.objects.get(prod=article)
+
+                    except Price.DoesNotExist:
+                        price_product = Price(prod=article)
+
+                    finally:
+                        price_product.currency = currency
+                        price_product.price_supplier = price_supplier
+                        price_product.vat = vat_catalog
+                        price_product.vat_include = True
+                        price_product.extra_price = extra
+                        price_product._change_reason = "Автоматическое"
+                        price_product.save()
+
+                
+                elif article.count() > 1:
+                    for article_one in article:
+                        image = ProductImage.objects.filter(product=article_one).exists
+                        if image == False:
+                            save_image(article_one)
+                        try:
+                            stock_prod = Stock.objects.get(prod=article_one)
+
+                        except Stock.DoesNotExist:
+                            stock_supplier = None
+                            lot = Lot.objects.get(name="штука")
+
+                            stock_prod = Stock(
+                                prod=article_one,
+                                lot=lot,
+                                stock_supplier=stock_supplier,
+                                data_update=datetime.datetime.now(),
+                            )
+                            stock_prod._change_reason = "Автоматическое"
+                            stock_prod.save()
+
+                        # свойства из из общей колонки
+                        props_product = ProductProperty.objects.filter(product=article_one).exists()
+                        if props_product == False:
+
+                            if tds != []:
+                                i = 0
+                                for td in tds:
+                                    i += 1
+                                    if i > 1:
+                                        if td != []:
+                                            print(td)
+                                            value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                            value_props_no_br = str(td[1]).replace(
+                                                "<br/>", ". "
+                                            )
+                                            name_props = re.sub(
+                                                r"<[^>]+>", "", str(td[0]), flags=re.S
+                                            )
+                                            value_props = re.sub(
+                                                r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                            )
+                                            props_product = ProductProperty(product=article_one)
+                                            props_product.name = name_props
+
+                                            props_product.value = value_props
+                                            props_product.save()
+                                            update_change_reason(
+                                                props_product, "Автоматическое"
+                                            )
+                        # свойства из отдельных колонок
+                        save_optimus_props(row2, article_one)
+
+                        # цены товара
+                        try:
+                            price_product = Price.objects.get(prod=article_one)
+
+                        except Price.DoesNotExist:
+                            price_product = Price(prod=article_one)
+
+                        finally:
+                            price_product.currency = currency
+                            price_product.price_supplier = price_supplier
+                            price_product.vat = vat_catalog
+                            price_product.vat_include = True
+                            price_product.extra_price = extra
+                            price_product._change_reason = "Автоматическое"
+                            price_product.save()
+
+
+                else:
                     new_article = create_article_motrum(obj.id)
                     article = Product(
                         article=new_article,
                         supplier=obj,
-                        vendor=None,
+                        vendor=base_vendor,
                         article_supplier=article_supplier,
                         name=name,
                         description=description,
@@ -354,53 +495,53 @@ def optimus_written_file(file_name, obj, new_dir):
                         stock_prod._change_reason = "Автоматическое"
                         stock_prod.save()
 
-                # свойства из из общей колонки
-                props_product = ProductProperty.objects.filter(product=article).exists()
-                if props_product == False:
+                    # свойства из из общей колонки
+                    props_product = ProductProperty.objects.filter(product=article).exists()
+                    if props_product == False:
 
-                    if tds != []:
-                        i = 0
-                        for td in tds:
-                            i += 1
-                            if i > 1:
-                                if td != []:
-                                    print(td)
-                                    value_props_no_br = str(td[1]).replace("<br>", ". ")
-                                    value_props_no_br = str(td[1]).replace(
-                                        "<br/>", ". "
-                                    )
-                                    name_props = re.sub(
-                                        r"<[^>]+>", "", str(td[0]), flags=re.S
-                                    )
-                                    value_props = re.sub(
-                                        r"<[^>]+>", "", value_props_no_br, flags=re.S
-                                    )
-                                    props_product = ProductProperty(product=article)
-                                    props_product.name = name_props
+                        if tds != []:
+                            i = 0
+                            for td in tds:
+                                i += 1
+                                if i > 1:
+                                    if td != []:
+                                        print(td)
+                                        value_props_no_br = str(td[1]).replace("<br>", ". ")
+                                        value_props_no_br = str(td[1]).replace(
+                                            "<br/>", ". "
+                                        )
+                                        name_props = re.sub(
+                                            r"<[^>]+>", "", str(td[0]), flags=re.S
+                                        )
+                                        value_props = re.sub(
+                                            r"<[^>]+>", "", value_props_no_br, flags=re.S
+                                        )
+                                        props_product = ProductProperty(product=article)
+                                        props_product.name = name_props
 
-                                    props_product.value = value_props
-                                    props_product.save()
-                                    update_change_reason(
-                                        props_product, "Автоматическое"
-                                    )
-                # свойства из отдельных колонок
-                save_optimus_props(row2, article)
+                                        props_product.value = value_props
+                                        props_product.save()
+                                        update_change_reason(
+                                            props_product, "Автоматическое"
+                                        )
+                    # свойства из отдельных колонок
+                    save_optimus_props(row2, article)
 
-                # цены товара
-                try:
-                    price_product = Price.objects.get(prod=article)
+                    # цены товара
+                    try:
+                        price_product = Price.objects.get(prod=article)
 
-                except Price.DoesNotExist:
-                    price_product = Price(prod=article)
+                    except Price.DoesNotExist:
+                        price_product = Price(prod=article)
 
-                finally:
-                    price_product.currency = currency
-                    price_product.price_supplier = price_supplier
-                    price_product.vat = vat_catalog
-                    price_product.vat_include = True
-                    price_product.extra_price = extra
-                    price_product._change_reason = "Автоматическое"
-                    price_product.save()
+                    finally:
+                        price_product.currency = currency
+                        price_product.price_supplier = price_supplier
+                        price_product.vat = vat_catalog
+                        price_product.vat_include = True
+                        price_product.extra_price = extra
+                        price_product._change_reason = "Автоматическое"
+                        price_product.save()
 
             except Exception as e:
                 print(e)

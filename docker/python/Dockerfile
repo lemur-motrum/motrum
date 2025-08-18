@@ -5,6 +5,7 @@ RUN pip install --upgrade pip
 RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
     && apt-get install -y git \
+    # && apt-get install -y libarchive-tools \
     && pip install psycopg2 
 
 # RUN pip install git+https://github.com/jazzband/django-smart-selects.git

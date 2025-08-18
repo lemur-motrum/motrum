@@ -1581,7 +1581,7 @@ def save_specification(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
 
-        pdf = crete_pdf_specification(
+        pdf,pdf_no_sign = crete_pdf_specification(
             specification.id,
             requisites,
             account_requisites,

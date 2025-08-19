@@ -789,7 +789,7 @@ def add_info_order(request, order, type_save):
                     file_dict_no_signed,
                     id_bitrix_order,
                     "crm.deal.update",
-                    "UF_CRM_1755524330",
+                    "UF_CRM_1734772537613",
                 )
 
                 if order.specification.number:
@@ -825,7 +825,7 @@ def add_info_order(request, order, type_save):
                         bx,
                         order.id_bitrix,
                         "crm.deal.update",
-                        "UF_CRM_1748864769142",
+                        "UF_CRM_1755524330",
                     )
                     spes_file = "счет-оферта"
 

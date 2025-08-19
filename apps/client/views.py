@@ -120,7 +120,6 @@ def order_client_one(request, pk):
     order = Order.objects.get(pk=pk)
     is_final_price = False
 
-    print("order.bill_name", order.bill_name)
     if order.bill_name:
         is_final_price = True
         print(" TRUE")

@@ -1543,6 +1543,10 @@ def save_specification(
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
 
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
             product_spes.save()
 
             total_amount = total_amount + price_all
@@ -1581,7 +1585,7 @@ def save_specification(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
 
-        pdf = crete_pdf_specification(
+        pdf,pdf_no_sign = crete_pdf_specification(
             specification.id,
             requisites,
             account_requisites,
@@ -1595,6 +1599,7 @@ def save_specification(
 
         if pdf:
             specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
             specification._change_reason = "Ручное"
 
             if post_update == False:
@@ -1939,6 +1944,7 @@ def save_specification_before_upd_marja_okt(
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
+    print("id_bitrix", id_bitrix)   
     specification.id_bitrix = id_bitrix
     specification.marginality = marginality
     specification._change_reason = "Ручное"
@@ -1960,7 +1966,7 @@ def save_specification_before_upd_marja_okt(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
 
-        pdf = crete_pdf_specification(
+        pdf,pdf_no_sign = crete_pdf_specification(
             specification.id,
             requisites,
             account_requisites,
@@ -1974,6 +1980,7 @@ def save_specification_before_upd_marja_okt(
 
         if pdf:
             specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
             specification._change_reason = "Ручное"
 
             if post_update == False:
@@ -2750,6 +2757,10 @@ def create_info_request_order_1c(order, order_products):
     else:
         kpp = None
 
+    number_invoice = order.bill_name
+    if order.bill_name_prefix:
+        number_invoice = f"{order.bill_name_prefix}-{order.bill_name}"
+
     data_for_1c = {
         "motrum_requisites": {
             "legal_entity": order.motrum_requisites.requisites.full_name_legal_entity,
@@ -2781,7 +2792,7 @@ def create_info_request_order_1c(order, order_products):
             "delivery": order.type_delivery.text_long,
             # "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "type_invoice": "счет",
-            "number_invoice": order.bill_name,
+            "number_invoice": number_invoice,
             "data_invoice": order.bill_date_start.isoformat(),
             "prepay_persent": order.requisites.prepay_persent,
             "postpay_persent": order.requisites.postpay_persent,

@@ -199,6 +199,7 @@ def xlsx_props_motrum_pandas():
                 or sheet_name == "РP (привод.техника)Электродвиг"
                 or sheet_name == "Фильтр Датчики (Индуктивные)"
                 or sheet_name == "РP (привод.техника)Серво"
+                or sheet_name == "РP Систем. автомат ПЛК 12.08"
             ):
                 supplier_sheets = Supplier.objects.get(slug="prompower")
             elif sheet_name == "ONI ПЧ":

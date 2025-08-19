@@ -767,14 +767,14 @@ def add_info_order(request, order, type_save):
                         "UF_CRM_1734772155723": order.bill_sum_paid,
                         "UF_CRM_1734772173389": order_debt,
                         "UF_CRM_1747900569834":order.marginality,
-                        "UF_CRM_1755585965":date_update,
+                        "UF_CRM_1755609235":date_update,
                     },
                 }
                 if order.marginality_sum:
                     data_order["fields"]["UF_CRM_1755586068"] = order.marginality_sum
                 if order.bill_name:
                     bill_name_text = f"{order.bill_name_prefix}-{order.bill_name}"
-                    data_order["fields"]["UF_CRM_1755585927"] = order.marginality_sum
+                    data_order["fields"]["UF_CRM_1755585927"] = bill_name_text
                     
                 
                 

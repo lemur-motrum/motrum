@@ -756,6 +756,10 @@ def add_info_order(request, order, type_save):
                 company_bx = bx.get_by_ID("crm.company.get", [company])
 
                 order_debt = order.bill_sum - order.bill_sum_paid
+                date_update = datetime.datetime.fromisoformat(
+                    order.date_update.isoformat()
+                )
+                
                 data_order = {
                     "id": id_bitrix_order,
                     "fields": {
@@ -763,8 +767,27 @@ def add_info_order(request, order, type_save):
                         "UF_CRM_1734772155723": order.bill_sum_paid,
                         "UF_CRM_1734772173389": order_debt,
                         "UF_CRM_1747900569834":order.marginality,
+                        "UF_CRM_1755585965":date_update,
                     },
                 }
+                if order.marginality_sum:
+                    data_order["fields"]["UF_CRM_1755586068"] = order.marginality_sum
+                if order.bill_name:
+                    bill_name_text = f"{order.bill_name_prefix}-{order.bill_name}"
+                    data_order["fields"]["UF_CRM_1755585927"] = order.marginality_sum
+                    
+                
+                
+                
+                # data_order = {
+                #     "id": id_bitrix_order,
+                #     "fields": {
+                #         "OPPORTUNITY": order.bill_sum,
+                #         "UF_CRM_1734772155723": order.bill_sum_paid,
+                #         "UF_CRM_1734772173389": order_debt,
+                #         "UF_CRM_1747900569834":order.marginality,
+                #     },
+                # }
                 orders_bx = bx.call("crm.deal.update", data_order)
                 print(orders_bx)
 

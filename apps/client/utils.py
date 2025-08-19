@@ -56,8 +56,7 @@ def crete_pdf_bill(
 ):
 
     try:
-        print("crete_pdf_bill")
-        print(type_save)
+   
         directory = check_spesc_directory_exist(
             "bill",
         )
@@ -85,7 +84,7 @@ def crete_pdf_bill(
             F('id_cart__order'),
             'id'
         )
-        print(type_delivery)
+      
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
 
         order = Order.objects.get(specification=specification)
@@ -118,10 +117,7 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-        print("type_bill", type_bill)
-        print("bill_name", bill_name)
-        print("type_save", type_save)
-        print("*******************************")
+      
         if type_save == "new":
             name_bill_text = f"{type_bill} № {bill_name}"
             motrum_info.save()
@@ -134,8 +130,7 @@ def crete_pdf_bill(
         else:
             bill_name = order.bill_name
             name_bill_text = f"{type_bill} № {bill_name}"
-        print("name_bill_text", name_bill_text)
-        print("*******************************")
+
 
         older_doc = OrderDocumentBill.objects.filter(
             order=order,
@@ -144,19 +139,17 @@ def crete_pdf_bill(
             bill_date_start=datetime.datetime.today(),
         )
         if older_doc:
-            print(1, older_doc)
+       
             older_doc_ver = older_doc.last()
-            print(2, older_doc_ver)
+
             version = older_doc_ver.version + 1
-            print(2, older_doc_ver)
+     
             text_version = f"_{version}"
         else:
-            print(2, older_doc)
+        
             version = 1
             text_version = ""
-        print(older_doc)
-        print(version)
-        print(text_version)
+
         name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
         name_bill_to_fullname_nosign = (
             f"{name_bill_text} от {date_now} без печати{text_version}"
@@ -497,7 +490,7 @@ def crete_pdf_bill(
         total_product_quantity = 0
         for product in product_specification:
             i += 1
-            print(i, product)
+        
             try:
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
@@ -984,7 +977,7 @@ def crete_pdf_bill(
             )
         )
 
-        print(table_data_text_info)
+    
         # story_no_sign = story.copy()
         story.append(table_data_text_info)
         story_no_sign.append(table_data_text_info2)
@@ -1081,11 +1074,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+    
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+          
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,
@@ -1150,9 +1142,7 @@ def crete_pdf_bill(
             "bill",
             name_bill,
         )
-        print(file_path)
 
-        print(333333333333333333)
 
         data_signature = [
             (
@@ -1248,11 +1238,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+       
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+          
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,

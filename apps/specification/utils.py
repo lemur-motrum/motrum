@@ -621,7 +621,7 @@ def crete_pdf_specification(
             name_specification,
         )
 
-        print("file_path", file_path)
+   
         return file_path
     except Exception as e:
         tr = traceback.format_exc()
@@ -671,14 +671,12 @@ def get_shipment_doc_path(instance, filename):
 def save_shipment_doc(link, document_shipment):
     from apps.core.utils import check_spesc_directory_exist, transform_date
 
-    print(link, document_shipment)
-    print(document_shipment.id)
-    print(document_shipment.date)
+
     directory = check_spesc_directory_exist(
         "shipment",
     )
     name = f"отгрузка_{document_shipment.id}_{document_shipment.date}.pdf"
-    print(name)
+
     # file_last_list = filename.split(".")
     # type_file = "." + file_last_list[-1]
     name_doc = f"{name}"

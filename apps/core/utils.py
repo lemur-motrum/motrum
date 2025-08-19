@@ -1543,6 +1543,10 @@ def save_specification(
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
 
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
             product_spes.save()
 
             total_amount = total_amount + price_all

@@ -466,7 +466,7 @@ def crete_pdf_specification(
         else:
             postpay_persent_text_3 = ""
 
-        info_payment_text = ""
+        info_payment_text = "Способ оплаты: "
         parts_payment = []
         if prepay_persent_text:
             parts_payment.append(prepay_persent_text)

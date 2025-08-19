@@ -113,6 +113,7 @@ class SliderMain(models.Model):
         upload_to=get_file_path_slider_web,
         blank=True,
         null=True,
+        max_length=500,
     )
     image_right = models.ImageField(
         "Изображение правое",

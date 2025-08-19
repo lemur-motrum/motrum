@@ -616,12 +616,14 @@ class Order(models.Model):
         upload_to=get_document_bill_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     bill_file_no_signature = models.FileField(
         "Фаил счета без печатей",
         upload_to=get_document_bill_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",
@@ -648,7 +650,7 @@ class Order(models.Model):
         null=True,
     )
     act_file = models.FileField(
-        "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
+        "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None, max_length=1000
     )
     marginality = models.FloatField(
         "Маржинальность заказа в %",
@@ -886,6 +888,7 @@ class OrderDocumentBill(models.Model):
         "Фаил счета",
         default=None,
         null=True,
+        max_length=1000,
     )
     text_name_bill_no_sign = models.CharField(
         "Текстовое название без подписи",
@@ -898,6 +901,7 @@ class OrderDocumentBill(models.Model):
         "Фаил счета без печатей",
         default=None,
         null=True,
+        max_length=1000,
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",
@@ -960,6 +964,7 @@ class DocumentShipment(models.Model):
         upload_to=get_shipment_doc_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     # name = models.PositiveIntegerField(
     #     "номер",

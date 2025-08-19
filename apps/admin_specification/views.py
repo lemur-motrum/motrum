@@ -980,7 +980,7 @@ def create_specification(request):
     type_delivery = TypeDelivery.objects.filter(actual=True)
     supplier = Supplier.objects.all().order_by("name")
     vendor = Vendor.objects.all().order_by("name")
-    lot = Lot.objects.all().order_by("-name")
+    lot = Lot.objects.all().order_by("id")
     context = {
         # "title": title,
         "product": product,

@@ -32,6 +32,7 @@ libsass==0.23.0
 django-compressor==4.5.1
 django-sass-processor==1.4.1
 
+rarfile==4.2
 
 
 

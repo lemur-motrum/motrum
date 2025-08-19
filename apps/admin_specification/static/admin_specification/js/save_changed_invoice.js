@@ -288,6 +288,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   )
                     .then((response3) => {
                       if (response3.status == 200 || response2.status == 201) {
+                        // document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                         window.location.href =
                           "/admin_specification/all_specifications/";
                       } else {

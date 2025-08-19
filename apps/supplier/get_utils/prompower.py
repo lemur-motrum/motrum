@@ -208,7 +208,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None :
+                if data_item["article"] != None:
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -674,6 +674,12 @@ def upd_document_pp():
                 except Exception:
                     pass
                 del r
+            if "ofile" in locals():
+                try:
+                    ofile.close()
+                except Exception:
+                    pass
+                del ofile
             if 'url' in locals():
                 del url
             if 'local_file_path' in locals():

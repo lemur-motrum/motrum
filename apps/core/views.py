@@ -387,6 +387,7 @@ def add_admin_okt(request):
 def robots_txt(request):
     if IS_PROD:
         lines = [
+            "User-agent: *",
             "Disallow: /admin/",
             "Disallow: /website_admin/",
             "Disallow: /okt/",
@@ -395,6 +396,8 @@ def robots_txt(request):
             "Disallow: /api/",
             "Disallow: /tinymce/",
             "Disallow: /logs/",
+            "Disallow: /product/all/",
+            "Disallow: /product/other/",
         ]
     else:
         lines = [

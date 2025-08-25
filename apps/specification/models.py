@@ -47,10 +47,10 @@ class Specification(models.Model):
         default=None,
     )
     file = models.FileField(
-        "Фаил", upload_to=get_document_path, null=True, default=None
+        "Фаил", upload_to=get_document_path, null=True, default=None, max_length=1000
     )
     file_no_signature  = models.FileField(
-        "Фаил без печатей", upload_to=get_document_path, null=True, default=None
+        "Фаил без печатей", upload_to=get_document_path, null=True, default=None, max_length=1000
     )
     is_prepay = models.BooleanField("Предоплата", default=False)
     cart = models.OneToOneField(

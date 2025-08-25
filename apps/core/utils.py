@@ -9,6 +9,7 @@ import re
 import shutil
 import threading
 
+
 import requests
 import hashlib
 import os
@@ -27,6 +28,7 @@ from requests.auth import HTTPBasicAuth
 
 
 from django.db.models import OuterRef, Subquery, IntegerField, Case, When, Value
+
 
 
 
@@ -1543,6 +1545,10 @@ def save_specification(
             if text_delivery != "" and text_delivery != None:
                 product_spes.text_delivery = text_delivery
 
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
             product_spes.save()
 
             total_amount = total_amount + price_all
@@ -3261,21 +3267,142 @@ def add_new_photo_adress_prompower():
 
 
 def serch_products_web(search_text, queryset):
+    from apps.product.models import Product
+    from django.db.models import Q, F, Value, Func
+    from django.db.models.functions import Lower
+    
     print("queryset1", queryset)
     search_input = search_text
     search_input = search_input.replace(",", "")
     search_input = search_input.split()
-    print("search_input", search_input)
-    queryset = queryset.filter(
-        Q(name__icontains=search_input[0])
-        | Q(article_supplier__icontains=search_input[0])
+    # print("search_input", search_input)
+    # queryset = queryset.filter(
+    #     Q(name__icontains=search_input[0])
+    #     | Q(article_supplier__icontains=search_input[0])
+    # )
+    # if len(search_input) > 1:
+    #     for search_item in search_input[1:]:
+    #         queryset = queryset.filter(
+    #             Q(name__icontains=search_item)
+    #             | Q(article_supplier__icontains=search_item)
+    #         )
+    
+    
+    # # вариант ищет каждое слово все рабоатет
+        # нормализация: удаляем все НЕ буквенно-цифровые символы (Unicode). Сохраняем кириллицу/латиницу/цифры.
+        # Python: \w включает буквенно-цифровые символы Unicode и '_', поэтому дополнительно удалим '_'.
+    normalized_terms = [
+        re.sub(r"\W+", "", term, flags=re.UNICODE).replace("_", "").lower()
+        for term in search_input
+    ]
+
+    # Используем Postgres REGEXP_REPLACE для удаления всех не-алфанумерических символов в полях
+    queryset = (
+        Product.objects.annotate(
+            name_sanitized=Lower(
+                Func(
+                    F("name"),
+                    Value(r"[^[:alnum:]]+"),
+                    Value(""),
+                    Value("g"),
+                    function="REGEXP_REPLACE",
+                )
+            ),
+            article_sanitized=Lower(
+                Func(
+                    F("article"),
+                    Value(r"[^[:alnum:]]+"),
+                    Value(""),
+                    Value("g"),
+                    function="REGEXP_REPLACE",
+                )
+            ),
+            article_supplier_sanitized=Lower(
+                Func(
+                    F("article_supplier"),
+                    Value(r"[^[:alnum:]]+"),
+                    Value(""),
+                    Value("g"),
+                    function="REGEXP_REPLACE",
+                )
+            ),
+            additional_article_supplier_sanitized=Lower(
+                Func(
+                    F("additional_article_supplier"),
+                    Value(r"[^[:alnum:]]+"),
+                    Value(""),
+                    Value("g"),
+                    function="REGEXP_REPLACE",
+                )
+            ),
+            description_sanitized=Lower(
+                Func(
+                    F("description"),
+                    Value(r"[^[:alnum:]]+"),
+                    Value(""),
+                    Value("g"),
+                    function="REGEXP_REPLACE",
+                )
+            ),
+        )
     )
+
+    # Первая часть условий (первый термин)
+    first_term = search_input[0]
+    first_norm = normalized_terms[0]
+    q_first = (
+        Q(name__icontains=first_term)
+        | Q(article__icontains=first_term)
+        | Q(article_supplier__icontains=first_term)
+        | Q(additional_article_supplier__icontains=first_term)
+        | Q(description__icontains=first_term)
+    )
+    if first_norm:
+        q_first |= (
+            Q(name_sanitized__icontains=first_norm)
+            | Q(article_sanitized__icontains=first_norm)
+            | Q(article_supplier_sanitized__icontains=first_norm)
+            | Q(additional_article_supplier_sanitized__icontains=first_norm)
+            | Q(description_sanitized__icontains=first_norm)
+        )
+    queryset = queryset.filter(q_first)
+
+
+    # del search_input[0]
     if len(search_input) > 1:
-        for search_item in search_input[1:]:
-            queryset = queryset.filter(
+        for idx, search_item in enumerate(search_input[1:], start=1):
+            normalized_item = normalized_terms[idx]
+            q_next = (
                 Q(name__icontains=search_item)
+                | Q(article__icontains=search_item)
                 | Q(article_supplier__icontains=search_item)
+                | Q(additional_article_supplier__icontains=search_item)
+                | Q(description__icontains=search_item)
             )
+            if normalized_item:
+                q_next |= (
+                    Q(name_sanitized__icontains=normalized_item)
+                    | Q(article_sanitized__icontains=normalized_item)
+                    | Q(article_supplier_sanitized__icontains=normalized_item)
+                    | Q(additional_article_supplier_sanitized__icontains=normalized_item)
+                    | Q(description_sanitized__icontains=normalized_item)
+                )
+            queryset = queryset.filter(q_next)
+    else:
+        queryset = (
+            queryset.filter(check_to_order=True)
+            .filter(in_view_website=True)
+            .order_by("name")
+        )
+
+    queryset = (
+        queryset.filter(check_to_order=True)
+        .filter(in_view_website=True)
+        .order_by("name")
+    )
+
+    
+    
     print("queryset", queryset)
     return queryset
 

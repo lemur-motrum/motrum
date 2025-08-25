@@ -24,21 +24,23 @@
                         <div class="hover_container"></div>
                         <span class="name">{{ category_item.name }}</span></a>
                 {% endfor %}
+                {% if request.user.is_staff == True %}
                 <a href="{% url "product:group" "other" %}"
                    class="category"
                    data-category="category_item.id">
                     <div class="gray-bg"></div>
                     <div class="background-container"></div>
                     <div class="hover_container"></div>
-                    <span class="name">товары без категории</span></a>
+                    <span class="name">товары без категории</span></a>{% endif %}
             {% endif %}
+            {% if request.user.is_staff == True %}
             <a href="{% url "product:group" "all" %}"
                class="category"
                data-category="category_item.id">
                 <div class="gray-bg"></div>
                 <div class="background-container"></div>
                 <div class="hover_container"></div>
-                <span class="name">все товары</span></a>
+                <span class="name">все товары</span></a>{% endif %}
         </div>
     </div>
 {% endblock content %}

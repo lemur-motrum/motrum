@@ -56,6 +56,8 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.db.models import Exists, OuterRef, FloatField
 from django.db.models.functions import Cast
+from django.db.models.functions import Lower
+from django.db.models import Func
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -382,6 +384,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             data_resp = {"result": "error", "error": f"info-error {info}"}
             return Response(data_resp, status=status.HTTP_400_BAD_REQUEST)
 
+
     @action(detail=False, methods=["post", "get"], url_path=r"search-product-web")
     def search_product_web(self, request, *args, **kwargs):
         data = request.data
@@ -393,24 +396,105 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         print(search_input)
         # # вариант ищет каждое слово все рабоатет
-        queryset = Product.objects.filter(
-            Q(name__icontains=search_input[0])
-            | Q(article__icontains=search_input[0])
-            | Q(article_supplier__icontains=search_input[0])
-            | Q(additional_article_supplier__icontains=search_input[0])
-            | Q(description__icontains=search_input[0])
+        # нормализация: удаляем все НЕ буквенно-цифровые символы (Unicode). Сохраняем кириллицу/латиницу/цифры.
+        # Python: \w включает буквенно-цифровые символы Unicode и '_', поэтому дополнительно удалим '_'.
+        normalized_terms = [
+            re.sub(r"\W+", "", term, flags=re.UNICODE).replace("_", "").lower()
+            for term in search_input
+        ]
+
+        # Используем Postgres REGEXP_REPLACE для удаления всех не-алфанумерических символов в полях
+        queryset = (
+            Product.objects.annotate(
+                name_sanitized=Lower(
+                    Func(
+                        F("name"),
+                        Value(r"[^[:alnum:]]+"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                    )
+                ),
+                article_sanitized=Lower(
+                    Func(
+                        F("article"),
+                        Value(r"[^[:alnum:]]+"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                    )
+                ),
+                article_supplier_sanitized=Lower(
+                    Func(
+                        F("article_supplier"),
+                        Value(r"[^[:alnum:]]+"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                    )
+                ),
+                additional_article_supplier_sanitized=Lower(
+                    Func(
+                        F("additional_article_supplier"),
+                        Value(r"[^[:alnum:]]+"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                    )
+                ),
+                description_sanitized=Lower(
+                    Func(
+                        F("description"),
+                        Value(r"[^[:alnum:]]+"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                    )
+                ),
+            )
         )
+
+        # Первая часть условий (первый термин)
+        first_term = search_input[0]
+        first_norm = normalized_terms[0]
+        q_first = (
+            Q(name__icontains=first_term)
+            | Q(article__icontains=first_term)
+            | Q(article_supplier__icontains=first_term)
+            | Q(additional_article_supplier__icontains=first_term)
+            | Q(description__icontains=first_term)
+        )
+        if first_norm:
+            q_first |= (
+                Q(name_sanitized__icontains=first_norm)
+                | Q(article_sanitized__icontains=first_norm)
+                | Q(article_supplier_sanitized__icontains=first_norm)
+                | Q(additional_article_supplier_sanitized__icontains=first_norm)
+                | Q(description_sanitized__icontains=first_norm)
+            )
+        queryset = queryset.filter(q_first)
+
 
         # del search_input[0]
         if len(search_input) > 1:
-            for search_item in search_input[1:]:
-                queryset = queryset.filter(
+            for idx, search_item in enumerate(search_input[1:], start=1):
+                normalized_item = normalized_terms[idx]
+                q_next = (
                     Q(name__icontains=search_item)
                     | Q(article__icontains=search_item)
                     | Q(article_supplier__icontains=search_item)
                     | Q(additional_article_supplier__icontains=search_item)
                     | Q(description__icontains=search_item)
                 )
+                if normalized_item:
+                    q_next |= (
+                        Q(name_sanitized__icontains=normalized_item)
+                        | Q(article_sanitized__icontains=normalized_item)
+                        | Q(article_supplier_sanitized__icontains=normalized_item)
+                        | Q(additional_article_supplier_sanitized__icontains=normalized_item)
+                        | Q(description_sanitized__icontains=normalized_item)
+                    )
+                queryset = queryset.filter(q_next)
         else:
             queryset = (
                 queryset.filter(check_to_order=True)
@@ -442,7 +526,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             "count_all": count_all,
         }
         return Response(data_response, status=status.HTTP_200_OK)
-
+    
+    
     @action(detail=False, methods=["post", "get"], url_path=r"search-vendor")
     def search_vendor(self, request, *args, **kwargs):
         queryset = Vendor.objects.filter()

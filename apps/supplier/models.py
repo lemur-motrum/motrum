@@ -403,32 +403,9 @@ class SupplierCategoryProductAll(models.Model):
         verbose_name_plural = "Подгруппы поставщиков"
 
     def __str__(self):
-        def background_task():
-            # Долгосрочная фоновая задача
-            for product_one in product:
-             
-                if self.is_view_website == False:
-                    product_one.in_view_website = False
-                product_one.save(update_fields=["category", "group", "vendor", "in_view_website"])
-         
-                try:
-                    update_change_reason(product_one, "Автоматическое")
-                except AttributeError:
-                    pass
-
-        daemon_thread = threading.Thread(target=background_task)
-        daemon_thread.setDaemon(True)
-        daemon_thread.start()
+        
         return f"{self.name}"
-        # return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
-
-        # request = RequestMiddleware(get_response=None)
-        # request = request.thread_local.current_request
-
-        # if request.path == "/admin/product/product/":
-        #     return f"{self.name}"
-        # else:
-        #     return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
+        
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -444,11 +421,13 @@ class SupplierCategoryProductAll(models.Model):
                     product_one.category = self.category_catalog
                     if self.group_catalog:
                         product_one.group = self.group_catalog
-
+                    if self.is_view_website == False:
+                        product_one.in_view_website = False
                     product_one.save(
                         update_fields=[
                             "category",
                             "group",
+                            "in_view_website",
                         ]
                     )
                     try:

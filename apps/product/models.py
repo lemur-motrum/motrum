@@ -14,6 +14,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
+    chek_wiev_in_website,
     create_article_motrum,
     get_file_path_add,
     get_lot,
@@ -168,7 +169,10 @@ class Product(models.Model):
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-  
+
+        if self.category_supplier_all or self.group_supplier or self.category_supplier:
+            check_view =  chek_wiev_in_website(self.category_supplier_all,self.group_supplier,self.category_supplier) 
+            self.in_view_website = check_view
 
         # удалить лишние пробелы
         if self.description != None:

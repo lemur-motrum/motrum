@@ -38,6 +38,16 @@ window.addEventListener("DOMContentLoaded", () => {
       button.onclick = () => {
         const products = [];
         let validate = true;
+        const marginality =
+        document.querySelector(".marginality_value");
+        const marginality_sum = marginality.textContent
+        const marginalityValue =
+        document.querySelector(".marginality_prcent_value");
+        const marginality_percent = marginalityValue.textContent
+
+        console.log("marginality_sum", marginality, marginality_sum)
+        console.log("marginalityValue", marginalityValue, marginality_percent)
+
         const clientRequsits = document
           .querySelector("[name='client-requisit']")
           .getAttribute("value");
@@ -61,6 +71,10 @@ window.addEventListener("DOMContentLoaded", () => {
             "data-price-exclusive"
           );
           const itemPrice = specificationItem.getAttribute("data-price");
+          const textPrice = specificationItem.querySelector(".price_once");
+          const marjaItem =
+          specificationItem.querySelector(".marja-input");
+          
           const extraDiscount =
             specificationItem.querySelector(".discount-input");
           const productSpecificationId = specificationItem.getAttribute(
@@ -76,6 +90,9 @@ window.addEventListener("DOMContentLoaded", () => {
           );
           const vendor = specificationItem.getAttribute("data-vendor");
           const supplier = specificationItem.getAttribute("data-supplier");
+          const motrumPrice = specificationItem.getAttribute(
+            "data-price-motrum"
+          );
           const deliveryDate =
             specificationItem.querySelector(".delivery_date");
 
@@ -118,6 +135,7 @@ window.addEventListener("DOMContentLoaded", () => {
               ? productSpecificationId
               : null,
             extra_discount: extraDiscount.value,
+            marja_motrum:  marjaItem.value,
             date_delivery: deliveryDate.value
               ? new Date(deliveryDate.value).toISOString().split("T")[0]
               : null,
@@ -125,6 +143,7 @@ window.addEventListener("DOMContentLoaded", () => {
             product_name_new: nameProductNew,
             product_new_article: nameProductNewart,
             comment: commentItem ? commentItem : null,
+            price_motrum:+getCurrentPrice(motrumPrice),
             sale_motrum: saleMotrum ? saleMotrum.textContent : null,
             vendor: vendor ? vendor : null,
             supplier: supplier ? supplier : null,
@@ -137,7 +156,16 @@ window.addEventListener("DOMContentLoaded", () => {
               deliveryDate.style.borderColor = "red";
             }
           }
-
+          if (itemPrice) {
+            console.log(itemPrice)
+            console.log("inputPrice.value", itemPrice)
+            if (!itemPrice || itemPrice == 0.00 || itemPrice == 0.0 || itemPrice == 0 || itemPrice == "0,00" || itemPrice == "0,0"  || itemPrice == "0") {
+  
+              console.log(" if inputPrice 22222222222222")
+              validate = false;
+              textPrice.style.color = "red";
+            }
+          }
           if (inputPrice) {
             if (!inputPrice.value) {
               validate = false;
@@ -189,10 +217,12 @@ window.addEventListener("DOMContentLoaded", () => {
             type_delivery: deliveryRequsits,
             type_save: "bill",
             post_update: true,
+            marginality_sum: +getCurrentPrice(marginality_sum),
+            marginality: +marginality_percent,
           };
 
           const data = JSON.stringify(dataObj);
-
+          console.log("add-order-admin", "change-invoice")
           fetch("/api/v1/order/add-order-admin/", {
             method: "POST",
             body: data,
@@ -204,10 +234,13 @@ window.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
               if (response.status == 200 || response.status == 201) {
                 localStorage.removeItem("specificationValues");
-                document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
-                document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                deleteCookie("key", "/", window.location.hostname);
+                deleteCookie("specificationId", "/", window.location.hostname);
+                deleteCookie("cart", "/", window.location.hostname);
+                // document.cookie = `key=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `specificationId=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `cart=; path=/; SameSite=None; Secure; Max-Age=-1;`;
+                // document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                 return response.json();
               } else {
                 throw new Error("Ошибка");
@@ -255,6 +288,7 @@ window.addEventListener("DOMContentLoaded", () => {
                   )
                     .then((response3) => {
                       if (response3.status == 200 || response2.status == 201) {
+                        // document.cookie = `type_save=; path=/; SameSite=None; Secure; Max-Age=-1;`;
                         window.location.href =
                           "/admin_specification/all_specifications/";
                       } else {

@@ -8,7 +8,7 @@ import {
 import { setErrorModal } from "/static/core/js/error_modal.js";
 
 import { setCommentProductItem } from "../js/setCommnetToProduct.js";
-
+// НЕ ИСПОЛЬЗУЕТСЯ
 window.addEventListener("DOMContentLoaded", () => {
   const cartWrapper = document.querySelector(".spetification_table");
   if (cartWrapper) {

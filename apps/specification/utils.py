@@ -83,6 +83,7 @@ def crete_pdf_specification(
     from apps.core.models import BaseInfo
     from apps.core.utils import check_spesc_directory_exist, transform_date
     from apps.core.models import TypeDelivery
+    from django.db.models import Prefetch, OuterRef, Case, When, F
 
     try:
         print("create document spesif")
@@ -93,7 +94,11 @@ def crete_pdf_specification(
         specifications = Specification.objects.get(id=specification)
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
+        ).order_by(
+            Case(When(id_cart__isnull=False, then=0), default=1),
+            F("id_cart__order"),
+            "id",
+        )
         type_delivery = TypeDelivery.objects.get(id=type_delivery)
         type_delivery_name = type_delivery.text
         kpp_req = account_requisites.requisitesKpp
@@ -116,9 +121,13 @@ def crete_pdf_specification(
         #     date = transform_date(date_data)
         #     date_name_file = datetime.datetime.today().strftime("%d.%m.%Y")
 
-        name_specification = f"СП №{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
+        name_specification = f"СП №{specifications.name_prefix}-{specification_name} от {date_name_file} для {requisites.legal_entity}.pdf"
+        name_specification_no_signature = f"СП №{specifications.name_prefix}-{specification_name} от {date_name_file} для {requisites.legal_entity}_без печати.pdf"
+        
         fileName = os.path.join(directory, name_specification)
+        fileName_no_sign = os.path.join(directory, name_specification_no_signature)
         story = []
+        story_no_sign = []
 
         pdfmetrics.registerFont(TTFont("Roboto", "Roboto-Regular.ttf", "UTF-8"))
         pdfmetrics.registerFont(TTFont("Roboto-Bold", "Roboto-Bold.ttf", "UTF-8"))
@@ -128,6 +137,16 @@ def crete_pdf_specification(
 
         doc = SimpleDocTemplate(
             fileName,
+            pagesize=A4,
+            rightMargin=10,
+            leftMargin=10,
+            topMargin=10,
+            bottomMargin=50,
+            title="Спецификация",
+        )
+        
+        doc2 = SimpleDocTemplate(
+            fileName_no_sign,
             pagesize=A4,
             rightMargin=10,
             leftMargin=10,
@@ -221,29 +240,33 @@ def crete_pdf_specification(
             to_address = requisites.legal_entity
         else:
             to_address = ""
-
-        story.append(
+        header = []
+        print("header",header)
+        header.append(
             Paragraph(
-                f"<b>Спецификация №{specification_name} от {date_title}г.</b><br></br><br></br>",
+                f"<b>Спецификация №{specifications.name_prefix}-{specification_name} от {date_title}г.</b><br></br><br></br>",
                 bold_right_style,
             )
         )
         if to_contract:
-            story.append(
+            header.append(
                 Paragraph(
-                    f"К договору № {to_contract} от {date_contract}", normal_style
+                    f"К договору {to_contract} от {date_contract}", normal_style
                 )
             )
 
-        story.append(
+        header.append(
             Paragraph(f"На поставку продукции в адрес {to_address}", normal_style)
         )
-        story.append(
+        header.append(
             Paragraph(
                 f"от {motrum_info.short_name_legal_entity} <br></br><br></br>",
                 normal_style,
             )
         )
+        print("header2",header)
+        story.extend(header)
+        story_no_sign.extend(header)
 
         data = [
             (
@@ -269,7 +292,12 @@ def crete_pdf_specification(
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
             except Stock.DoesNotExist:
-                product_stock = "шт"
+                produc_cart = product.id_cart
+                if produc_cart and produc_cart.lot:
+                    product_stock = produc_cart.lot.name_shorts
+                else:
+                    product_stock = "шт"
+
             date_delivery = product.date_delivery
             if date_delivery and date_delivery > date_ship:
                 date_ship = date_delivery
@@ -282,7 +310,16 @@ def crete_pdf_specification(
 
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
-                product_name_str = str(product.product.name)
+
+                product_name_st = product.product.name
+                if (
+                    product.product.supplier.slug == "prompower"
+                    and product.product.description
+                ):
+                    product_name_st = product.product.description
+
+                product_name_str = str(product_name_st)
+
                 if product.product.in_view_website:
                     product_name = (
                         Paragraph(f"{product_name_str}", norm10_left_style),
@@ -338,6 +375,7 @@ def crete_pdf_specification(
             )
         )
         story.append(table)
+        story_no_sign.append(table)
 
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
@@ -364,7 +402,7 @@ def crete_pdf_specification(
             final_price_no_nds_table,
         )
         story.append(table)
-
+        story_no_sign.append(table)
         final_total_amount_no_nds = [
             (
                 None,
@@ -378,6 +416,7 @@ def crete_pdf_specification(
             final_total_amount_no_nds,
         )
         story.append(table)
+        story_no_sign.append(table)
         final_final_price_total = [
             (
                 None,
@@ -392,59 +431,101 @@ def crete_pdf_specification(
             final_final_price_total,
         )
         story.append(table)
+        story_no_sign.append(table)
         date_ship = transform_date(str(date_ship))
 
+        dop_info_arr = []
         i_dop_info = 1
         if date_delivery_all:
 
-            story.append(
+            dop_info_arr.append(
                 Paragraph(
                     f"{i_dop_info}. Срок поставки: {date_delivery_all}", normal_style
                 )
             )
             i_dop_info += 1
 
+        
+        
+        # if requisites.prepay_persent:
+        #     if requisites.prepay_persent == 100:
+        #         story.append(
+        #             Paragraph(
+        #                 f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
+        #                 normal_style,
+        #             )
+        #         )
+        #     else:
+        #         story.append(
+        #             Paragraph(
+        #                 f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
+        #                 normal_style,
+        #             )
+        #         )
+        #     i_dop_info += 1
+
         if requisites.prepay_persent:
-            if requisites.prepay_persent == 100:
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. Способ оплаты:100% предоплата.",
-                        normal_style,
-                    )
+            if requisites.prepay_persent  > 0:
+                prepay_persent_text = f"{requisites.prepay_persent}% предоплата"
+        else:
+            prepay_persent_text = ""
+        
+        if requisites.postpay_persent:
+            if requisites.postpay_persent > 0:
+                postpay_persent_text = f"{requisites.postpay_persent}% {requisites.postpay_persent_text}"
+        else:
+            postpay_persent_text = ""
+    
+        if requisites.postpay_persent_2:
+            if requisites.postpay_persent_2 > 0:
+                postpay_persent_text_2 = f"{requisites.postpay_persent_2}% {requisites.postpay_persent_text_2}"
+        else:
+            postpay_persent_text_2 = ""
+        
+        if requisites.postpay_persent_3:
+            if requisites.postpay_persent_3 > 0:
+                postpay_persent_text_3 = f"{requisites.postpay_persent_3}% {requisites.postpay_persent_text_3}"
+        else:
+            postpay_persent_text_3 = ""
+
+        info_payment_text = "Способ оплаты: "
+        parts_payment = []
+        if prepay_persent_text:
+            parts_payment.append(prepay_persent_text)
+        if postpay_persent_text:
+            parts_payment.append(postpay_persent_text)
+        if postpay_persent_text_2:
+            parts_payment.append(postpay_persent_text_2)
+        if postpay_persent_text_3:
+            parts_payment.append(postpay_persent_text_3)
+        if parts_payment:
+            info_payment_text = "Способ оплаты: " + ", ".join(parts_payment)
+        
+        info_payment = info_payment_text
+
+        if info_payment and info_payment != "":
+            dop_info_arr.append(
+                Paragraph(
+                    f"<br></br>{i_dop_info}. {info_payment}",
+                    normal_style,
                 )
-            else:
-                story.append(
-                    Paragraph(
-                        f"<br></br>{i_dop_info}. {requisites.prepay_persent}% предоплата, {requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика.",
-                        normal_style,
-                    )
-                )
+            )
             i_dop_info += 1
 
+
+
         if type_delivery:
-            story.append(
+            dop_info_arr.append(
                 Paragraph(
                     f"<br></br>{i_dop_info}. Доставка: {type_delivery_name}",
                     normal_style,
                 )
             )
 
-            # if type_delivery == "pickup":
-            #     story.append(
-            #         Paragraph(
-            #             f"<br></br>{i_dop_info}. Доставка: самовывоз", normal_style
-            #         )
-            #     )
-            # elif type_delivery == "paid_delivery":
-            #     story.append(
-            #         Paragraph(
-            #             f"<br></br>{i_dop_info}. Доставка с терминала Деловых линий в городе Поставщика до терминала Деловых линий в городе Покупателя за счет Покупателя.",
-            #             normal_style,
-            #         )
-            #     )
-            # else:
-            #     pass
-
+          
+        story.extend(dop_info_arr)
+        story_no_sign.extend(dop_info_arr)
+        print("story",story)
         data_address = [
             (
                 Paragraph("<br></br><br></br>Поставщик:", bold_style),
@@ -454,12 +535,11 @@ def crete_pdf_specification(
         text_motrum_ur = f"{motrum_info.short_name_legal_entity}<br />Юридический адрес: {motrum_info.legal_post_code},{motrum_info.legal_city}, {motrum_info.legal_address}<br></br><br></br>"
         text_motrum_post = f"Почтовый адрес: {motrum_info.postal_post_code},{motrum_info.postal_city}, {motrum_info.postal_address}<br></br><br></br>"
         text_motrum_inn = f"ИНН {motrum_info.inn} КПП {motrum_info.kpp}<br />Р/с {motrum_info_req.account_requisites}<br />{motrum_info_req.bank}<br />БИК {motrum_info_req.bic}<br />К/с {motrum_info_req.kpp}<br></br><br></br>"
-        
-        
+
         if requisites:
             text_buyer_ur = f"{requisites.legal_entity}<br />Юридический адрес: {kpp_req.legal_post_code}, г. {kpp_req.legal_city}, {kpp_req.legal_address}<br></br><br></br>"
             text_buyer_post = f"Почтовый адрес: {kpp_req.postal_post_code}, г. {kpp_req.postal_city}, {kpp_req.postal_address}<br></br><br></br>"
-            
+
             if kpp_req.kpp:
                 text_buyer_inn = f"ИНН {requisites.inn} КПП {kpp_req.kpp}<br />Р/с {account_requisites.account_requisites}<br />{account_requisites.bank}<br />БИК {account_requisites.bic}<br />К/с {account_requisites.kpp}<br></br><br></br>"
             else:
@@ -497,6 +577,9 @@ def crete_pdf_specification(
             )
         )
         table_address = Table(data_address)
+        story.extend([table_address])
+        story_no_sign.extend([table_address])
+        print("table_address")
         # name_image = f"{MEDIA_ROOT}/documents/skript.png"
         name_image = request.build_absolute_uri(motrum_info.signature.url)
 
@@ -505,7 +588,6 @@ def crete_pdf_specification(
             normal_style,
         )
 
-        story.append(table_address)
         text_signature = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
         data_signature = [
             (
@@ -541,10 +623,12 @@ def crete_pdf_specification(
             )
         )
         table_signature = Table(data_signature)
-        story.append(table_signature)
-
+        story.extend([table_signature])
+        print("table_signature2")
+         # Создаем PDF
         pdf = doc
         pdf.build(story, canvasmaker=MyCanvas)
+        print("build(story, canvasmaker=MyCanvas)")
         file_path = "{0}/{1}/{2}".format(
             "documents",
             "specification",
@@ -552,9 +636,60 @@ def crete_pdf_specification(
         )
 
         print("file_path", file_path)
-        return file_path
+        
+        signature_motrum = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
+
+        text_signature = '<br /><font  size="10">____________________ /________________  /</font><br /> &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp подпись &nbsp &nbsp &nbsp &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp  &nbsp        расшифровка'
+        data_signature = [
+            (
+                Paragraph("Поставщик:", bold_style),
+                Paragraph("Покупатель:", bold_style),
+            )
+        ]
+
+        data_signature.append(
+            (
+                Paragraph(signature_motrum, normal_style_8),
+                Paragraph(text_signature, normal_style_8),
+            )
+        )
+
+        data_signature.append(
+            (
+                None,
+                None,
+            )
+        )
+
+        # name_image_press = f"{MEDIA_ROOT}/documents/press.png"
+        name_image_press = request.build_absolute_uri(motrum_info.stamp.url)
+        press_motrum = Paragraph(
+            f'<br /><br /><br /><br /><br />М.П.<img width="100" height="100" src="{name_image_press}" valign="middle"/>',
+            normal_style,
+        )
+        data_signature.append(
+            (
+                Paragraph("<br /><br /><br /><br /><br />М.П.", normal_style),
+                Paragraph("<br /><br /><br /><br /><br />М.П.", normal_style),
+            )
+        )
+        table_signature = Table(data_signature)
+        story_no_sign.extend([table_signature])
+        pdf_no_sign = doc2
+        pdf_no_sign = pdf_no_sign.build(story_no_sign, canvasmaker=MyCanvas)
+        file_path_no_sign = "{0}/{1}/{2}".format(
+            "documents",
+            "specification",
+            name_specification_no_signature,
+        )
+        print("-----------------------------------------")
+        print(file_path,file_path_no_sign)
+        return (file_path,file_path_no_sign)
+    
     except Exception as e:
+        print(e)
         tr = traceback.format_exc()
+        print(tr)
         error = "error"
         location = "Сохранение документа спецификации админам окт"
         info = f"Сохранение документа спецификации админам окт ошибка {e}{tr}"
@@ -601,14 +736,12 @@ def get_shipment_doc_path(instance, filename):
 def save_shipment_doc(link, document_shipment):
     from apps.core.utils import check_spesc_directory_exist, transform_date
 
-    print(link, document_shipment)
-    print(document_shipment.id)
-    print(document_shipment.date)
+
     directory = check_spesc_directory_exist(
         "shipment",
     )
     name = f"отгрузка_{document_shipment.id}_{document_shipment.date}.pdf"
-    print(name)
+
     # file_last_list = filename.split(".")
     # type_file = "." + file_last_list[-1]
     name_doc = f"{name}"
@@ -626,8 +759,10 @@ def save_shipment_doc(link, document_shipment):
         name_doc,
     )
 
+
 def save_nomenk_doc(link):
     from apps.core.utils import check_spesc_directory_exist, transform_date
+
     try:
         directory = "{0}/{1}/{2}".format(
             MEDIA_ROOT,
@@ -637,9 +772,9 @@ def save_nomenk_doc(link):
 
         if not os.path.exists(directory):
             os.makedirs(directory)
-        
+
         current_date = datetime.date.today().isoformat()
-        
+
         name = f"склады_{current_date}.xlsx"
         print(name)
         # file_last_list = filename.split(".")
@@ -652,14 +787,14 @@ def save_nomenk_doc(link):
         r = requests.get(link, stream=True)
         with open(os.path.join(MEDIA_ROOT, path_doc), "wb") as ofile:
             ofile.write(r.content)
-            
+
         path = "{0}/{1}/{2}".format(
             "ones",
             "nomenk",
             name_doc,
         )
-        return (path,None,None)
-    
+        return (path, None, None)
+
     except Exception as e:
         print(e)
         tr = traceback.format_exc()
@@ -667,5 +802,4 @@ def save_nomenk_doc(link):
         location = "Получение\сохранение данных o складов 1с "
         info = f"Получение\сохранение данных o складов 1с . Тип ошибки:{e}{tr}"
         e = error_alert(error, location, info)
-        return ("ERROR",tr,e)
-        
+        return ("ERROR", tr, e)

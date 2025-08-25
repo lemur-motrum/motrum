@@ -1,5 +1,6 @@
 # расчет цены
 
+from collections import defaultdict
 import csv
 import datetime
 import json
@@ -17,12 +18,16 @@ import traceback
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from apps import supplier
+
 from apps.core.models import Currency, CurrencyPercent, Vat
 
 from apps.core.utils_web import send_email_message_html
 from apps.logs.utils import error_alert
 from requests.auth import HTTPBasicAuth
+
+
+from django.db.models import OuterRef, Subquery, IntegerField, Case, When, Value
+
 
 
 from apps.specification.utils import crete_pdf_specification
@@ -57,19 +62,21 @@ def get_price_motrum(
     all_item_group,
     supplier,
     promo_groupe,
-    is_need_vendor_serch=False
+    is_need_vendor_serch=False,
 ):
     from apps.supplier.models import (
         Discount,
     )
-    print(item_category,
-    item_group,
-    vendors,
-    rub_price_supplier,
-    all_item_group,
-    supplier,
-    promo_groupe,
-    is_need_vendor_serch
+
+    print(
+        item_category,
+        item_group,
+        vendors,
+        rub_price_supplier,
+        all_item_group,
+        supplier,
+        promo_groupe,
+        is_need_vendor_serch,
     )
     motrum_price = rub_price_supplier
     percent = 0
@@ -79,7 +86,7 @@ def get_price_motrum(
     def get_percent(item):
         for i in item:
             return i.percent
-    
+
     # промо группа
     if promo_groupe and percent == 0:
         discount_promo_groupe = Discount.objects.filter(
@@ -90,7 +97,7 @@ def get_price_motrum(
         if discount_promo_groupe:
             percent = get_percent(discount_promo_groupe)
             sale = discount_promo_groupe
-    
+
     if all_item_group and percent == 0:
         discount_all_group = Discount.objects.filter(
             promo_groupe__isnull=True,
@@ -98,8 +105,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_all_group:
-            discount_all_group = discount_all_group.filter(
-            vendor=vendors)
+            discount_all_group = discount_all_group.filter(vendor=vendors)
 
         if discount_all_group:
             percent = get_percent(discount_all_group)
@@ -108,7 +114,7 @@ def get_price_motrum(
         # скидка по группе
 
     if item_group and percent == 0:
-        print(item_group,"item_group")
+        print(item_group, "item_group")
         discount_group = Discount.objects.filter(
             promo_groupe__isnull=True,
             category_supplier_all__isnull=True,
@@ -116,10 +122,8 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_group:
-            print(discount_group,"discount_group")
-            discount_group = discount_group.filter(
-            vendor=vendors)
-            
+            print(discount_group, "discount_group")
+            discount_group = discount_group.filter(vendor=vendors)
 
         if discount_group:
             percent = get_percent(discount_group)
@@ -138,8 +142,7 @@ def get_price_motrum(
             is_tag_pre_sale=False,
         )
         if is_need_vendor_serch and discount_categ:
-            discount_categ = discount_categ.filter(
-            vendor=vendors)
+            discount_categ = discount_categ.filter(vendor=vendors)
 
         if discount_categ:
             percent = get_percent(discount_categ)
@@ -155,7 +158,7 @@ def get_price_motrum(
             promo_groupe__isnull=True,
             is_tag_pre_sale=False,
         )
-        
+
         # скидка по всем вендору
         if discount_all:
             percent = get_percent(discount_all)
@@ -185,7 +188,7 @@ def get_price_motrum(
         motrum_price = round(motrum_price, 2)
     else:
         motrum_price = None
-    print("motrum_price",motrum_price)
+    print("motrum_price", motrum_price)
     return motrum_price, sale[0]
 
 
@@ -207,10 +210,13 @@ def get_price_supplier_rub(currency, vat, vat_includ, price_supplier):
             current_percent = CurrencyPercent.objects.filter().latest("id")
 
             price_supplier_vat = price_supplier + (price_supplier / 100 * vat)
-
+            print("price_supplier_vat",price_supplier_vat)
+            print("currency_rate",currency_rate)
+            print("current_percent",current_percent.percent)
             price_supplier_rub = (
                 price_supplier_vat * currency_rate * current_percent.percent
             )
+            print("price_supplier_rub",price_supplier_rub)
 
             return round(price_supplier_rub, 2)
     else:
@@ -343,7 +349,7 @@ def get_category_unimat(supplier, vendor, category_name):
     print(category_name)
     try:
         category_all = SupplierCategoryProductAll.objects.get(
-            supplier=supplier,  article_name=category_name
+            supplier=supplier, article_name=category_name
         )
 
         groupe = category_all.group_supplier
@@ -352,7 +358,7 @@ def get_category_unimat(supplier, vendor, category_name):
     except SupplierCategoryProductAll.DoesNotExist:
         try:
             groupe = SupplierGroupProduct.objects.get(
-                supplier=supplier,  article_name=category_name
+                supplier=supplier, article_name=category_name
             )
             category_all = None
 
@@ -866,13 +872,15 @@ def create_time_stop_specification():
 
 
 # получение категорий мотрум из категорий поставщика
-def get_motrum_category(self):
+def get_motrum_category_and_motrum_props(self):
     category_catalog = None
     group_catalog = None
     if self.category_supplier_all != None:
         category_catalog = self.category_supplier_all.category_catalog
         group_catalog = self.category_supplier_all.group_catalog
-
+        serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier_all.name
+)
     if self.group_supplier != None:
         print(self.group_supplier)
         if category_catalog == None and group_catalog == None:
@@ -880,11 +888,40 @@ def get_motrum_category(self):
             print(category_catalog)
             group_catalog = self.group_supplier.group_catalog
             print(group_catalog)
-
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.group_supplier.name
+)
     if self.category_supplier != None:
         if category_catalog == None and group_catalog == None:
             category_catalog = self.category_supplier.category_catalog
             group_catalog = self.category_supplier.group_catalog
+            serch_prod_to_motrum_props_categ_to_create_product(
+    self,self.category_supplier.name
+)
+    print(category_catalog, group_catalog)
+    return (category_catalog, group_catalog)
+
+# получение категорий мотрум из категорий поставщика
+def get_motrum_category(self):
+    category_catalog = None
+    group_catalog = None
+    if self.category_supplier_all != None:
+        category_catalog = self.category_supplier_all.category_catalog
+        group_catalog = self.category_supplier_all.group_catalog
+       
+    if self.group_supplier != None:
+        print(self.group_supplier)
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.group_supplier.category_catalog
+            print(category_catalog)
+            group_catalog = self.group_supplier.group_catalog
+            print(group_catalog)
+            
+    if self.category_supplier != None:
+        if category_catalog == None and group_catalog == None:
+            category_catalog = self.category_supplier.category_catalog
+            group_catalog = self.category_supplier.group_catalog
+           
     print(category_catalog, group_catalog)
     return (category_catalog, group_catalog)
 
@@ -974,6 +1011,28 @@ def get_file_price_path_add(instance, filename):
         )
 
         return file
+    elif instance.slug == "instart":
+        print("INSTART")
+        base_dir = "price"
+        base_dir_supplier = instance.slug
+
+        current_date = datetime.date.today().isoformat()
+
+        new_dir = check_file_price_directory_exist(
+            base_dir,
+            base_dir_supplier,
+        )
+        random_number = random.randint(1000, 9999)
+
+        file = "{0}/{1}/{2}_{3}".format(
+            base_dir,
+            base_dir_supplier,
+            random_number,
+            instance.file,
+        )
+        print(file)
+
+        return file
 
 
 # проверка заполненны ли поля продукта если нет добавить значение
@@ -996,8 +1055,6 @@ def save_update_product_attr(
 
         if product.vendor == None or product.vendor == "":
             product.vendor = vendor
-        if product.vendor == None or product.vendor == "":
-            product.vendor = vendor
 
         if (
             product.additional_article_supplier == None
@@ -1012,29 +1069,20 @@ def save_update_product_attr(
 
         if product.category_supplier_all == None or product.category_supplier_all == "":
             product.category_supplier_all = category_supplier_all
-        if product.category_supplier_all == None or product.category_supplier_all == "":
-            product.category_supplier_all = category_supplier_all
 
-        if product.group_supplier == None or product.group_supplier == "":
-            product.group_supplier = group_supplier
         if product.group_supplier == None or product.group_supplier == "":
             product.group_supplier = group_supplier
 
         if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
-        if product.category_supplier == None or product.category_supplier == "":
-            product.category_supplier = category_supplier
 
-        if product.description == None or product.description == "":
-            product.description = description
         if product.description == None or product.description == "":
             product.description = description
 
         if product.name == None or product.name == "":
             product.name = name
-        if product.name == None or product.name == "":
-            product.name = name
-
+        
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1062,7 +1110,7 @@ def save_update_product_attr_all(
 ):
 
     try:
-        print( "save_update_product_attr_all")
+        print("save_update_product_attr_all")
 
         print(
             product,
@@ -1094,15 +1142,24 @@ def save_update_product_attr_all(
             or product.additional_article_supplier == ""
         ):
             product.additional_article_supplier = additional_article_supplier
-
-        if category_supplier_all:
+        
+        if product.category_supplier_all == None or product.category_supplier_all == "":
             product.category_supplier_all = category_supplier_all
 
-        if group_supplier:
+        if product.group_supplier == None or product.group_supplier == "":
             product.group_supplier = group_supplier
 
-        if category_supplier:
+        if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
+            
+        # if category_supplier_all:
+        #     product.category_supplier_all = category_supplier_all
+
+        # if group_supplier:
+        #     product.group_supplier = group_supplier
+
+        # if category_supplier:
+        #     product.category_supplier = category_supplier
 
         if product.description == None or product.description == "":
             product.description = description
@@ -1111,10 +1168,8 @@ def save_update_product_attr_all(
             product.name = name
 
         if promo_groupe:
-            print(promo_groupe, "promo_groupe24")
             product.promo_groupe = promo_groupe
-            print("product.promo_groupe", product.promo_groupe)
-
+        product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
     except Exception as e:
@@ -1226,8 +1281,11 @@ def save_specification(
         ):
 
             product = Product.objects.get(id=product_item["product_id"])
+            # цена прайс
             price_data = float(product_item["price_one"])
-
+            
+           
+            # скидка мотрум от прайса
             if product_item["sale_motrum"]:
                 sale_motrum_data = product_item["sale_motrum"]
                 sale_motrum_data = sale_motrum_data.replace(".", "")
@@ -1236,9 +1294,439 @@ def save_specification(
             else:
                 sale_motrum_data = 0.00
 
-            # sale_motrum_data = float(product_item["sale_motrum"].replace(",", "."))
+            price_okt = Price.objects.get(prod=product)
+            price_one = float(product_item["price_one"])
+            price_one_motrum = float(product_item["price_motrum"])
+            # если есть доп скидка работать с ценой прайс
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+
+                persent_sale = float(product_item["extra_discount"])
+                
+                price_one_sale = price_one - (price_one / 100 * persent_sale)
+                price_one = round(price_one_sale, 2)
+                
+            # если маржа работает с ценой закупки мотрум
+            if (
+                product_item["marja_motrum"] != "0"
+                and product_item["marja_motrum"] != ""
+                and product_item["marja_motrum"] != 0
+            ):
+                price_one_for_marja = price_one_motrum
+                persent_sale_marja = float(product_item["marja_motrum"])
+                price_one_sale = price_one_for_marja / ((100-persent_sale_marja) / 100)
+                price_one = round(price_one_sale, 2)
+            
+            # # если цена по запросу взять ее если нет взять цену из бд
+            if (
+                product_item["price_exclusive"] != "0"
+                and product_item["price_exclusive"] != ""
+                and product_item["price_exclusive"] != 0
+            ):
+                # price_one = price_data
+                # price_one_motrum = price_one - (price_one / 100 * sale_motrum_data)
+                # price_one_motrum = round(price_one_motrum, 2)
+                product_price_catalog = None
+
+            else:
+                # price_one = product_item["price_one"]
+                # price_one_motrum = price_one - (price_one / 100 * sale_motrum_data)
+                # price_one_motrum = round(price_one_motrum, 2)
+                product_price_catalog = Price.objects.get(
+                    prod=product
+                ).rub_price_supplier
+
+            # # если есть доп скидка отнять от цены поставщика
+            # if (
+            #     product_item["extra_discount"] != "0"
+            #     and product_item["extra_discount"] != ""
+            #     and product_item["extra_discount"] != 0
+            # ):
+
+            #     persent_sale = float(product_item["extra_discount"])
+
+            #     price_one_sale = price_one - (price_one / 100 * persent_sale)
+            #     price_one = round(price_one_sale, 2)
+
+            # если есть предоплата найти скидку по предоплате мотрум
+            # persent_pre_sale = 0
+
+            # if pre_sale and price_okt.in_auto_sale:
+            #     price_pre_sale = get_presale_discount(product)
+            #     if price_pre_sale:
+            #         persent_pre_sale = price_pre_sale.percent
+            #         price_one_motrum = price_one_motrum - (
+            #             price_one_motrum / 100 * float(persent_pre_sale)
+            #         )
+            #         price_one_motrum = round(price_one_motrum, 2)
+
+            
+            
+            # суммы за все кол во товаров
+            price_all = float(price_one) * int(product_item["quantity"])
+            price_all = round(price_all, 2)
+
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            price_all_motrum = round(price_all_motrum, 2)
+
+            # выбор продукт из спецификации или заспись нового
+            if (
+                product_item["product_specif_id"] != "None"
+                and product_item["product_specif_id"] != None
+            ):
+                product_spes = ProductSpecification.objects.get(
+                    id=int(product_item["product_specif_id"]),
+                )
+
+            else:
+                product_spes = ProductSpecification(
+                    specification=specification,
+                    product=product,
+                )
+            # сохранение параметров  товары 
+            product_spes.price_exclusive = product_item["price_exclusive"]
+            product_spes.product_currency = price_okt.currency
+            product_spes.quantity = product_item["quantity"]
+            product_spes.price_all = price_all
+            product_spes.price_one = price_one
+
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+                product_spes.extra_discount = product_item["extra_discount"]
+            else:
+                product_spes.extra_discount = None
+
+            product_spes.price_one_motrum = price_one_motrum
+            product_spes.price_all_motrum = price_all_motrum
+            product_spes._change_reason = "Ручное"
+            product_spes.comment = product_item["comment"]
+            product_spes.id_cart_id = int(product_item["id_cart"])
+            product_spes.product_price_catalog = product_price_catalog
+            product_spes.sale_motrum = sale_motrum_data
+            
+            # запись дат
+            date_delivery = product_item["date_delivery"]
+            if date_delivery != "" and date_delivery != None:
+                product_spes.date_delivery = datetime.datetime.strptime(
+                    date_delivery, "%Y-%m-%d"
+                )
+                product_spes.date_delivery = date_delivery
+
+            text_delivery = product_item["text_delivery"]
+            if text_delivery != "" and text_delivery != None:
+                product_spes.text_delivery = text_delivery
+            
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
+
+            product_spes.save()
+
+            total_amount = total_amount + price_all
+            total_amount_motrum = total_amount_motrum + price_all_motrum
+
+        # продукты без записи в окт
+        else:
+            print("продукты без записи в окт", product_item)
+
+            # price_one = product_item["price_one"]
+            # price_one_original_new = price_one
+            
+            # скидка мотрум от прайса
+            if product_item["sale_motrum"]:
+                motrum_sale = product_item["sale_motrum"]
+                motrum_sale = motrum_sale.replace(".", "")
+                motrum_sale = motrum_sale.replace(",", ".")
+                motrum_sale = float(motrum_sale)
+            else:
+                motrum_sale = 0.00
+                
+            price_one = float(product_item["price_one"])
+            price_one_original_new = price_one
+            price_one_motrum = float(product_item["price_motrum"])
+            # если есть доп скидка работать с ценой прайс
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+
+                persent_sale = float(product_item["extra_discount"])
+                
+                price_one_sale = price_one - (price_one / 100 * persent_sale)
+                price_one = round(price_one_sale, 2)
+                
+            # если маржа работает с ценой закупки мотрум
+            if (
+                product_item["marja_motrum"] != "0"
+                and product_item["marja_motrum"] != ""
+                and product_item["marja_motrum"] != 0
+            ):
+                price_one_for_marja = price_one_motrum
+                persent_sale_marja = float(product_item["marja_motrum"])
+                price_one_sale = price_one_for_marja / ((100-persent_sale_marja) / 100)
+                price_one = round(price_one_sale, 2)
+                
+
+            # price_one_motrum = price_one - (price_one / 100 * motrum_sale)
+            # price_one_motrum = round(price_one_motrum, 2)
+            # price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            # price_all_motrum = round(price_all_motrum, 2)
+
+    
+
+            price_all = float(price_one) * int(product_item["quantity"])
+            price_all = round(price_all, 2)
+            price_all_motrum = float(price_one_motrum) * int(product_item["quantity"])
+            price_all_motrum = round(price_all_motrum, 2)
+
+            currency = Currency.objects.get(words_code="RUB")
+
+            if (
+                product_item["product_specif_id"] != "None"
+                and product_item["product_specif_id"] != None
+            ):
+                product_spes = ProductSpecification.objects.get(
+                    id=int(product_item["product_specif_id"]),
+                )
+
+            else:
+                product_spes = ProductSpecification(
+                    specification=specification,
+                    product=None,
+                )
+
+            if (
+                product_item["extra_discount"] != "0"
+                and product_item["extra_discount"] != ""
+                and product_item["extra_discount"] != 0
+            ):
+                product_spes.extra_discount = product_item["extra_discount"]
+            else:
+                product_spes.extra_discount = None
+                
+            
+            product_spes.price_exclusive = product_item["price_exclusive"]
+            product_spes.product_currency = currency
+            product_spes.quantity = product_item["quantity"]
+            product_spes.price_all = price_all
+            product_spes.price_one = price_one
+            product_spes.price_one_original_new = price_one_original_new
+            product_spes.sale_motrum = motrum_sale
+            product_spes.price_one_motrum = price_one_motrum
+            product_spes.price_all_motrum = price_all_motrum
+            product_spes.product_new = product_item["product_name_new"]
+            product_spes.product_new_article = product_item["product_new_article"]
+            product_spes._change_reason = "Ручное"
+            product_spes.comment = product_item["comment"]
+            product_spes.vendor_id = int(product_item["vendor"])
+            product_spes.supplier_id = int(product_item["supplier"])
+            product_spes.id_cart_id = int(product_item["id_cart"])
+
+            date_delivery = product_item["date_delivery"]
+            if date_delivery != "" and date_delivery != None:
+                product_spes.date_delivery = datetime.datetime.strptime(
+                    date_delivery, "%Y-%m-%d"
+                )
+                product_spes.date_delivery = date_delivery
+            text_delivery = product_item["text_delivery"]
+            if text_delivery != "" and text_delivery != None:
+                product_spes.text_delivery = text_delivery
+
+            item_comm = product_item["comment"]
+            if item_comm != "" and item_comm != None:
+                product_spes.text_delivery = item_comm
+                
+            product_spes.save()
+
+            total_amount = total_amount + price_all
+            total_amount_motrum = total_amount_motrum + price_all_motrum
+
+    # обновить спецификацию пдф
+    total_amount = round(total_amount, 2)
+    total_amount_motrum = round(total_amount_motrum, 2)
+    
+    marginality =  ((total_amount - total_amount_motrum) / total_amount) * 100
+    marginality =  round(marginality, 2)
+    marginality_sum =  round(total_amount - total_amount_motrum, 2)
+    
+    specification.marginality_sum = marginality_sum
+    specification.total_amount = total_amount
+    specification.comment = specification_comment
+    specification.date_delivery = date_delivery_all
+    specification.id_bitrix = id_bitrix
+    specification.marginality = marginality
+    specification._change_reason = "Ручное"
+
+    specification.save()
+    if requisites.contract:
+        if type_save == "new":
+            specification_name = requisites.number_spec + 1
+            requisites.number_spec = specification_name
+
+        elif type_save == "update":
+            specification_name = specification.number
+        elif type_save == "hard_update":
+            specification_name = specification.number
+        else:
+            specification_name = specification.number
+
+        if specification_name == None:
+            specification_name = requisites.number_spec + 1
+            requisites.number_spec = specification_name
+
+        pdf,pdf_no_sign = crete_pdf_specification(
+            specification.id,
+            requisites,
+            account_requisites,
+            request,
+            motrum_requisites,
+            date_delivery_all,
+            type_delivery,
+            post_update,
+            specification_name,
+        )
+
+        if pdf:
+            specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
+            specification._change_reason = "Ручное"
+
+            if post_update == False:
+                specification.date_create_pdf = datetime.datetime.today()
+
+            specification.number = specification_name
+            specification.save()
+            requisites.save()
+
+    else:
+        specification_name = None
+        specification.file = None
+        specification.number = specification_name
+        specification.save()
+
+    return specification
+
+def save_specification_before_upd_marja_okt(
+    received_data,
+    pre_sale,
+    request,
+    motrum_requisites,
+    account_requisites,
+    requisites,
+    id_bitrix,
+    type_delivery,
+    post_update,
+    # specification_name,
+    type_save,
+):
+    from apps.product.models import Price, Product
+    from apps.specification.models import ProductSpecification, Specification
+    from apps.specification.utils import crete_pdf_specification
+    from apps.product.models import ProductCart
+    from apps.core.utils import create_time_stop_specification
+
+    # try:
+
+    # сохранение спецификации
+    id_bitrix = received_data["id_bitrix"]  # сюда распарсить значения с фронта
+    admin_creator_id = received_data["admin_creator_id"]
+    id_specification = received_data["id_specification"]
+    specification_comment = received_data["comment"]
+    date_delivery_all = received_data["date_delivery"]
+    products = received_data["products"]
+    id_cart = received_data["id_cart"]
+    print("products",products)
+    # первичное создание/взятие спецификации
+    try:
+        specification = Specification.objects.get(id=id_specification)
+        if post_update:
+            pass
+        else:
+            # if specification_name:
+            #     specification.number = specification_name
+            data_stop = create_time_stop_specification()
+            specification.date_stop = data_stop
+            specification.tag_stop = True
+
+        # удалить продукты если удалили из спецификации
+        product_old = ProductSpecification.objects.filter(specification=specification)
+        for product_item_for_old in product_old:
+            item_id = product_item_for_old.id
+            having_items = False
+            for products_new in products:
+                if (
+                    products_new["product_specif_id"] != "None"
+                    and products_new["product_specif_id"] != None
+                ):
+
+                    if int(products_new["product_specif_id"]) == item_id:
+                        having_items = True
+
+            if having_items == False:
+
+                specification._change_reason = "Ручное"
+                product_item_for_old.delete()
+
+            having_items = False
+
+            # for i, dic in enumerate(products):
+            #     if dic["product_specif_id"] == item_id:
+            #         having_items = True
+
+            # if having_items == False:
+
+            #     product_item_for_old.delete()
+
+    except Specification.DoesNotExist:
+        specification = Specification(
+            id_bitrix=id_bitrix, admin_creator_id=admin_creator_id, cart_id=id_cart
+        )
+        # if specification_name:
+        #     specification.number = specification_name
+        # specification.skip_history_when_saving = True
+        data_stop = create_time_stop_specification()
+        specification.date_stop = data_stop
+        specification.tag_stop = True
+        specification._change_reason = "Ручное"
+        specification.save()
+
+    # сохранение продуктов для спецификации
+    # перебор продуктов и сохранение
+    total_amount = 0.00
+    total_amount_motrum = 0.00
+    print(products)
+    for product_item in products:
+        print(product_item)
+        # продукты которые есть в окт
+        if (
+            product_item["product_new_article"] == ""
+            or product_item["product_new_article"] == None
+            or product_item["product_new_article"] == "None"
+        ):
+
+            product = Product.objects.get(id=product_item["product_id"])
+            # цена прайс
+            price_data = float(product_item["price_one"])
+
+            # скидка мотрум от прайса
+            if product_item["sale_motrum"]:
+                sale_motrum_data = product_item["sale_motrum"]
+                sale_motrum_data = sale_motrum_data.replace(".", "")
+                sale_motrum_data = sale_motrum_data.replace(",", ".")
+                sale_motrum_data = float(sale_motrum_data)
+            else:
+                sale_motrum_data = 0.00
 
             price_okt = Price.objects.get(prod=product)
+
 
             # если цена по запросу взять ее если нет взять цену из бд
             if (
@@ -1283,6 +1771,9 @@ def save_specification(
                     )
                     price_one_motrum = round(price_one_motrum, 2)
 
+            
+            
+            # суммы за все кол во товаров
             price_all = float(price_one) * int(product_item["quantity"])
             price_all = round(price_all, 2)
 
@@ -1303,7 +1794,7 @@ def save_specification(
                     specification=specification,
                     product=product,
                 )
-
+            # сохранение параметров  товары 
             product_spes.price_exclusive = product_item["price_exclusive"]
             product_spes.product_currency = price_okt.currency
             product_spes.quantity = product_item["quantity"]
@@ -1450,6 +1941,7 @@ def save_specification(
     specification.total_amount = total_amount
     specification.comment = specification_comment
     specification.date_delivery = date_delivery_all
+    print("id_bitrix", id_bitrix)   
     specification.id_bitrix = id_bitrix
     specification.marginality = marginality
     specification._change_reason = "Ручное"
@@ -1471,7 +1963,7 @@ def save_specification(
             specification_name = requisites.number_spec + 1
             requisites.number_spec = specification_name
 
-        pdf = crete_pdf_specification(
+        pdf,pdf_no_sign = crete_pdf_specification(
             specification.id,
             requisites,
             account_requisites,
@@ -1485,6 +1977,7 @@ def save_specification(
 
         if pdf:
             specification.file = pdf
+            specification.file_no_signature = pdf_no_sign
             specification._change_reason = "Ручное"
 
             if post_update == False:
@@ -1599,9 +2092,16 @@ def save_new_product_okt(product_new):
     if product_new.product:
         product_new_prod = product_new.product.id
         product = Product.objects.get(id=product_new_prod)
+        # product.name = product_new.product_new
+        prod_cart = product_new.id_cart
+        if prod_cart.product != product:
+        
+            prod_cart.product = product
+            prod_cart.product_price = product_new.price_one_original_new 
+            prod_cart.product_sale_motrum = product_new.sale_motrum 
+            prod_cart.sale_client = product_new.extra_discount 
 
-        product.name = product_new.product_new
-
+        prod_cart.save()
         product.save()
 
     else:
@@ -1629,8 +2129,11 @@ def save_new_product_okt(product_new):
         )
         price.save()
         update_change_reason(price, "Автоматическое")
-
-        lot_auto = Lot.objects.get(name_shorts="шт")
+        if  product_new.id_cart.lot:
+            lot_auto = product_new.id_cart.lot
+        else:
+            lot_auto = Lot.objects.get(name_shorts="шт")
+            
         product_stock = Stock(
             prod=product,
             lot=lot_auto,
@@ -1638,6 +2141,13 @@ def save_new_product_okt(product_new):
         product_stock.save()
 
         product_new.product = product
+        prod_cart = product_new.id_cart
+        prod_cart.product = product
+        prod_cart.product_price = product_new.price_one_original_new 
+        prod_cart.product_sale_motrum = product_new.sale_motrum 
+        prod_cart.sale_client = product_new.extra_discount 
+
+        prod_cart.save()
         product_new.save()
 
     return product
@@ -1681,7 +2191,6 @@ def save_new_product_okt(product_new):
     #     product_stock.save()
 
     #     return product
-
 
 def number_specification(type_save):
     from apps.specification.models import Specification
@@ -2077,6 +2586,7 @@ def send_requests(url, headers, data, auth):
     if auth == "1c":
         print("auth1c")
         payload = data
+        #
         url = os.environ.get("1S_URL")
         headers = {}
         auth = HTTPBasicAuth(os.environ.get("1S_LOGIN"), os.environ.get("1S_PASSWORD"))
@@ -2094,6 +2604,7 @@ def send_requests(url, headers, data, auth):
             allow_redirects=False,
             verify=False,
         )
+
         error = "info_error_order"
         location = "отправка requests 1c"
         info = f"отправка requests 1c {response} / {response.text}"
@@ -2143,25 +2654,37 @@ def after_save_order_products(products):
             promo = prod.product.promo_groupe.name
         else:
             promo = ""
-        
-        product_name_str =  prod.product.name
-                
-        # if vendor and  prod.product.vendor.slug == "prompower" and prod.product.description:
-        #     product_name_str = prod.product.description
+
+        product_name_str = prod.product.name
+
+        if (
+            vendor
+            and prod.product.supplier.slug == "prompower"
+            and prod.product.description
+        ):
+            product_name_str = prod.product.description
+
+        # Получаем единицу измерения товара
+        try:
+            from apps.product.models import Stock
+            product_stock_item = Stock.objects.get(prod=prod.product)
+            lot = product_stock_item.lot.name_shorts
+        except Stock.DoesNotExist:
+            lot = "шт"
 
         data_prod_to_1c = {
             "vendor": vendor,
             "article": prod.product.article_supplier,
             "article_motrum": prod.product.article,
-            "name": prod.product.name,
-            # "name": product_name_str,
-            
+            # "name": prod.product.name,
+            "name": product_name_str,
             "price_one": prod.price_one,
             "quantity": prod.quantity,
             "price_all": prod.price_all,
             "text_delivery": prod.text_delivery,
             "data_delivery": prod.date_delivery.isoformat(),
-            # "promo_group": promo,
+            "promo_group": promo,
+            # "lot": lot,
         }
 
         order_products.append(data_prod_to_1c)
@@ -2224,9 +2747,13 @@ def create_info_request_order_1c(order, order_products):
         contract_date = order.requisites.contract_date.isoformat()
 
     if order.account_requisites.requisitesKpp.kpp:
-        kpp = int(order.account_requisites.requisitesKpp.kpp)
+        kpp = order.account_requisites.requisitesKpp.kpp
     else:
         kpp = None
+
+    number_invoice = order.bill_name
+    if order.bill_name_prefix:
+        number_invoice = f"{order.bill_name_prefix}-{order.bill_name}"
 
     data_for_1c = {
         "motrum_requisites": {
@@ -2239,9 +2766,9 @@ def create_info_request_order_1c(order, order_products):
             "contract": order.requisites.contract,
             "contract_date": contract_date,
             "legal_entity": order.requisites.legal_entity,
-            "inn": int(order.requisites.inn),
+            "inn": order.requisites.inn,
             "kpp": kpp,
-            "ogrn": int(order.account_requisites.requisitesKpp.ogrn),
+            "ogrn": order.account_requisites.requisitesKpp.ogrn,
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
@@ -2249,17 +2776,17 @@ def create_info_request_order_1c(order, order_products):
             # "postal_city": order.account_requisites.requisitesKpp.postal_city,
             # "postal_address": order.account_requisites.requisitesKpp.postal_address,
             "tel": order.account_requisites.requisitesKpp.tel,
-            "account_requisites": int(order.account_requisites.account_requisites),
+            "account_requisites": order.account_requisites.account_requisites,
             "bank": order.account_requisites.bank,
-            "ks": int(order.account_requisites.kpp),
-            "bic": int(order.account_requisites.bic),
+            "ks": order.account_requisites.kpp,
+            "bic": order.account_requisites.bic,
         },
         "invoice_options": {
             "id_bitrix": order.id_bitrix,
             "delivery": order.type_delivery.text_long,
             # "type_invoice": "счет" if order.requisites.contract else "счет-оферта",
             "type_invoice": "счет",
-            "number_invoice": order.bill_name,
+            "number_invoice": number_invoice,
             "data_invoice": order.bill_date_start.isoformat(),
             "prepay_persent": order.requisites.prepay_persent,
             "postpay_persent": order.requisites.postpay_persent,
@@ -2737,7 +3264,7 @@ def add_new_photo_adress_prompower():
 def serch_products_web(search_text, queryset):
     print("queryset1", queryset)
     search_input = search_text
-    search_input = search_input.replace(".", "").replace(",", "")
+    search_input = search_input.replace(",", "")
     search_input = search_input.split()
     print("search_input", search_input)
     queryset = queryset.filter(
@@ -2754,7 +3281,333 @@ def serch_products_web(search_text, queryset):
     return queryset
 
 
-def create_file_props_in_vendor_props():
+def check_delite_product_cart_in_upd_spes(specification,cart):
+    from apps.product.models import ProductCart
+    from apps.specification.models import ProductSpecification
+    
+    cart_prod = ProductCart.objects.filter(cart=cart).values_list("id")
+    spes_prod = ProductSpecification.objects.filter(specification=specification,id_cart__in=cart_prod)
+    print(spes_prod)
+    
+    print("cart_prod",cart_prod)
+    for spes_prod_item in spes_prod:
+        p = ProductCart(cart=spes_prod_item.specification.cart,
+                        product=spes_prod_item.product,
+                        product_price = spes_prod_item.price_one,
+                        product_price_motrum = spes_prod_item.price_one_motrum,
+                        product_sale_motrum= spes_prod_item.sale_motrum,
+                        sale_client=spes_prod_item.extra_discount,
+                        vendor=spes_prod_item.vendor,
+                        supplier =spes_prod_item.supplier,
+                        product_new=spes_prod_item.product_new,
+                        product_new_article=spes_prod_item.product_new_article,
+                        product_new_price=spes_prod_item.price_one_original_new,
+                        product_new_sale=spes_prod_item.extra_discount,
+                        product_new_sale_motrum=spes_prod_item.sale_motrum,
+                        quantity=spes_prod_item.quantity,
+                        comment=spes_prod_item.comment,
+                        date_delivery=spes_prod_item.date_shipment,
+                        )
+        print(p)
+        p._change_reason = "Автоматическое"
+        p.save()
+    
+
+def create_file_props_in_vendor_props(path, vendor, name_supplier):
+    from apps.product.models import (
+        Product,
+        ProductProperty,
+    )
+
+    new_dir = "{0}/{1}".format(MEDIA_ROOT, f"props_file/props_file_{vendor}")
+    print(f"[create_file_props_in_vendor_props] старт. vendor={vendor} path={path}")
+    
+
+    # добавим поддержку Excel файлов с несколькими листами
+    import os
+    import re
+    import traceback
+    from collections import defaultdict
+    from openpyxl import Workbook
+
+    # итоговые заголовки (добавлен столбец "Встречается в других группа", список других категорий/групп и путь поставщика)
+    fieldnames_nomenclature_written = [
+        "Частота упоминания",
+        "Название характеристики",
+        "Варианты значений",
+        "Единица измерения",
+        "Встречается в других группа",
+        "Где ещё встречается (категория/группа)",
+        "Категория/Группа/Подгруппа поставщика",
+    ]
+
+    # подготовка каталога для выгрузки
+    try:
+        os.makedirs(new_dir, exist_ok=True)
+        print(f"[create_file_props_in_vendor_props] каталог для вендора: {new_dir}")
+    except Exception as e:
+        print("[create_file_props_in_vendor_props] ошибка создания каталога new_dir:", e)
+
+    # нормализуем путь сохранения: относительный путь сохраняем внутри MEDIA_ROOT
+    try:
+        if not os.path.isabs(path):
+            path = os.path.join(MEDIA_ROOT, path)
+            print(f"[create_file_props_in_vendor_props] нормализованный путь (MEDIA_ROOT): {path}")
+        # обеспечить существование каталога для переданного пути сохранения
+        dir_for_path = os.path.dirname(path)
+        if dir_for_path:
+            os.makedirs(dir_for_path, exist_ok=True)
+            print(f"[create_file_props_in_vendor_props] каталог для path: {dir_for_path}")
+    except Exception as e:
+        print("[create_file_props_in_vendor_props] ошибка подготовки пути/каталога для path:", e)
+
+    # данные по листам: ключ листа -> { prop_name -> {count:int, values:set, units:set} }
+    sheets_data = {}
+    # отображаемые имена листов: ключ листа -> строка для названия
+    sheet_titles = {}
+    # присутствие характеристик в разных листах: prop_name -> set(keys)
+    prop_presence = defaultdict(set)
+    # глобальная агрегация по всем товарам вендора (для листа "ВСЕ")
+    global_props_map = {}
+    # количество товаров на каждом листе (категория/группа/без)
+    sheet_product_counts = defaultdict(int)
+
+    # формируем ключ листа
+    def make_sheet_key_and_title(product):
+        if product.category is None and product.group is None:
+            return ("unassigned", None), "не распределено"
+        if product.category is not None and product.group is None:
+            return (product.category_id, None), f"{product.category.name}"
+        if product.category is not None and product.group is not None:
+            return (product.category_id, product.group_id), f"{product.category.name} - {product.group.name}"
+        # на всякий случай
+        return ("unassigned", None), "не распределено"
+
+    # наполнение данных
+    if name_supplier:
+        total_count = Product.objects.filter(supplier__slug=name_supplier).count()
+        queryset_limited = Product.objects.filter(supplier__slug=name_supplier)
+    else:
+        total_count = Product.objects.filter(vendor__slug=vendor).count()
+        queryset_limited = Product.objects.filter(vendor__slug=vendor)
+    
+    selected_products = list(queryset_limited)
+    print(f"[create_file_props_in_vendor_props] всего товаров у вендора: {total_count}; будет обработано: {len(selected_products)}")
+    for idx, prod in enumerate(selected_products, start=1):
+        try:
+            print(f"[prod] {idx}/{len(selected_products)} id={prod.id} article={prod.article} category={(prod.category.name if prod.category else None)} group={(prod.group.name if prod.group else None)}")
+            props_prod = ProductProperty.objects.filter(product=prod)
+            props_count = props_prod.count()
+            print(f"[prod] свойств у товара: {props_count}")
+            # ключ листа и инициализация структуры листа
+            key, title = make_sheet_key_and_title(prod)
+            if key not in sheets_data:
+                sheets_data[key] = {}
+                sheet_titles[key] = title
+                print(f"[sheet-init] создан лист: key={key} title='{title}'")
+
+            # учёт количества товаров на лист
+            sheet_product_counts[key] += 1
+
+            if props_count == 0:
+                # товар без характеристик — только увеличили счётчик товаров листа
+                continue
+
+            for prop_prod in props_prod:
+                prop_name = prop_prod.name
+                prop_value = prop_prod.value
+                prop_unit = prop_prod.unit_measure
+                print(f"  [prop] name='{prop_name}' value='{prop_value}' unit='{prop_unit}'")
+
+                # учёт присутствия характеристики на листе
+                prop_presence[prop_name].add(key)
+
+                # агрегирование по листу
+                bucket = sheets_data[key].get(prop_name)
+                if bucket is None:
+                    bucket = {"count": 0, "values": set(), "units": set(), "supplier_paths": set()}
+                    sheets_data[key][prop_name] = bucket
+                    print(f"    [agg] новый параметр на листе '{title}': '{prop_name}'")
+                bucket["count"] += 1
+                print(f"    [agg] '{prop_name}' count -> {bucket['count']}")
+                if prop_value is not None and prop_value != "":
+                    bucket["values"].add(str(prop_value))
+                if prop_unit is not None and prop_unit != "":
+                    bucket["units"].add(str(prop_unit))
+                # фиксируем путь поставщика (для листа без группы)
+                if key == ("unassigned", None):
+                    sup_cat = prod.category_supplier.name if getattr(prod, "category_supplier", None) else None
+                    sup_grp = prod.group_supplier.name if getattr(prod, "group_supplier", None) else None
+                    sup_sub = prod.category_supplier_all.name if getattr(prod, "category_supplier_all", None) else None
+                    parts = [p for p in [sup_cat, sup_grp, sup_sub] if p]
+                    if parts:
+                        bucket["supplier_paths"].add(" / ".join(parts))
+
+                # глобальная агрегация (лист "ВСЕ")
+                g_bucket = global_props_map.get(prop_name)
+                if g_bucket is None:
+                    g_bucket = {"count": 0, "values": set()}
+                    global_props_map[prop_name] = g_bucket
+                g_bucket["count"] += 1
+                if prop_value is not None and prop_value != "":
+                    g_bucket["values"].add(str(prop_value))
+        except Exception as e:
+            tr = traceback.format_exc()
+            error = "error"
+            location = f"create_file_props_in_vendor_props: iterate products (vendor={vendor})"
+            info = f"path={path} product_id={getattr(prod, 'id', None)} err={e} {tr}"
+            try:
+                from apps.logs.utils import error_alert
+                error_alert(error, location, info)
+            except Exception:
+                pass
+
+    print(f"[summary] листов сформировано: {len(sheets_data)}")
+    for k, v in sheet_titles.items():
+        print(f"  [sheet] key={k} title='{v}' props={len(sheets_data.get(k, {}))}")
+
+    # создаём XLSX c листами по категориям/группам и сортировкой по убыванию частоты
+    wb = Workbook()
+    used_titles = set()
+
+    def sanitize_sheet_title(title):
+        # сократить каждое слово до 4 символов и разделить точками (без пробелов)
+        short = '.'.join([w[:4] for w in re.split(r"\s+", title.strip()) if w])
+        # запрещённые символы : \ / ? * [ ]
+        short = re.sub(r"[:\\/\?\*\[\]]", "-", short)
+        # обрежем до 31 символа
+        base = short[:31]
+        # обеспечим уникальность
+        candidate = base
+        idx = 1
+        while candidate in used_titles or candidate == "Sheet":
+            suffix = f"_{idx}"
+            candidate = (base[: 31 - len(suffix)]) + suffix
+            idx += 1
+        used_titles.add(candidate)
+        return candidate
+
+    # удалим дефолтный лист, если будем создавать свои
+    default_ws = wb.active
+
+    any_created = False
+    for key, props_map in sheets_data.items():
+        try:
+            # если на листе нет строк для записи — пропускаем создание листа
+            if not props_map:
+                continue
+            # сортировка по убыванию частоты заранее, чтобы знать кол-во строк
+            sorted_items = sorted(
+                props_map.items(), key=lambda kv: kv[1]["count"], reverse=True
+            )
+            if len(sorted_items) == 0:
+                continue
+
+            title = sheet_titles.get(key, "не распределено")
+            sheet_name = sanitize_sheet_title(title)
+            if sheet_name != title:
+                print(f"[worksheet] sanitized title: '{title}' -> '{sheet_name}'")
+            ws = wb.create_sheet(title=sheet_name)
+            any_created = True
+
+            # первая строка: количество товаров на листе + полное название категории/группы
+            ws.append(["Всего товаров", sheet_product_counts.get(key, 0), title])
+            # заголовки
+            ws.append(fieldnames_nomenclature_written)
+
+            print(f"  [worksheet] '{sheet_name}' строк для записи: {len(sorted_items)}")
+
+            for prop_name, agg in sorted_items:
+                supplier_path_cell = ""
+                if key == ("unassigned", None):
+                    supplier_path_cell = " || ".join(sorted(agg.get("supplier_paths", set()))) if agg.get("supplier_paths") else ""
+                # список других категорий/групп, где встречается эта характеристика
+                other_keys = prop_presence.get(prop_name, set())
+                other_titles = [sheet_titles.get(k, str(k)) for k in other_keys if k != key]
+                others_cell = " || ".join(sorted(other_titles)) if other_titles else ""
+                # сортировка значений по возрастанию (числа по числовому возрастанию, остальное — по алфавиту)
+                values_cell = ""
+                if agg["values"]:
+                    vals_list = list(agg["values"])
+                    def _val_sort_key(v):
+                        s = str(v)
+                        try:
+                            return (0, float(s.replace(",", ".")))
+                        except Exception:
+                            return (1, s)
+                    vals_sorted = sorted(vals_list, key=_val_sort_key)
+                    values_cell = "|| ".join([str(v) for v in vals_sorted])
+                row = [
+                    agg["count"],
+                    prop_name,
+                    values_cell,
+                    "|| ".join(sorted(agg["units"])) if agg["units"] else "",
+                    "да" if len(prop_presence.get(prop_name, set())) > 1 else "",
+                    others_cell,
+                    supplier_path_cell,
+                ]
+                ws.append(row)
+        except Exception as e:
+            tr = traceback.format_exc()
+            error = "error"
+            location = f"create_file_props_in_vendor_props: build sheet (vendor={vendor})"
+            info = f"path={path} key={key} err={e} {tr}"
+            try:
+                from apps.logs.utils import error_alert
+                error_alert(error, location, info)
+            except Exception:
+                pass
+
+    # Добавляем лист "ВСЕ" c общей сводкой по вендору
+    if global_props_map:
+        ws_all = wb.create_sheet(title=sanitize_sheet_title("ВСЕ"))
+        any_created = True
+        # заголовки только из 3 полей
+        ws_all.append(["Частота упоминания", "Название характеристики", "Варианты значений"])
+        # сортировка по убыванию частоты
+        sorted_global = sorted(global_props_map.items(), key=lambda kv: kv[1]["count"], reverse=True)
+        for prop_name, agg in sorted_global:
+            # сортировка значений по возрастанию (числа по числовому возрастанию, остальное — по алфавиту)
+            values_cell = ""
+            if agg["values"]:
+                vals_list = list(agg["values"])
+                def _val_sort_key(v):
+                    s = str(v)
+                    try:
+                        return (0, float(s.replace(",", ".")))
+                    except Exception:
+                        return (1, s)
+                vals_sorted = sorted(vals_list, key=_val_sort_key)
+                values_cell = "|| ".join([str(v) for v in vals_sorted])
+            ws_all.append([
+                agg["count"],
+                prop_name,
+                values_cell,
+            ])
+
+    # если не было создано ни одного листа (например, нет товаров) — используем дефолтный
+    if any_created:
+        wb.remove(default_ws)
+        print("[worksheet] удалён дефолтный лист 'Sheet'")
+
+    try:
+        wb.save(path)
+        print(f"[done] Файл сформирован: {path}")
+    except Exception as e:
+        print("[error] Ошибка сохранения файла:", e)
+        tr = traceback.format_exc()
+        error = "error"
+        location = f"create_file_props_in_vendor_props: save workbook (vendor={vendor})"
+        info = f"path={path} err={e} {tr}"
+        try:
+            from apps.logs.utils import error_alert
+            error_alert(error, location, info)
+        except Exception:
+            pass
+
+
+
+def create_file_props_in_vendor_props2():
     from apps.product.models import (
         Product,
         ProductProperty,
@@ -2763,9 +3616,11 @@ def create_file_props_in_vendor_props():
     new_dir = "{0}/{1}".format(MEDIA_ROOT, "props_file")
     # path_delta = f"{new_dir}/delta.csv"
     # path_emas = f"{new_dir}/emas.csv"
-    path_iek = f"{new_dir}/iek.csv"
+    # path_iek = f"{new_dir}/iek.csv"
     # path_optimus = f"{new_dir}/optimus.csv"
     # path_prompower = f"{new_dir}/prompower.csv"
+    # path_innovert = f"{new_dir}/innovert.csv"
+    path_instart = f"{new_dir}/instart.csv"
 
     fieldnames_nomenclature_written = [
         "Частота упоминания",
@@ -2775,8 +3630,8 @@ def create_file_props_in_vendor_props():
     ]
 
     props = []
-
-    all_product_supplier = Product.objects.filter(supplier__slug="iek")
+    
+    all_product_supplier = Product.objects.filter(supplier__slug="instart")
     i = 0
 
     def key_val_upd(key, val, value, unit_measure):
@@ -2788,8 +3643,8 @@ def create_file_props_in_vendor_props():
             val_c = val_i.get("count")
             if val_c:
                 print(val_c)
-                val_i["count"] = val_c + 1
-
+                val_i["count"] = val_c + 1 
+                
             if val_v:
                 if value not in val_v:
                     val_v.append(value)
@@ -2827,16 +3682,17 @@ def create_file_props_in_vendor_props():
     for prod in all_product_supplier:
         i += 1
         props_prod = ProductProperty.objects.filter(product=prod)
-        if props_prod.count() > 0:
+        if props_prod.count() > 0 :
             for prop_prod in props_prod:
                 print(prop_prod)
                 name = if_name(prop_prod.name, prop_prod.value, prop_prod.unit_measure)
 
     print(props)
 
+    
     props_count = len(props)
-    print("props_count", props_count)
-    with open(path_iek, "w", encoding="UTF-8") as writerFile:
+    print("props_count",props_count)
+    with open(path_instart, "w", encoding="UTF-8") as writerFile:
         writer_nomenk = csv.DictWriter(
             writerFile, delimiter=";", fieldnames=fieldnames_nomenclature_written
         )
@@ -2872,37 +3728,772 @@ def create_file_props_in_vendor_props():
                         if val_u != [None]:
                             val_u_i = "|| ".join(val_u)
                             row["Единица измерения"] = val_u_i
-                writer_nomenk.writerow(row)
+                writer_nomenk.writerow(row)        
+                
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+# фильтр в шаблон если у одного значение пропсов товара только ожно значение пропсов мотрум
+def get_props_motrum_filter(product_props):
+
+    from apps.product.models import ProductPropertyMotrum
+
+    # Характеристики дял фильтрации
+    all_values = product_props.values(
+        "property_motrum",
+        "property_motrum__name",
+        "property_value_motrum__id",
+        "property_value_motrum__value",
+        "is_diapason",
+        "value",
+    ).distinct()
+
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "property_motrum": pid,
+                    "is_diapason": is_diapason,
+                }
+            )
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["value"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            chars_dict[pid]["values"].append(
+                {
+                    "id": row["property_value_motrum__id"],
+                    "value": row["property_value_motrum__value"],
+                }
+            )
+
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    chars = list(chars_dict.values())
+    # Сортировка по article ProductPropertyMotrum
+    chars.sort(
+        key=lambda x: (x.get("id_property_motrum") is None, x.get("id_property_motrum"))
+    )
+    # Попробуем получить порядок из ProductPropertyMotrum
+    article_map = {
+        p.id: p.article if p.article is not None else 9999
+        for p in ProductPropertyMotrum.objects.filter(
+            id__in=[c["id_property_motrum"] for c in chars]
+        )
+    }
+    chars.sort(key=lambda x: article_map.get(x["id_property_motrum"], 9999))
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
+    print("chars", chars)
+
+    return chars
 
 
-def email_manager_after_new_order_site(order):
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+def get_props_all_motrum_filter(product_props_2):
+    from apps.product.models import (
+        TYPE_DOCUMENT,
+        CategoryProduct,
+        GroupProduct,
+        Product,
+        ProductDocument,
+        ProductImage,
+        ProductProperty,
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        Stock,
+        VendorPropertyAndMotrum,
+    )
+
+    # Оптимизированная сборка chars_motrum
+    # Собираем все условия для поиска VendorPropertyAndMotrum
+    print(product_props_2)
+    vendor_props_q = Q()
+    vendor_props_conditions = []
+    diapason_names = set()
+    diapason_value = []
+
+    for prop in product_props_2:
+        is_diapason = prop.get("is_diapason", False)
+        if is_diapason:
+            p = {
+                "property_vendor_name": prop["name"],
+                "supplier_id": prop["product__supplier"],
+                "is_diapason": True,
+            }
+            if p not in diapason_value:
+                diapason_value.append(p)
+                vendor_props_conditions.append(
+                    Q(
+                        property_vendor_name=prop["name"],
+                        supplier_id=prop["product__supplier"],
+                    )
+                )
+
+        else:
+            vendor_props_conditions.append(
+                Q(
+                    property_vendor_name=prop["name"],
+                    supplier_id=prop["product__supplier"],
+                    property_vendor_value=prop["value"],
+                )
+            )
+
+    print("diapason_value3333", diapason_value)
+    print("vendor_props_conditions", vendor_props_conditions)
+    if vendor_props_conditions:
+        vendor_props_q = vendor_props_conditions.pop()
+        for cond in vendor_props_conditions:
+            vendor_props_q |= cond
+
+        all_vendor_props = VendorPropertyAndMotrum.objects.filter(vendor_props_q)
+    else:
+        all_vendor_props = VendorPropertyAndMotrum.objects.none()
+
+    print("44444444444444444444444444444444444444444444")
+    print("vendor_props_q", vendor_props_q)
+    # Собираем все уникальные id property_motrum и property_value_motrum
+    motrum_ids = set()
+    value_ids = set()
+    for vp in all_vendor_props:
+        if vp.property_motrum_id and vp.property_value_motrum_id:
+            motrum_ids.add(vp.property_motrum_id)
+            value_ids.add(vp.property_value_motrum_id)
+    # Получаем все объекты одним запросом
+    motrum_objs = {
+        m.id: m for m in ProductPropertyMotrum.objects.filter(id__in=motrum_ids)
+    }
+    value_objs = {
+        v.id: v for v in ProductPropertyValueMotrum.objects.filter(id__in=value_ids)
+    }
+    # Формируем структуру
+    chars_motrum_dict = {}
+    for vp in all_vendor_props:
+        key = vp.property_motrum_id
+        val_id = vp.property_value_motrum_id
+        if key is None or val_id is None:
+            continue
+        if key not in chars_motrum_dict:
+            motrum_obj = motrum_objs.get(key)
+            chars_motrum_dict[key] = {
+                "values": [],
+                "id_property_motrum": key,
+                "name_property_motrum": motrum_obj.name if motrum_obj else "",
+                "is_diapason": getattr(motrum_obj, "is_diapason", False),
+            }
+
+        value_obj = value_objs.get(val_id)
+        value_val = value_obj.value if value_obj else None
+        if (
+            value_val is not None
+            and {"value": value_val, "id": val_id}
+            not in chars_motrum_dict[key]["values"]
+        ):
+            chars_motrum_dict[key]["values"].append({"value": value_val, "id": val_id})
+    chars_motrum = list(chars_motrum_dict.values())
+    print(chars_motrum)
+    print("diapason_names (уникальные диапазонные пары):", diapason_names)
+    print("vendor_props_conditions (все условия):", vendor_props_conditions)
+    return chars_motrum
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -не используем
+def get_props_all_motrum_filter3(product_props_3):
+    from apps.product.models import (
+        ProductPropertyMotrum,
+        ProductPropertyValueMotrum,
+        VendorPropertyAndMotrum,
+        ProductProperty,
+        PropertyItemAndMotrum,
+    )
+
+    chars_motrum_dict = {}
+    # Получаем все id product_props из product_props_3
+    props_prod_ids = [p.id for p in product_props_3]
+    # Получаем все PropertyItemAndMotrum одним запросом
+    items = PropertyItemAndMotrum.objects.filter(
+        product_props_id__in=props_prod_ids
+    ).select_related(
+        "vendor_property_motrum__property_motrum",
+        "vendor_property_motrum__property_value_motrum",
+        "product_props",
+    )
+    # Группируем по product_props_id
+    from collections import defaultdict
+
+    items_by_props = defaultdict(list)
+    for item in items:
+        items_by_props[item.product_props_id].append(item)
+
+    # Теперь перебираем product_props_3 и работаем с уже загруженными items
+    for props_prod in product_props_3:
+
+        for item in items_by_props.get(props_prod.id, []):
+            vendor_prop = item.vendor_property_motrum
+            if not vendor_prop or not vendor_prop.property_motrum:
+                continue
+            key = vendor_prop.property_motrum.id
+            motrum_obj = vendor_prop.property_motrum
+            value_obj = vendor_prop.property_value_motrum
+            is_diapason = value_obj.is_diapason if value_obj else False
+            # --- добавляем ключ, даже если нет value_obj ---
+            if key not in chars_motrum_dict:
+
+                chars_motrum_dict[key] = {
+                    "values": [],
+                    "id_property_motrum": key,
+                    "name_property_motrum": motrum_obj.name if motrum_obj else "",
+                    "is_diapason": is_diapason,
+                }
+
+            # --- для диапазонных не добавляем values, только min/max ниже ---
+            if (
+                not is_diapason
+                and value_obj
+                and {"value": value_obj.value, "id": value_obj.id}
+                not in chars_motrum_dict[key]["values"]
+            ):
+                chars_motrum_dict[key]["values"].append(
+                    {"value": value_obj.value, "id": value_obj.id}
+                )
+
+    # Для диапазонных характеристик вычисляем min/max
+    for props_prod in product_props_3:
+        for item in items_by_props.get(props_prod.id, []):
+            vendor_prop = item.vendor_property_motrum
+            if not vendor_prop or not vendor_prop.property_motrum:
+                continue
+            key = vendor_prop.property_motrum.id
+            motrum_obj = vendor_prop.property_motrum
+            value_obj = vendor_prop.property_value_motrum
+            is_diapason = value_obj.is_diapason if value_obj else False
+            if is_diapason:
+                diapason_values = []
+                for diapason_item in items_by_props.get(props_prod.id, []):
+                    try:
+                        val = float(diapason_item.product_props.value)
+                        diapason_values.append(val)
+                    except (TypeError, ValueError, AttributeError):
+                        pass
+                if diapason_values:
+                    chars_motrum_dict[key]["min_value"] = min(diapason_values)
+                    chars_motrum_dict[key]["max_value"] = max(diapason_values)
+    chars_motrum = list(chars_motrum_dict.values())
+    return chars_motrum
+
+
+# ФИЛЬТРЫ ПРОПСОВ В ШАБЛОНЕ -ИСПОЛЬЗУЕМ
+def get_props_motrum_filter_to_view(product_props,category,group):
+    from django.db.models.functions import Coalesce
+    from apps.product.models import ProductPropertyMotrum,ProductPropertyMotrumArticleCateg
+    from apps.product.models import CategoryProduct, GroupProduct
+ 
+    # Характеристики дял фильтрации
+ 
+    if not category or category in ("all", "other", "search"):
+        category_motrum = None
+        group_motrum = None
+    else:
+        category_motrum = CategoryProduct.objects.get(slug=category)
+        if group:
+            group_motrum = GroupProduct.objects.get(slug=group)
+        else:
+            group_motrum = None
+    
+    article_by_all = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group=OuterRef('product__group'),
+    ).values('article')[:1]
+
+    article_by_cat = ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum=OuterRef('property_motrum'),
+        category=OuterRef('product__category'),
+        group__isnull=True,
+    ).values('article')[:1]
+            
+    # all_values = (
+    #     product_props.values(
+    #         "property_motrum",
+    #         "property_motrum__name",
+    #         "property_motrum__name_to_slug",
+    #         "property_motrum__slug",
+    #         "property_value_motrum__id",
+    #         "property_value_motrum__value",
+    #         "property_motrum__is_diapason",
+    #         "property_value_motrum_to_diapason",
+    #     )
+    #     .distinct()
+    #     .order_by("property_value_motrum__value")
+    # )
+    all_values = (
+        product_props.annotate(
+            article_group=Coalesce(
+                Subquery(article_by_all, output_field=IntegerField()),
+                Subquery(article_by_cat, output_field=IntegerField()),
+            )
+        )
+        .values(
+            "property_motrum",
+            "property_motrum__name",
+            "property_motrum__name_to_slug",
+            "property_motrum__slug",
+            "property_value_motrum__id",
+            "property_value_motrum__value",
+            "property_motrum__is_diapason",
+            "property_value_motrum_to_diapason",
+            "article_group",
+        )
+        .distinct()
+        .order_by("property_value_motrum__value")
+    )
+
+    chars_dict = defaultdict(lambda: {"values": []})
+    diapason_values = defaultdict(list)  # Для сбора значений диапазонов
+    for row in all_values:
+        pid = row["property_motrum"]
+        is_diapason = row["property_motrum__is_diapason"]
+        if "id_property_motrum" not in chars_dict[pid]:
+            chars_dict[pid].update(
+                {
+                    "id_property_motrum": pid,
+                    "name_property_motrum": row["property_motrum__name"],
+                    "is_diapason": is_diapason,
+                    "slug":row["property_motrum__slug"],
+                    "property_motrum__name_to_slug":row['property_motrum__name_to_slug']
+                    # "count_values": 0,  # убираем счетчик
+                }
+            )
+            # Добавляем ключ gabarit для нужных характеристик
+            if row["property_motrum__name"] in [
+                "Высота (мм)",
+                "Ширина (мм)",
+                "Глубина (мм)",
+            ]:
+                chars_dict[pid]["gabarit"] = True
+            else:
+                chars_dict[pid]["gabarit"] = False
+            # Для недиапазонных фильтров сразу инициализируем массив для длин
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"] = []
+        if is_diapason:
+            # value может быть строкой, пробуем привести к float
+            try:
+                val = float(row["property_value_motrum_to_diapason"])
+                diapason_values[pid].append(val)
+            except (TypeError, ValueError):
+                pass
+        if row["property_value_motrum__id"] and row["property_value_motrum__value"]:
+            value_str = str(row["property_value_motrum__value"])
+            value_dict = {
+                "id": row["property_value_motrum__id"],
+                "value": row["property_value_motrum__value"],
+            }
+            chars_dict[pid]["values"].append(value_dict)
+            # Для недиапазонных фильтров собираем длины значений
+            if not is_diapason:
+                chars_dict[pid]["_value_lengths"].append(len(value_str))
+
+    # Добавляем min/max для диапазонных характеристик
+    for pid, values in diapason_values.items():
+        if values:
+            chars_dict[pid]["min_value"] = min(values)
+            chars_dict[pid]["max_value"] = max(values)
+    # Для недиапазонных фильтров определяем position
+    for pid, char in chars_dict.items():
+        if not char.get("is_diapason", False) and "_value_lengths" in char:
+            if any(l > 6 for l in char["_value_lengths"]):
+                char["position"] = "vertical"
+            else:
+                char["position"] = "horizontal"
+            del char["_value_lengths"]
+        # добавляем count_values через len
+        char["count_values"] = len(char["values"])
+    chars = list(chars_dict.values())
+    # Получаем все нужные id характеристик
+    motrum_ids = [c["id_property_motrum"] for c in chars]
+
+    # Получаем article_group для каждой характеристики (property_motrum) и текущей группы/категории
+    article_group_map = {
+    p.property_motrum_id: p.article
+    for p in ProductPropertyMotrumArticleCateg.objects.filter(
+        property_motrum_id__in=motrum_ids,
+        category_id=category_motrum.id if category_motrum else None,
+        group_id=group_motrum.id if group_motrum else None
+    )
+}
+
+    # Получаем обычный article из ProductPropertyMotrum
+    article_map = {
+        p.id: p.article if p.article is not None else 9999
+        for p in ProductPropertyMotrum.objects.filter(id__in=motrum_ids)
+    }
+
+    # Сортировка: сначала обычные, потом габариты, внутри — по article_group если есть, иначе по article
+    chars.sort(
+        key=lambda x: (
+            x.get("gabarit", False),
+            article_group_map.get(x["id_property_motrum"], article_map.get(x["id_property_motrum"], 9999)),
+        )
+    )
+    
+    
+    # # Сортировка: сначала обычные, потом габариты, внутри — по article
+    # article_map = {
+    #     p.id: p.article if p.article is not None else 9999
+    #     for p in ProductPropertyMotrum.objects.filter(
+    #         id__in=[c["id_property_motrum"] for c in chars]
+    #     )
+    # }
+    # chars.sort(
+    #     key=lambda x: (
+    #         x.get("gabarit", False),
+    #         article_map.get(x["id_property_motrum"], 9999),
+    #     )
+    # )
+    # --- Новый блок: если есть дубликаты name_property_motrum, заменить на name_to_slug ---
+    from collections import Counter
+    name_counts = Counter([c["name_property_motrum"] for c in chars])
+    for char in chars:
+        if name_counts[char["name_property_motrum"]] > 1:
+            # заменить на property_motrum__name_to_slug
+            char["name_property_motrum"] = char.get("property_motrum__name_to_slug", char["name_property_motrum"])
+    # Сортировка значений внутри каждого фильтра по числовому значению
+    for char in chars:
+        try:
+            char["values"].sort(key=lambda x: float(str(x["value"]).replace(",", ".")))
+        except Exception as e:
+            pass  # если не число — не сортируем
+    # Добавляем is_visible: True для первых 5, False для остальных
+    for idx, char in enumerate(chars):
+        char["is_visible"] = True if idx < 5 else False
+   
+    
+    
+    return chars
+
+
+def serch_props_prod_and_add_motrum_props(vendor_property_and_motrum, supplier):
+    from apps.product.models import ProductProperty, ProductPropertyMotrumItem
+
+    print("serch_props_prod_and_add_motrum_props", vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(
+        product__supplier=supplier,
+        name=vendor_property_and_motrum.property_vendor_name,
+        value=vendor_property_and_motrum.property_vendor_value,
+    )
+
+    for prop in props:
+        if prop.value != "" or prop.value != " ":
+
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                property_value_motrum=vendor_property_and_motrum.property_value_motrum,
+                is_diapason=False,
+                is_have_vendor_props=True,
+            )
+            print("*****standart_or_multi****")
+            print(prop_motrum, created)
+
+
+def serch_props_prod_and_add_motrum_props_diapason(
+    vendor_property_and_motrum, supplier
+):
+    from apps.product.models import ProductProperty, ProductPropertyMotrumItem
+
+    print("serch_props_prod_and_add_motrum_props_diapason", vendor_property_and_motrum)
+    props = ProductProperty.objects.filter(
+        product__supplier=supplier, name=vendor_property_and_motrum.property_vendor_name
+    )
+
+    def extract_first_number(value):
+        if isinstance(value, (int, float)):
+            return value
+        if isinstance(value, str):
+            match = re.search(r"\d+(\.\d+)?", value)
+            if match:
+                return float(match.group())
+
+    for prop in props:
+
+        if prop.value != "" or prop.value != " ":
+            value = extract_first_number(prop.value)
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prop.product,
+                property_motrum=vendor_property_and_motrum.property_motrum,
+                is_diapason=True,
+                property_value_motrum_to_diapason=value,
+                is_have_vendor_props=True,
+            )
+            print("****_diapason*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_article(
+    prod_prop_motrum, prod_prop_value_motrum, article, supplier, is_diapason
+):
+    from apps.product.models import Product, ProductPropertyMotrumItem
+
+    products = Product.objects.filter(supplier=supplier, article_supplier=article)
+    if products:
+        for prod in products:
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prod,
+                property_motrum=prod_prop_motrum,
+                property_value_motrum=prod_prop_value_motrum,
+                is_diapason=is_diapason,
+                # property_value_motrum_to_diapason=prod_prop_value_motrum,
+                is_have_vendor_props=False,
+            )
+            print("****_article*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_categ(
+    prod_prop_motrum,
+    prod_prop_value_motrum,
+    article,
+    supplier,
+    is_diapason,
+    categ,
+    groupe,
+    last_categ,
+):
+    print(prod_prop_motrum,
+    prod_prop_value_motrum,
+    article,
+    supplier,
+    is_diapason,
+    categ,
+    groupe,
+    last_categ,"")
+    from apps.product.models import Product, ProductPropertyMotrumItem
+
+    if last_categ:
+        products = Product.objects.filter(
+            supplier=supplier, category_supplier_all__name=last_categ
+        )
+    elif groupe:
+        products = Product.objects.filter(
+            supplier=supplier, group_supplier__name=groupe
+        )
+    elif categ:
+        products = Product.objects.filter(
+            supplier=supplier, category_supplier__name=categ
+        )
+    print(products)
+    if products:
+        for prod in products:
+            prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                product=prod,
+                property_motrum=prod_prop_motrum,
+                property_value_motrum=prod_prop_value_motrum,
+                is_diapason=is_diapason,
+                # property_value_motrum_to_diapason=prod_prop_value_motrum,
+                is_have_vendor_props=False,
+            )
+            print("****_categ*****")
+            print(prop_motrum, created)
+
+
+def serch_prod_to_motrum_props_categ_to_create_product(
+    product,value
+):
+    from apps.product.models import Product, ProductPropertyMotrumItem,VendorPropertyAndMotrum
+    # Получение х-к мотрум  
+    obj= VendorPropertyAndMotrum.objects.filter(
+        supplier=product.supplier,
+        is_category = True,
+        property_value_motrum__value=value,
+    ).first()
+    if obj is not None:
+        prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+            product=product,
+            property_motrum=obj.property_motrum,
+            property_value_motrum=obj.property_value_motrum,
+            is_diapason=obj.is_diapason,
+            is_have_vendor_props=False,
+        )
+        if created:
+            error = "info_error"
+            location = "+ х-ка"
+            info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+            e = error_alert(error, location, info)
+
+
+
+def delete_prop_motrum_item_duble():
+    """
+    Удаляет дублирующиеся ProductPropertyMotrumItem по ключевым полям:
+    product, property_motrum, property_value_motrum, is_diapason, property_value_motrum_to_diapason
+    Оставляет только один экземпляр для каждого уникального набора.
+    Также выводит в лог список товаров и названия свойств, которые были удалены.
+    """
+    from apps.product.models import ProductPropertyMotrumItem, Product, ProductPropertyMotrum
+    from django.db.models import F
+
+    seen = set()
+    to_delete = []
+    deleted_info = []
+    for item in ProductPropertyMotrumItem.objects.all().order_by('id'):
+        key = (
+            item.product_id,
+            item.property_motrum_id,
+            item.property_value_motrum_id,
+            item.is_diapason,
+            item.property_value_motrum_to_diapason,
+        )
+        if key in seen:
+            to_delete.append(item.id)
+            deleted_info.append((item.product_id, item.property_motrum_id))
+        else:
+            seen.add(key)
+    if to_delete:
+        ProductPropertyMotrumItem.objects.filter(id__in=to_delete).delete()
+        # Получаем имена для лога
+        product_names = {p.id: str(p) for p in Product.objects.filter(id__in=[x[0] for x in deleted_info])}
+        prop_names = {p.id: str(p) for p in ProductPropertyMotrum.objects.filter(id__in=[x[1] for x in deleted_info])}
+        for prod_id, prop_id in deleted_info:
+            error = "info_error"
+            location = "+ х-ка"
+            info = f"Удалён дубликат: Товар: {product_names.get(prod_id, prod_id)}, Свойство: {prop_names.get(prop_id, prop_id)}"
+            e = error_alert(error, location, info)
+          
+    
+def revert_cart_changes(cart_id, specification_id=None):
+    """
+    Откатывает все изменения в корзине до состояния на момент создания спецификации
+    или до последнего сохраненного состояния
+    """
+    from apps.product.models import Cart, ProductCart
+    from apps.specification.models import Specification, ProductSpecification
+    
     try:
-        from django.template import loader
+        cart = Cart.objects.get(id=cart_id)
+        
+        # Если есть спецификация, восстанавливаем состояние на момент её создания
+        if specification_id:
+            try:
+                specification = Specification.objects.get(id=specification_id)
+                # Получаем все товары из спецификации
+                spec_products = ProductSpecification.objects.filter(specification=specification)
+                
+                # Удаляем все текущие товары в корзине
+                ProductCart.objects.filter(cart=cart).delete()
+                
+                # Восстанавливаем товары из спецификации
+                for spec_product in spec_products:
+                    ProductCart.objects.create(
+                        cart=cart,
+                        product=spec_product.product,
+                        product_price=spec_product.price_one,
+                        product_price_motrum=spec_product.price_one_motrum,
+                        product_sale_motrum=spec_product.sale_motrum,
+                        sale_client=spec_product.extra_discount,
+                        vendor=spec_product.vendor,
+                        supplier=spec_product.supplier,
+                        product_new=spec_product.product_new,
+                        product_new_article=spec_product.product_new_article,
+                        product_new_price=spec_product.price_one_original_new,
+                        product_new_sale=spec_product.extra_discount,
+                        product_new_sale_motrum=spec_product.sale_motrum,
+                        quantity=spec_product.quantity,
+                        comment=spec_product.comment,
+                        date_delivery=spec_product.date_shipment,
+                    )
+                
+                # Восстанавливаем состояние корзины
+                cart.is_active = True
+                cart.save()
+                
+                return True
+                
+            except Specification.DoesNotExist:
+                pass
+        
+        # Если спецификации нет, восстанавливаем из истории
+        # Получаем последнее состояние корзины из истории
+        cart_history = cart.history.all().order_by('-history_date')
+        if cart_history.exists():
+            last_cart_state = cart_history.first()
+            
+            # Восстанавливаем состояние корзины
+            cart.is_active = last_cart_state.is_active
+            cart.save()
+            
+            # Восстанавливаем товары из истории
+            product_cart_history = ProductCart.history.filter(cart=cart).order_by('-history_date')
+            
+            # Группируем по ID товара и берем последнее состояние каждого
+            restored_products = {}
+            for product_history in product_cart_history:
+                product_id = product_history.id
+                if product_id not in restored_products:
+                    restored_products[product_id] = product_history
+            
+            # Удаляем все текущие товары
+            ProductCart.objects.filter(cart=cart).delete()
+            
+            # Восстанавливаем товары из истории
+            for product_history in restored_products.values():
+                if product_history.history_type != '-':  # Не восстанавливаем удаленные
+                    ProductCart.objects.create(
+                        cart=cart,
+                        product=product_history.product,
+                        product_price=product_history.product_price,
+                        product_price_motrum=product_history.product_price_motrum,
+                        product_sale_motrum=product_history.product_sale_motrum,
+                        sale_client=product_history.sale_client,
+                        vendor=product_history.vendor,
+                        supplier=product_history.supplier,
+                        product_new=product_history.product_new,
+                        product_new_article=product_history.product_new_article,
+                        product_new_price=product_history.product_new_price,
+                        product_new_sale=product_history.product_new_sale,
+                        product_new_sale_motrum=product_history.product_new_sale_motrum,
+                        quantity=product_history.quantity,
+                        comment=product_history.comment,
+                        date_delivery=product_history.date_delivery,
+                    )
+            
+            return True
+        
+        return False
+        
+    except Cart.DoesNotExist:
+        return False
 
-        id_bitrix = order.id_bitrix
-        manager_client = order.manager.email
-        phone_client = order.client.phone
-        url_bitrix_deal = f"https://pmn.bitrix24.ru/crm/deal/details/{id_bitrix}/"
-        html_message = loader.render_to_string(
-            "core/emails/email_manager_neworder.html",
-            {
-                "id_bitrix": id_bitrix,
-                "url_bitrix_deal": url_bitrix_deal,
-                "phone": phone_client,
-            },
-        )
-        subject = "Новый заказа с сайта"
-        to_email = manager_client
 
-        print(to_email)
-        sending_result = send_email_message_html(
-            subject, None, to_email, html_message=html_message
-        )
 
-    except Exception as e:
-        tr = traceback.format_exc()
-        error = "error"
-        location = "Отправка оповещения менеджеру после создания заказа с сайта"
-        info = f"order.id = {order.id} {e}{tr}"
-        e = error_alert(error, location, info)
-        return ("error", info)
+def chek_wiev_in_website(category_supplier,group_supplier,category_supplier_all):
+    chek = True
+    if category_supplier_all and category_supplier_all.is_view_website == False:
+        chek = False
+    elif group_supplier and group_supplier.is_view_website == False:
+        chek = False
+    elif category_supplier and category_supplier.is_view_website == False:
+        chek = False
+    else:
+        chek = True
+    return chek
+
+
+

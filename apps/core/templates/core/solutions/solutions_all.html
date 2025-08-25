@@ -6,7 +6,13 @@
             <div class="bread_crumbs">
                 <a href="/">главная</a>
             </div>
-            <h1 class="title">решения</h1>
+            {% if seo_meta and seo_meta.meta_h1 %}
+                <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
+                        
+            {% else %}
+                <h1 class="title">решения</h1>
+            {% endif %}
+            
         </div>
         <div class="solution_table">
             <a href="{% url "core:cobots" %}" class="solution_item first">

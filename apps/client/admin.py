@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from apps.client.form import RequisitesAdminForm
 from apps.client.models import AccountRequisites, Client, Requisites, RequisitesOtherKpp
 from project.admin import website_admin
 from django.template.loader import get_template
-
+from django.db import models
 # Register your models here.
 
 
@@ -43,21 +44,84 @@ class AccountRequisitesAdminInline(admin.TabularInline):
 
 
 class RequisitesOtherKppAdminInline(admin.TabularInline):
+    
     extra = 1
     model = RequisitesOtherKpp
+    readonly_fields = [
+        "id_bitrix",
+    ]
 
 
 class RequisitesAdmin(admin.ModelAdmin):
-    list_display = ["legal_entity", "client"]
-    inlines = (RequisitesOtherKppAdminInline,)
-    exclude = ["discount","client",]
-    readonly_fields = ["id_bitrix", "client", "manager", "legal_entity", "inn", "type_client", "first_name", "last_name", "middle_name"]
-    # fields = 'legal_entity'
     search_help_text = "Поиск может осуществляться по: ИНН и названию Юр лица "
     search_fields = [
         "legal_entity",
         "inn",
     ]
+    
+    
+    form = RequisitesAdminForm
+    list_display = ["legal_entity", "inn"]
+    inlines = (RequisitesOtherKppAdminInline,)
+    exclude = [
+        "discount",
+        "client",
+        "id_bitrix",
+    ]
+    readonly_fields = [
+       
+        "manager",
+        "legal_entity",
+        "inn",
+        "type_client",
+        "first_name",
+        "last_name",
+        "middle_name",
+    ]
+    # fields = (
+    #     "type_payment",
+    #     "prepay_persent",
+    #     "postpay_persent",
+    #     "postpay_persent_text",
+    #     "postpay_persent_2",
+    #     "postpay_persent_text_2",
+    #     "postpay_persent_3",
+    #     "postpay_persent_text_3",
+    #     "legal_entity",
+    #     "inn",
+    #     "type_client",
+    #     "first_name",
+    #     "last_name",
+    #     "middle_name",
+    #     "manager",
+
+    # )
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    (   "type_client",
+                        "inn",
+                        "legal_entity",
+                    ),
+                    ("manager",),
+                    ("contract","contract_date","number_spec"),
+                    ("type_payment",),
+                    ("prepay_persent",),
+                    ("postpay_persent","postpay_persent_text"),
+                    ("postpay_persent_2","postpay_persent_text_2"),
+                    ("postpay_persent_3","postpay_persent_text_3"),
+                   
+                ],
+            },
+        ),
+    ]
+    # formfield_overrides = {
+    #     models.CharField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows': 4, 'cols': 80})},
+    # }
+    
+
     def has_delete_permission(self, request, obj=None):
         return False
 

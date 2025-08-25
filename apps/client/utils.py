@@ -33,7 +33,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from apps.logs.utils import error_alert
 from apps.specification.utils import MyCanvas
 from project.settings import IS_TESTING, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
-from django.db.models import Prefetch, OuterRef
+from django.db.models import Prefetch, OuterRef, Case, When, F
 from apps.product.models import Product, ProductCart, Stock
 from apps.specification.models import ProductSpecification, Specification
 from reportlab.lib.fonts import addMapping
@@ -56,8 +56,7 @@ def crete_pdf_bill(
 ):
 
     try:
-        print("crete_pdf_bill")
-        print(type_save)
+   
         directory = check_spesc_directory_exist(
             "bill",
         )
@@ -77,8 +76,15 @@ def crete_pdf_bill(
 
         product_specification = ProductSpecification.objects.filter(
             specification=specification
-        ).order_by("id")
-        print(type_delivery)
+        ).order_by(
+            Case(
+                When(id_cart__isnull=False, then=0),
+                default=1
+            ),
+            F('id_cart__order'),
+            'id'
+        )
+      
         # type_delivery = TypeDelivery.objects.get(id=type_delivery)
 
         order = Order.objects.get(specification=specification)
@@ -99,7 +105,7 @@ def crete_pdf_bill(
         # else:
         #     date_now = transform_date(datetime.date.today().isoformat())
         #     date_name_dot = datetime.datetime.today().strftime("%d.%m.%Y")
-
+        print("motrum_info.counter_bill", motrum_info.counter_bill)
         if order.requisites.contract or specifications.total_amount > 99999.99:
             type_bill = "Счет"
             bill_name = motrum_info.counter_bill + 1
@@ -111,20 +117,29 @@ def crete_pdf_bill(
             # bill_name = motrum_info.counter_bill_offer + 1
             # motrum_info.counter_bill_offer = bill_name
 
-        print("type_bill", type_bill)
-        print("*******************************")
+      
         if type_save == "new":
-            name_bill_text = f"{type_bill} № {bill_name}"
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
             motrum_info.save()
+            
         elif type_save == "update":
-            bill_name = order.bill_name
-            name_bill_text = f"{type_bill} № {bill_name}"
+            if order.bill_name:
+                bill_name = order.bill_name
+            else:
+                motrum_info.save()
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
+            
         elif type_save == "hard_update":
-            name_bill_text = f"{type_bill} № {bill_name}"
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
             motrum_info.save()
         else:
-            bill_name = order.bill_name
-            name_bill_text = f"{type_bill} № {bill_name}"
+            if order.bill_name:
+                bill_name = order.bill_name
+            else:
+                motrum_info.save()
+            name_bill_text = f"{type_bill} № {order.bill_name_prefix}-{bill_name}"
+            
+        print("bill_name", bill_name)
         print("name_bill_text", name_bill_text)
         print("*******************************")
 
@@ -135,19 +150,17 @@ def crete_pdf_bill(
             bill_date_start=datetime.datetime.today(),
         )
         if older_doc:
-            print(1, older_doc)
+       
             older_doc_ver = older_doc.last()
-            print(2, older_doc_ver)
+
             version = older_doc_ver.version + 1
-            print(2, older_doc_ver)
+     
             text_version = f"_{version}"
         else:
-            print(2, older_doc)
+        
             version = 1
             text_version = ""
-        print(older_doc)
-        print(version)
-        print(text_version)
+
         name_bill_to_fullname = f"{name_bill_text} от {date_now}{text_version}"
         name_bill_to_fullname_nosign = (
             f"{name_bill_text} от {date_now} без печати{text_version}"
@@ -376,26 +389,26 @@ def crete_pdf_bill(
         if is_contract or specifications.total_amount > 99999.99:
             story.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет на оплату № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет на оплату № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет на оплату № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
         else:
             story.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет-оферта № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
             story_no_sign.append(
                 Paragraph(
-                    f"Счет-оферта № {bill_name} от {date_now}<br></br><br></br>",
+                    f"Счет-оферта № {order.bill_name_prefix}-{bill_name} от {date_now}<br></br><br></br>",
                     title_style_14,
                 )
             )
@@ -441,7 +454,7 @@ def crete_pdf_bill(
         data_info.append(
             (
                 Paragraph(f"Основание:", normal_style),
-                Paragraph(f"Счет {bill_name} от {date_name_dot}", bold_style),
+                Paragraph(f"Счет {order.bill_name_prefix}-{bill_name} от {date_name_dot}", bold_style),
             )
         )
 
@@ -488,7 +501,7 @@ def crete_pdf_bill(
         total_product_quantity = 0
         for product in product_specification:
             i += 1
-            print(i, product)
+        
             try:
                 product_stock_item = Stock.objects.get(prod=product.product)
                 product_stock = product_stock_item.lot.name_shorts
@@ -504,12 +517,12 @@ def crete_pdf_bill(
                 url_absolute = request.build_absolute_uri("/").strip("/")
                 link = f"{url_absolute}/{link}"
                 product_name_str = product.product.name
-                
-                if product.product.vendor.slug == "prompower" and product.product.description:
+
+                if product.product.supplier.slug == "prompower" and product.product.description:
                     product_name_str = product.product.description
                     # if product.product.name not in product.product.description:
                     #     product_name_str = f"{product.product.name} {product_name_str}"
-                
+
                 if product.product.in_view_website:
                     product_name = (
                         f'<a href="{link}" color="blue">{str(product_name_str)}</a>'
@@ -538,10 +551,10 @@ def crete_pdf_bill(
             product_quantity = product.quantity
             product_data = product.text_delivery
 
-            if product.date_delivery_bill:
-                product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
-            else:
-                product_data = product.text_delivery
+            # if product.date_delivery_bill:
+            #     product_data = str(product.date_delivery_bill.strftime("%d.%m.%Y"))
+            # else:
+            #     product_data = product.text_delivery
 
             product_data = (Paragraph(f"{product_data}", normal_style_right),)
             # else:
@@ -618,15 +631,60 @@ def crete_pdf_bill(
         )
         story.append(table_product)
         story_no_sign.append(table_product)
-        if order.prepay_persent:
-            if order.prepay_persent == 100:
-                info_payment = f" Способ оплаты: 100% предоплата."
-
-            else:
-                info_payment = f"{order.prepay_persent}% предоплата, {order.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
-
+        
+        
+        if order.requisites.prepay_persent:
+            if order.requisites.prepay_persent  > 0:
+                prepay_persent_text = f"{order.requisites.prepay_persent}% предоплата"
         else:
-            info_payment = ""
+            prepay_persent_text = ""
+        
+        if order.requisites.postpay_persent:
+            if order.requisites.postpay_persent > 0:
+                postpay_persent_text = f"{order.requisites.postpay_persent}% {order.requisites.postpay_persent_text}"
+        else:
+            postpay_persent_text = ""
+       
+        if order.requisites.postpay_persent_2:
+            if order.requisites.postpay_persent_2 > 0:
+                postpay_persent_text_2 = f"{order.requisites.postpay_persent_2}% {order.requisites.postpay_persent_text_2}"
+        else:
+            postpay_persent_text_2 = ""
+        
+        if order.requisites.postpay_persent_3:
+            if order.requisites.postpay_persent_3 > 0:
+                postpay_persent_text_3 = f"{order.requisites.postpay_persent_3}% {order.requisites.postpay_persent_text_3}"
+        else:
+            postpay_persent_text_3 = ""
+   
+        
+        info_payment_text = ""
+        parts_payment = []
+        if prepay_persent_text:
+            parts_payment.append(prepay_persent_text)
+        if postpay_persent_text:
+            parts_payment.append(postpay_persent_text)
+        if postpay_persent_text_2:
+            parts_payment.append(postpay_persent_text_2)
+        if postpay_persent_text_3:
+            parts_payment.append(postpay_persent_text_3)
+        if parts_payment:
+            info_payment_text = "" + ", ".join(parts_payment)
+        
+        info_payment = info_payment_text
+        
+        
+
+        # if order.requisites.prepay_persent:
+        #     if order.requisites.prepay_persent == 100:
+        #         info_payment = f"100% предоплата."
+        #     elif order.requisites.prepay_persent > 0:
+        #         info_payment = f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
+        #     else:
+        #         info_payment = f"{order.requisites.prepay_persent}% предоплата, {order.requisites.postpay_persent}% в течение 5 дней с момента отгрузки со склада Поставщика."
+
+        # else:
+        #     info_payment = ""
 
         total_amount_nds = float(specifications.total_amount) * 20 / (20 + 100)
         total_amount_nds = round(total_amount_nds, 2)
@@ -640,22 +698,22 @@ def crete_pdf_bill(
             "{0:,.2f}".format(total_amount_nds).replace(",", " ").replace(".", ",")
         )
         final_table_all = []
-        final_table_all.append(
-            (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            )
-        )
+        # final_table_all.append(
+        #     (
+               
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #         None,
+        #     )
+        # )
         final_table_all.append(
             (
                 Paragraph(info_payment, normal_style),
-                None,
+               
                 None,
                 None,
                 Paragraph("Итого:", bold_left_style),
@@ -667,7 +725,7 @@ def crete_pdf_bill(
 
         final_table_all.append(
             (
-                None,
+                
                 None,
                 None,
                 None,
@@ -680,7 +738,7 @@ def crete_pdf_bill(
 
         final_table_all.append(
             (
-                None,
+                
                 None,
                 None,
                 None,
@@ -694,19 +752,33 @@ def crete_pdf_bill(
         final_table_all_prod = Table(
             final_table_all,
             colWidths=[
-                6 * cm,
-                1 * cm,
-                2.5 * cm,
+                9 * cm,
+                # 1 * cm,
+                0.5 * cm,
                 0 * cm,
                 3 * cm,
                 2.5 * cm,
                 2.5 * cm,
                 2 * cm,
             ],
-            rowHeights=13,
+            splitInRow=1,
+        )
+        final_table_all_prod2 = Table(
+            final_table_all,
+            colWidths=[
+                9 * cm,
+                # 1 * cm,
+                0.5 * cm,
+                0 * cm,
+                3 * cm,
+                2.5 * cm,
+                2.5 * cm,
+                2 * cm,
+            ],
+            splitInRow=1,
         )
         story.append(final_table_all_prod)
-        story_no_sign.append(final_table_all_prod)
+        story_no_sign.append(final_table_all_prod2)
 
         total_amount_word = num2words.num2words(
             int(specifications.total_amount), lang="ru"
@@ -916,7 +988,7 @@ def crete_pdf_bill(
             )
         )
 
-        print(table_data_text_info)
+    
         # story_no_sign = story.copy()
         story.append(table_data_text_info)
         story_no_sign.append(table_data_text_info2)
@@ -1013,11 +1085,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+    
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+          
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,
@@ -1082,9 +1153,7 @@ def crete_pdf_bill(
             "bill",
             name_bill,
         )
-        print(file_path)
 
-        print(333333333333333333)
 
         data_signature = [
             (
@@ -1141,7 +1210,6 @@ def crete_pdf_bill(
             )
         )
 
-        
         # Получаем высоту таблицы
         available_width = doc_2.width - doc_2.topMargin - doc_2.rightMargin
         available_height = doc_2.height - doc_2.bottomMargin - doc_2.topMargin
@@ -1181,11 +1249,10 @@ def crete_pdf_bill(
 
         table_height_3 = table_height / 3
         table_height_23 = table_height_3 * 2
-        print("remaining_height", remaining_height)
-        print("table_height_23", table_height_23)
+       
         # Если таблица занимает меньше половины оставшегося места
         if table_height_23 > remaining_height:
-            print("66666666666666666666666666666666666666666666666666")
+          
             signature_motrum = Paragraph(
                 f'<br /><img width="95" height="25" src="{name_image}" valign="middle"/>',
                 normal_style,
@@ -1257,9 +1324,6 @@ def crete_pdf_bill(
                     if isinstance(cell, Paragraph):
                         cell.style.spaceBefore = 0
                         cell.style.spaceAfter = 0
-        
-        
-        
 
         story_no_sign.append(table_signature)
 

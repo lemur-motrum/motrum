@@ -59,6 +59,8 @@ from django.views.decorators.clickjacking import (
 )
 
 
+
+
 # ГЛАВНАЯ
 def index(request):
     categories = CategoryProduct.objects.filter(is_view_home_web=True).order_by(
@@ -254,6 +256,7 @@ def cobots_all(request):
 
 # РЕШЕНИЕ ОДНО ОТЛЕЬЕНАЯ СТРАНИЦА
 def solutions_one(request):
+    motrum_in_numbers = IndexInfoWeb.objects.all().last()
     url_name = request.resolver_match.url_name
     if url_name == "shkaf-upravleniya":
         cat_slug = "sborka-shu"
@@ -286,6 +289,7 @@ def solutions_one(request):
         meta_title = "Сборка шкафов управления"
 
     context = {
+        "motrum_in_numbers":motrum_in_numbers,
         "seo_test": seo_test,
         "projects": projects,
         "meta_title": f"{meta_title} | Мотрум - автоматизация производства",
@@ -383,6 +387,7 @@ def add_admin_okt(request):
 def robots_txt(request):
     if IS_PROD:
         lines = [
+            "User-agent: *",
             "Disallow: /admin/",
             "Disallow: /website_admin/",
             "Disallow: /okt/",
@@ -391,6 +396,8 @@ def robots_txt(request):
             "Disallow: /api/",
             "Disallow: /tinymce/",
             "Disallow: /logs/",
+            "Disallow: /product/all/",
+            "Disallow: /product/other/",
         ]
     else:
         lines = [

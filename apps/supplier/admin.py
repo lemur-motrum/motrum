@@ -19,6 +19,7 @@ from apps.supplier.get_utils.emas import (
     add_group_emas,
     add_props_emas_product,
 )
+from apps.supplier.get_utils.instart import get_instart_file
 from apps.supplier.get_utils.optimus import add_file_optimus, add_optimus_product
 
 # Register your models here.
@@ -53,7 +54,7 @@ class SupplierAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    readonly_fields = ["name",]
+    # readonly_fields = ["name",]
     
     # inlines = [
     #     VendorInline,
@@ -76,6 +77,7 @@ class SupplierAdmin(admin.ModelAdmin):
                 or obj.slug == "optimus-drive"
                 or obj.slug == "emas"
                 or obj.slug == "avangard"
+                or obj.slug == "instart"
             ):
                 return fields_add
 
@@ -94,6 +96,8 @@ class SupplierAdmin(admin.ModelAdmin):
 
         if obj.file:
             new_file = obj.file
+            print(0000000000000)
+            print(obj.file)
 
             if new_file != old_file:
                 if old_supplier.slug == "delta":
@@ -127,11 +131,24 @@ class SupplierAdmin(admin.ModelAdmin):
                     daemon_thread = threading.Thread(target=new_task)
                     daemon_thread.setDaemon(True)
                     daemon_thread.start()
-    # def has_change_permission(self, request, obj=None):
-    #     if obj:
-    #         return False
-    #     else:
-    #         return True
+                
+                if old_supplier.slug == "instart":
+
+                    def new_task():
+                        get_instart_file(new_file)
+
+                    daemon_thread = threading.Thread(target=new_task)
+                    daemon_thread.setDaemon(True)
+                    daemon_thread.start()
+                    
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            
+            return ["name",]
+        else:
+            return [
+                "",
+            ]
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -196,6 +213,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
     # list_editable = ("category_catalog", "group_catalog")
     readonly_fields = (
@@ -313,6 +331,7 @@ class SupplierCategoryProductAdmin(admin.ModelAdmin):
         "article_name",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
 
     def get_readonly_fields(self, request, obj=None):
@@ -351,6 +370,7 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
+        "is_view_website",
         # "category_catalog",
     )
     list_display_links = [
@@ -506,6 +526,9 @@ class DiscountAdmin(admin.ModelAdmin):
 
 class VendorWebAdmin(admin.ModelAdmin):
     model = Vendor
+    search_fields = [
+        "name",
+    ]
     list_display = (
         "name",
         "is_view_index_web",
@@ -517,8 +540,16 @@ class VendorWebAdmin(admin.ModelAdmin):
         "img",
         "is_view_index_web",
         "article",
+        "article_filter",
+        "promo_text",
+        "img_promo",
     )
     readonly_fields = ["name"]
+    
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     form.base_fields['promo_text'].widget = Textarea(attrs={'rows': 10, 'cols': 80})
+    #     return form
 
     def has_delete_permission(self, request, obj=None):
         return False

@@ -170,10 +170,46 @@ class Requisites(models.Model):
         blank=True,
         null=True,
     )
+    
+
 
     postpay_persent = models.FloatField(
         "Процент постоплаты",
         default="0",
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text = models.CharField(
+        "Процент постоплаты текст",
+        default="в течение 5 дней с момента отгрузки со склада Поставщика.",
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    
+    postpay_persent_2 = models.FloatField(
+        "Процент постоплаты 2",
+        default=None,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text_2 = models.CharField(
+        "Процент предоплаты текст 2",
+        default=None,
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_3 = models.FloatField(
+        "Процент постоплаты 3",
+        default=None,
+        blank=True,
+        null=True,
+    )
+    postpay_persent_text_3 = models.CharField(
+        "Процент предоплаты текст 3",
+        default=None,
+        max_length=200,
         blank=True,
         null=True,
     )
@@ -302,7 +338,10 @@ class RequisitesOtherKpp(models.Model):
         null=True,
         blank=True,
     )
-
+   
+    class Meta:
+        verbose_name = "Реквизиты и данные"
+        verbose_name_plural = "Реквизиты и данные"
     def __str__(self):
         return f"{self.requisites.legal_entity} {self.kpp}"
 
@@ -480,7 +519,11 @@ CLEAN_STATUS_ORDER_BITRIX = (
 #     (6, "CANCELED"),
 #     (7, "COMPLETED"),
 # )
-
+TYPE_ORDER_NAME = (
+    ("ИМ", "ИМ"),
+    ("ОКТ", "ОКТ"),
+    
+)
 
 class Order(models.Model):
     client = models.ForeignKey(
@@ -599,17 +642,24 @@ class Order(models.Model):
         default=None,
         null=True,
     )
+    bill_name_prefix = models.CharField(
+        "Префикс номера счета",
+        max_length=100, choices=TYPE_ORDER_NAME, default="ОКТ",blank=True,
+        null=True,
+    )
     bill_file = models.FileField(
         "Фаил счета",
         upload_to=get_document_bill_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     bill_file_no_signature = models.FileField(
         "Фаил счета без печатей",
         upload_to=get_document_bill_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",
@@ -636,10 +686,15 @@ class Order(models.Model):
         null=True,
     )
     act_file = models.FileField(
-        "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None
+        "Фаил акта поставки", upload_to=get_document_bill_path, null=True, default=None, max_length=1000
     )
     marginality = models.FloatField(
         "Маржинальность заказа в %",
+        blank=True,
+        null=True,
+    )
+    marginality_sum = models.FloatField(
+        "Маржинальность заказа в рублях",
         blank=True,
         null=True,
     )
@@ -761,7 +816,7 @@ class Order(models.Model):
             self.bill_sum = self.specification.total_amount
             self.bill_name = pdf_name
             self.marginality = self.specification.marginality
-            
+            self.marginality_sum = self.specification.marginality_sum
             if IS_TESTING:
                 pass
             else:
@@ -777,6 +832,7 @@ class Order(models.Model):
                 order=self,
                 bill_name=pdf_name,
                 bill_file=pdf_file,
+                bill_name_prefix=self.bill_name_prefix,
                 bill_date_start=bill_date_start,
                 bill_date_stop=data_stop,
                 bill_file_no_signature=None,
@@ -789,6 +845,7 @@ class Order(models.Model):
             OrderDocumentBill.objects.create(
                 order=self,
                 bill_name=pdf_name,
+                bill_name_prefix=self.bill_name_prefix,
                 bill_file=None,
                 bill_file_no_signature=file_path_no_sign,
                 bill_date_start=bill_date_start,
@@ -851,6 +908,11 @@ class OrderDocumentBill(models.Model):
         default=None,
         null=True,
     )
+    bill_name_prefix = models.CharField(
+        "Префикс номера счета",
+        max_length=100, choices=STATUS_ORDER, default="ОКТ",blank=True,
+        null=True,
+    )
     text_name_bill = models.CharField(
         "Текстовое название",
         default=None,
@@ -862,6 +924,7 @@ class OrderDocumentBill(models.Model):
         "Фаил счета",
         default=None,
         null=True,
+        max_length=1000,
     )
     text_name_bill_no_sign = models.CharField(
         "Текстовое название без подписи",
@@ -874,6 +937,7 @@ class OrderDocumentBill(models.Model):
         "Фаил счета без печатей",
         default=None,
         null=True,
+        max_length=1000,
     )
     bill_date_start = models.DateField(
         verbose_name="Дата создания счета",
@@ -936,6 +1000,7 @@ class DocumentShipment(models.Model):
         upload_to=get_shipment_doc_path,
         blank=True,
         null=True,
+        max_length=1000,
     )
     # name = models.PositiveIntegerField(
     #     "номер",

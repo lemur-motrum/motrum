@@ -43,7 +43,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (filtersParamsArray.length > 0) {
           for (let i = 0; i < filtersElems.length; i++) {
             if (filtersElems[i].getAttribute("slug") == param) {
-              console.log("Есть такое");
               filtersElems[i].classList.add("active");
             }
           }

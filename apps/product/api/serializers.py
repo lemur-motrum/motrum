@@ -118,6 +118,8 @@ class ProductSerializer(serializers.ModelSerializer):
     productproperty_set = ProductPropertySerializer(read_only=False, many=True)
     productimage_set = ProductImageSerializer(read_only=False, many=True)
     url = serializers.CharField(source="get_absolute_url", read_only=True)
+    supplier_slug = serializers.ReadOnlyField(source="supplier.slug")
+    # product_name = serializers.SerializerMethodField()
     # image_small = serializers.SerializerMethodField()
     # max_price = serializers.SerializerMethodField()
     class Meta:
@@ -126,8 +128,10 @@ class ProductSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "article",
+            "article_supplier",
             "vendor",
             "supplier",
+            "supplier_slug",
             "category",
             "group",
             "check_to_order",
@@ -136,6 +140,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "productproperty_set",
             "productimage_set",
             "url",
+            # "product_name"
             # "image_small",
         )
 
@@ -166,8 +171,17 @@ class ProductSerializer(serializers.ModelSerializer):
         if len(data["productimage_set"]) > 0:
             # crop='center', quality=99
             data["productimage_set"][0]["photo"]  = get_thumbnail(data["productimage_set"][0]["photo"], '200x200',format="PNG",quality=50 ).url
-
+      
+        if data["supplier_slug"] == "iek":
+            data["name"] = f"{data["article_supplier"]} {data["name"]}"
         return data
+
+    # def get_product_name(self, obj):
+
+    #     if obj.vendor.slug == "oni":
+    #         return f"{obj.article_supplier} {obj.name}"
+    #     else:
+    #         return f"{obj.name}"
     
     # def get_image_small(self, obj):
     #     image_small = get_thumbnail(data["productimage_set"][0], '200x200', crop='center', quality=99).url
@@ -206,3 +220,10 @@ class CartOktAllSerializer(serializers.ModelSerializer):
             "admin_creator_name",
             "productcart_set",
         )
+
+class VendorOktNewProdSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Vendor
+        fields = "__all__"

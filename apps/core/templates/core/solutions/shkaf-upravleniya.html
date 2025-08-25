@@ -4,7 +4,12 @@
         <a href="/">главная</a>
         <a href="{% url "core:solutions" %}">решения</a>
     </div>
-    <h1 class="title">СБОРКА ШКАФОВ УПРАВЛЕНИЯ</h1>
+    {% if seo_meta and seo_meta.meta_h1 %}
+        <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
+        
+    {% else %}
+        <h1 class="title">СБОРКА ШКАФОВ УПРАВЛЕНИЯ</h1>
+    {% endif %}
     <div class="solution_one_slider">
         <div class="swiper-wrapper">
             <div class="swiper-slide information_slide">
@@ -88,13 +93,12 @@
                 </div>
                 <button type-solution="shkaf" btn-form-type="shkaf" class="btn">отправить</button>
             </div>
-            <div class="politic_description">
-                Нажимая на кнопку, вы даёте согласие на
+            <div class="politic_description">Нажимая на кнопку, вы даёте согласие на
                 обработку персональных данных в
                 соответствии с <a target="_blank" href="{% url "core:privacy-policy" %}">политикой
-            конфиденциальности</a>
+                    конфиденциальности</a>
+            </div>
         </div>
     </div>
-</div>
 </div>
 {% include "core/includes/directions.html" %}

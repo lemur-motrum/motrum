@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalproductdocument',
             name='link',
-            field=models.CharField(max_length=255, null=True, verbose_name='Ссылка у поставщика'),
+            field=models.CharField(max_length=1000, null=True, verbose_name='Ссылка у поставщика'),
         ),
         migrations.AlterField(
             model_name='historicalproductimage',

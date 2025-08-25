@@ -14,10 +14,12 @@ from simple_history.models import HistoricalRecords
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
+    chek_wiev_in_website,
     create_article_motrum,
     get_file_path_add,
     get_lot,
     get_motrum_category,
+    get_motrum_category_and_motrum_props,
     get_price_motrum,
     get_price_supplier_rub,
 )
@@ -54,6 +56,12 @@ TYPE_DOCUMENT = (
     ("Soft", "Программы"),
     ("Doc", "Руководства и Спецификации"),
     ("Text", "Тексты"),
+)
+TAG_DOC = (
+    ("ONE", "Один вариант"),
+    ("MULTI", "Несколько вариантов"),
+    ("NONE", "Нет варинтов"),
+    ("-", "Не из документа"),
 )
 # Create your models here.
 
@@ -142,7 +150,6 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
-        
 
     def __str__(self):
         return f"Арт.мотрум: {self.article} | Арт.поставщика: {self.article_supplier} | Название товара: {self.name}"
@@ -162,16 +169,10 @@ class Product(models.Model):
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-        # # добавление производителя из групп вендора если нет своего
-        # if self.vendor == None:
-        #     if self.category_supplier_all is not None:
-        #         if self.category_supplier_all.vendor is not None:
-        #             self.vendor = self.category_supplier_all.vendor
 
-        #     elif self.group_supplier is not None:
-        #         if self.group_supplier.vendor is not None:
-        #             self.vendor = self.group_supplier.vendor
-        #     print(self.vendor)
+        if self.category_supplier_all or self.group_supplier or self.category_supplier:
+            check_view =  chek_wiev_in_website(self.category_supplier_all,self.group_supplier,self.category_supplier) 
+            self.in_view_website = check_view
 
         # удалить лишние пробелы
         if self.description != None:
@@ -192,8 +193,8 @@ class Product(models.Model):
             info = f"Обновление слагов"
             e = error_alert(error, location, info)
 
-        need_for_promo_work = True 
-        print(need_for_promo_work)   
+        need_for_promo_work = True
+    
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки
@@ -203,6 +204,7 @@ class Product(models.Model):
             price.save()
         except Price.DoesNotExist:
             pass
+        get_motrum_category_and_motrum_props(self)
 
     def get_absolute_url(self):
         if self.category is not None:
@@ -310,9 +312,11 @@ class Product(models.Model):
         sender, instance, history_instance, **kwargs
     ):
         if history_instance.history_type == "~":
-            delta = history_instance.diff_against(history_instance.prev_record)
-            if delta.changed_fields == []:
-                history_instance.delete()
+            # Проверяем, что prev_record не None перед сравнением
+            if history_instance.prev_record is not None:
+                delta = history_instance.diff_against(history_instance.prev_record)
+                if delta.changed_fields == []:
+                    history_instance.delete()
 
 
 @receiver(post_save, sender=Product)
@@ -354,10 +358,18 @@ class CategoryProduct(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -396,9 +408,18 @@ class GroupProduct(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -425,18 +446,18 @@ class Price(models.Model):
     )
     vat_include = models.BooleanField("Включен ли налог в цену", default=True)
     price_supplier = models.FloatField(
-        "Цена в каталоге поставщика в валюте каталога",
+        "Цена в каталоге поставщика в валюте каталога с НДС",
         blank=True,
         null=True,
         default=0,
     )
     rub_price_supplier = models.FloatField(
-        "Цена в каталоге поставщика в рублях + НДС",
+        "Цена в каталоге поставщика в рублях с НДС",
         blank=True,
         null=True,
     )
     price_motrum = models.FloatField(
-        "Цена поставщика для Motrum в рублях",
+        "Цена поставщика для Motrum в рублях с НДС",
         blank=True,
         null=True,
     )
@@ -463,9 +484,9 @@ class Price(models.Model):
     def __str__(self):
         return f"Цена поставщика:{self.rub_price_supplier} ₽ Цена мотрум: {self.price_motrum} ₽"
 
-    def save(self, *args,force_price_motrum=False, **kwargs):
+    def save(self, *args, force_price_motrum=False, **kwargs):
         print("SAVE PRICE")
-        print("force_price_motrum",force_price_motrum)
+        print("force_price_motrum", force_price_motrum)
         # если 0 цена или экстра прайс проставить нули и теги
         if (
             self.price_supplier == 0
@@ -493,18 +514,18 @@ class Price(models.Model):
         # получить скидки
         if self.in_auto_sale:
             print("self.prod.promo_groupe,", self.prod.promo_groupe)
-            if self.prod.vendor.slug == "unimat":
+            if self.prod.vendor and self.prod.vendor.slug == "unimat":
                 print("unimat")
                 price_motrum_all = get_price_motrum(
-                self.prod.category_supplier,
-                self.prod.group_supplier,
-                self.prod.vendor,
-                self.rub_price_supplier,
-                self.prod.category_supplier_all,
-                self.prod.supplier,
-                self.prod.promo_groupe,
-                True,
-            )
+                    self.prod.category_supplier,
+                    self.prod.group_supplier,
+                    self.prod.vendor,
+                    self.rub_price_supplier,
+                    self.prod.category_supplier_all,
+                    self.prod.supplier,
+                    self.prod.promo_groupe,
+                    True,
+                )
             else:
                 print("None unimat")
                 price_motrum_all = get_price_motrum(
@@ -519,8 +540,8 @@ class Price(models.Model):
 
             price_motrum = price_motrum_all[0]
             sale = price_motrum_all[1]
-            print("price_motrum",price_motrum)
-            print("sale",sale)
+            print("price_motrum", price_motrum)
+            print("sale", sale)
             if force_price_motrum:
                 print("self.price_motrum")
                 self.price_motrum = self.price_motrum
@@ -575,7 +596,7 @@ class Price(models.Model):
         rub_price_supplier = self.rub_price_supplier
         all_item_group = self.prod.category_supplier_all
         supplier = self.prod.supplier
-        promo_groupe = self.promo_groupe
+        promo_groupe = self.prod.promo_groupe
 
         motrum_price = rub_price_supplier
         percent = 0
@@ -585,6 +606,7 @@ class Price(models.Model):
         def get_percent(item):
             for i in item:
                 return i.percent
+
         if promo_groupe and percent == 0:
             discount_promo_groupe = Discount.objects.filter(
                 promo_groupe=promo_groupe.id,
@@ -595,8 +617,6 @@ class Price(models.Model):
                 percent = get_percent(discount_promo_groupe)
                 sale = discount_promo_groupe
 
-    
-    
         if all_item_group and percent == 0:
             discount_all_group = Discount.objects.filter(
                 promo_groupe__isnull=True,
@@ -751,13 +771,13 @@ class Stock(models.Model):
     def __str__(self):
         return f"{self.stock_supplier} {self.stock_supplier}"
 
-    def save(self, *args,force_stock_supplier_unit=False, **kwargs):
-        print(self.lot_complect,"self.lot_complect")
-        print(self.order_multiplicity,"self.order_multiplicity")
-        print(self.stock_supplier_unit,"self.stock_supplier_unit")
-        print(self.stock_supplier,"self.stock_supplier")
-        print(force_stock_supplier_unit,"self.force_stock_supplier_unit")
-        
+    def save(self, *args, force_stock_supplier_unit=False, **kwargs):
+        print(self.lot_complect, "self.lot_complect")
+        print(self.order_multiplicity, "self.order_multiplicity")
+        print(self.stock_supplier_unit, "self.stock_supplier_unit")
+        print(self.stock_supplier, "self.stock_supplier")
+        print(force_stock_supplier_unit, "self.force_stock_supplier_unit")
+
         if self.lot_complect == 0:
             self.lot_complect = 1
 
@@ -767,13 +787,25 @@ class Stock(models.Model):
         print(self.stock_supplier_unit)  # посчитать комплекты лотов
         if self.stock_supplier != None and self.stock_supplier_unit == None:
 
-            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect,self.stock_supplier_unit,force_stock_supplier_unit)
+            lots = get_lot(
+                self.lot.name,
+                self.stock_supplier,
+                self.lot_complect,
+                self.stock_supplier_unit,
+                force_stock_supplier_unit,
+            )
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
         print(self.stock_supplier_unit)
         if self.stock_supplier != None and self.stock_supplier != 0:
             print(" if self.stock_supplier != None and self.stock_supplier != 0:")
-            lots = get_lot(self.lot.name, self.stock_supplier, self.lot_complect,self.stock_supplier_unit,force_stock_supplier_unit)
+            lots = get_lot(
+                self.lot.name,
+                self.stock_supplier,
+                self.lot_complect,
+                self.stock_supplier_unit,
+                force_stock_supplier_unit,
+            )
             self.stock_supplier_unit = lots[1]
             self.lot_complect = lots[2]
         print(self.stock_supplier_unit)
@@ -793,9 +825,18 @@ class Lot(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        slug_text = self.name
-        slugish = translit.translify(slug_text)
-        self.slug = slugify(slugish)
+        if self.slug == None:
+            slug_text = self.name
+            slugish = translit.translify(slug_text)
+            base_slug = slugify(slugish)
+            slug = base_slug
+            ModelClass = self.__class__
+            counter = 1
+            # Проверяем уникальность
+            while ModelClass.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
 
         super().save(*args, **kwargs)
 
@@ -806,9 +847,11 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         # on_delete=models.PROTECT,
     )
-    photo = models.ImageField("Изображение", upload_to=get_file_path_add,max_length=500, null=True)
+    photo = models.ImageField(
+        "Изображение", upload_to=get_file_path_add, max_length=500, null=True
+    )
     # file = models.CharField("фаил в системе", max_length=100, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=250)
+    link = models.CharField("Ссылка у поставщика", max_length=1000)
     hide = models.BooleanField("Скрыть", default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
@@ -829,13 +872,13 @@ class ProductDocument(models.Model):
         on_delete=models.CASCADE,
     )
     document = models.FileField(
-        "Документ", upload_to=get_file_path_add, max_length=255, null=True
+        "Документ", upload_to=get_file_path_add, max_length=1000, null=True
     )
     type_doc = models.CharField(
         "Тип документации", max_length=100, choices=TYPE_DOCUMENT, default="Other"
     )
-    name = models.CharField("Название документа", max_length=255, null=True)
-    link = models.CharField("Ссылка у поставщика", max_length=255, null=True)
+    name = models.CharField("Название документа", max_length=1000, null=True)
+    link = models.CharField("Ссылка у поставщика", max_length=2000, null=True)
     hide = models.BooleanField("Скрыть", default=False)
 
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
@@ -879,18 +922,85 @@ class ProductProperty(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = "Характеристика\свойства"
-        verbose_name_plural = "Характеристики\свойства"
+        verbose_name = "Характеристика поставщика"
+        verbose_name_plural = "Характеристики поставщиков"
 
     def __str__(self):
         return f"{self.name}:{self.value}"
 
     def save(self, *args, **kwargs):
-        if self.value == "true" or self.value == "True":
-            self.value == "Да"
+        if self.value == "true" or self.value == "True" or self.value == True :
+            self.value = "Да"
 
-        if self.value == "false" or self.value == "False":
-            self.value == "Нет"
+        if self.value == "false" or self.value == "False" or self.value == False :
+            self.value = "Нет"
+        
+        # Получение х-к мотрум не диапазонные 
+        obj= VendorPropertyAndMotrum.objects.filter(
+        supplier=self.product.supplier,
+        property_vendor_name=self.name,
+        property_vendor_value=self.value,
+        is_diapason=False
+    )
+        if obj:
+            for ob in obj:
+                if ob.is_diapason:
+                    def extract_first_number(value):
+                        if isinstance(value, (int, float)):
+                            return value
+                        if isinstance(value, str):
+                            match = re.search(r'\d+(\.\d+)?', value)
+                            if match:
+                                return float(match.group())
+                    value = extract_first_number(self.value)
+                    value_diapason = value
+                else:
+                    value_diapason = None
+                    
+                prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                    product=self.product,
+                    property_motrum=ob.property_motrum,
+                    property_value_motrum=ob.property_value_motrum,
+                    is_diapason=ob.is_diapason,
+                    is_have_vendor_props=True,
+                    property_value_motrum_to_diapason=value_diapason
+                )
+                if created:
+                    error = "info_error"
+                    location = "+ х-ка"
+                    info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                    e = error_alert(error, location, info)
+         
+        obj_diapason= VendorPropertyAndMotrum.objects.filter(
+        supplier=self.product.supplier,
+        property_vendor_name=self.name,
+        is_diapason=True
+    )
+        if obj_diapason:
+            for obj_d in obj_diapason:
+                def extract_first_number(value):
+                    if isinstance(value, (int, float)):
+                        return value
+                    if isinstance(value, str):
+                        match = re.search(r"\d+(\.\d+)?", value)
+                        if match:
+                            return float(match.group())
+                        
+                value = extract_first_number(self.value)
+                prop_motrum, created = ProductPropertyMotrumItem.objects.get_or_create(
+                        product=self.product,
+                        property_motrum=obj_d.property_motrum,
+                        is_diapason=True,
+                        is_have_vendor_props=True,
+                        property_value_motrum_to_diapason=value
+                )
+            if created:
+                error = "info_error"
+                location = "+ х-ка"
+                info = f"+ х-ка{prop_motrum.id}{prop_motrum.product}{prop_motrum.property_motrum}{prop_motrum.property_value_motrum}"
+                e = error_alert(error, location, info)
+         
+                
         super().save(*args, **kwargs)
 
 
@@ -909,6 +1019,7 @@ class Cart(models.Model):
         blank=True,
         null=True,
     )
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     class Meta:
         verbose_name = "Корзина"
@@ -924,14 +1035,6 @@ class Cart(models.Model):
         )
 
         return cart
-
-
-TAG_DOC = (
-    ("ONE", "Один вариант"),
-    ("MULTI", "Несколько вариантов"),
-    ("NONE", "Нет варинтов"),
-    ("-", "Не из документа"),
-)
 
 
 class ProductCart(models.Model):
@@ -952,6 +1055,12 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
+    product_price_motrum = models.FloatField(
+        "Цена товара",
+        blank=True,
+        null=True,
+        default=None,
+    )
     product_sale_motrum = models.FloatField(
         "Скидка мотрум товара ",
         blank=True,
@@ -959,11 +1068,18 @@ class ProductCart(models.Model):
         default=None,
     )
     sale_client = models.FloatField(
-        "Скидка клиента из парсинга фаила",
+        "Скидка клиента",
         blank=True,
         null=True,
         default=None,
     )
+    sale_marja = models.FloatField(
+        "Маржа",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    
     vendor = models.ForeignKey(
         Vendor,
         verbose_name="Производитель",
@@ -1011,7 +1127,7 @@ class ProductCart(models.Model):
         null=True,
         default=None,
     )
-
+   
     quantity = models.IntegerField(
         "количество товара",
         blank=True,
@@ -1024,8 +1140,20 @@ class ProductCart(models.Model):
         blank=True,
         null=True,
     )
+    lot = models.ForeignKey(
+        "Lot",
+        verbose_name="Единица измерения",
+        on_delete=models.PROTECT, blank=True,
+        null=True,
+    )
+    date_delivery = models.DateField(verbose_name="Дата поставки товара", null=True)
     tag_auto_document = models.CharField(max_length=100, choices=TAG_DOC, default="-")
-
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    order = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Корзина продукт"
         verbose_name_plural = "Корзина Продукты"
@@ -1035,3 +1163,202 @@ class ProductCart(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class ProductPropertyMotrum(models.Model):
+
+    name = models.CharField("Название", max_length=600)
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
+    name_to_slug = models.CharField("Название для слага", max_length=600,blank=True,
+        null=True,)
+    slug = models.CharField("Название для слага", max_length=600,blank=True,
+        null=True,)
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    
+
+    class Meta:
+        verbose_name = "Характеристика товара мотрум"
+        verbose_name_plural = "Характеристики товаров мотрум"
+
+    def __str__(self):
+        return str(self.name)
+    
+    def save(self, *args, **kwargs):
+        if self.name_to_slug and self.slug == None:
+            slug_text = self.name_to_slug
+            regex = r"[^A-Za-z0-9,А-ЯЁа-яё, ,-.]"
+            slugish = re.sub(regex, "", slug_text)
+            slugish = translit.translify(slugish)
+            self.slug = slugify(slugish)
+            print( "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& self.slug", self.slug)
+        
+        super().save(*args, **kwargs)
+
+class ProductPropertyMotrumArticleCateg(models.Model):
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    category = models.ForeignKey(
+        "CategoryProduct",
+        verbose_name="Категория Мотрум",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+
+    group = models.ForeignKey(
+        "GroupProduct",
+        verbose_name="Группа Мотрум",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    article = models.PositiveIntegerField(
+        "Очередность",
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        verbose_name = "Очередность в группе Характеристика товара мотрум"
+        verbose_name_plural = "Очередность в группе Характеристики товаров мотрум"
+class ProductPropertyValueMotrum(models.Model):
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    value = models.CharField(
+        "Значение",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+
+    class Meta:
+        verbose_name = "Значение характеристики товара мотрум"
+        verbose_name_plural = "Значение характеристик товаров мотрум"
+        
+    def __str__(self):
+        return f"{self.value}"
+
+
+    
+
+# таблица соотвествий пропсов вендов пропсам мотрум
+class VendorPropertyAndMotrum(models.Model):
+    supplier = models.ForeignKey(
+        Supplier,
+        verbose_name="Поставщик",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        verbose_name="Производитель",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    property_value_motrum = models.ForeignKey(
+        ProductPropertyValueMotrum,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    is_category = models.BooleanField("Категория поставщика", default=False)
+    # is_property_motrum = models.BooleanField("Есть ли хор ка мотрум ", default=False)
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    # property_value_motrum_to_diapason = models.FloatField(
+    #     "Значение для диапазона",
+    #     blank=True,
+    #     null=True,
+    #     default=None,
+    # )
+    property_vendor_name = models.CharField(
+        "Название",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+    property_vendor_value = models.CharField(
+        "Значение",
+        max_length=600,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = (
+            "Значение характеристики товара мотрум для характеристики поставщика"
+        )
+        verbose_name_plural = (
+            "Значение характеристик товаров мотрум для характеристики поставщика"
+        )
+
+    def __str__(self):
+        return f"{self.property_vendor_name} _ {self.property_vendor_value}"
+    
+    
+
+
+
+class ProductPropertyMotrumItem(models.Model):
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=CASCADE,
+    )
+    property_motrum = models.ForeignKey(
+        ProductPropertyMotrum,
+        on_delete=CASCADE,
+    )
+    property_value_motrum = models.ForeignKey(
+        ProductPropertyValueMotrum,
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+    )
+    is_diapason = models.BooleanField("Диапазонное значение", default=False)
+    property_value_motrum_to_diapason = models.FloatField(
+        "Значение для диапазона",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    is_have_vendor_props = models.BooleanField("Есть ли такая хорка в хорках поставщика", default=False)
+
+    class Meta:
+        verbose_name = (
+            "Характеристика мотрум"
+        )
+        verbose_name_plural = (
+            "Характеристики мотрум"
+        )
+        
+    def save(self, *args, **kwargs):
+        if self.property_value_motrum_to_diapason:
+            self.is_diapason = True
+        else:
+            self.is_diapason = False
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        if self.is_diapason:
+          return f"{self.property_motrum} {self.property_value_motrum_to_diapason}"
+        else:
+            return f"{self.property_motrum} {self.property_value_motrum}"
+
+
+
+

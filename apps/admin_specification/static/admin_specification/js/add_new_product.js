@@ -99,7 +99,6 @@ function addNewProductLogic(container) {
 
     searchElemsContainer.addEventListener("scroll", function () {
       if (this.scrollHeight >= this.scrollTop + this.clientHeight) {
-        console.log("ff ff ff");
         if (!finish) {
           if (
             !smallLoader.classList.contains("show") &&
@@ -218,15 +217,18 @@ function addNewProductLogic(container) {
       const newProductError = newItemContainer.querySelector(
         ".add_new_item_in_cart_container_error"
       );
-      const vendorSelect = newItemContainer.querySelector(".vendor_select");
-      const vendorSelectToggle = vendorSelect.querySelector(
-        ".vendor_select__toggle"
-      );
+      const vendorInput = newItemContainer.querySelector(".vendor_input");
+      // const vendorSelect = newItemContainer.querySelector(".vendor_select");
+      // const vendorSelectToggle = vendorSelect.querySelector(
+      //   ".vendor_select__toggle"
+      // );
+
       const supplierSelect = newItemContainer.querySelector(".supplier_select");
       const supplierSelectToggle = supplierSelect.querySelector(
         ".supplier_select__toggle"
       );
-
+      const lotSelect = newItemContainer.querySelector(".lot_select");
+      const lotSelectToggle = lotSelect.querySelector(".lot_select__toggle");
       const addNewItemInCartButton = newItemContainer.querySelector(
         ".add_new_item_in_cart"
       );
@@ -236,9 +238,16 @@ function addNewProductLogic(container) {
       const motrumPrice = newItemContainer.querySelector(
         ".new_item_container_value_motrum_price"
       );
+      const changeMotrumPriceInput = newItemContainer.querySelector(
+        ".new_item_change_price_motrum"
+      );
+      const deliveryDate = newItemContainer.querySelector(
+        ".new_item_container_calendar"
+      );
+      const discountInput = newItemContainer.querySelector(".add_sale");
 
       function closeSelectDropdown(select) {
-        const options = select.querySelectorAll(".itc-select__options");
+        const options = select.querySelectorAll(".itc-select__option ");
 
         options.forEach((el) => {
           el.onclick = () => {
@@ -249,132 +258,172 @@ function addNewProductLogic(container) {
         });
       }
       closeSelectDropdown(supplierSelect);
-      closeSelectDropdown(vendorSelect);
+      closeSelectDropdown(lotSelect);
 
-      function changePercent() {
-        if (priceOnceInput.value && quantityInput.value) {
-          getDigitsNumber(
-            motrumPrice,
-            (priceOnceInput.value / 100) *
-              (100 - persentSaleInput.value) *
-              quantityInput.value
-          );
-        }
-      }
-      persentSaleInput.addEventListener("input", function () {
-        const currentValue = this.value
-          .replace(",", ".")
-          .replace(/[^.\d.-]+/g, "")
-          .replace(/^([^\.]*\.)|\./g, "$1")
-          .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-            return a + b + c.slice(0, 2);
-          });
-        persentSaleInput.value = currentValue;
-        if (+persentSaleInput.value > 99.99) {
-          persentSaleInput.value = 99.99;
-        }
-        if (+persentSaleInput.value < -99.99) {
-          persentSaleInput.value = -99.99;
-        }
-        if (
-          persentSaleInput.value.length > 1 &&
-          persentSaleInput.value.at(-1) === "-"
-        ) {
-          persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
-        }
-        if (persentSaleInput.value == ".") {
-          persentSaleInput.target.value = "";
-        }
-        if (persentSaleInput.value == "0") {
-          persentSaleInput.target.value = "";
-        }
-        changePercent();
-      });
+      // function changePercent() {
+      //   if (priceOnceInput.value && quantityInput.value) {
+      //     getDigitsNumber(
+      //       motrumPrice,
+      //       (priceOnceInput.value / 100) *
+      //       (100 - persentSaleInput.value) *
+      //       quantityInput.value
+      //     );
+      //   }
+      // }
+      // discountInput.addEventListener("input", function () {
+      //   console.log("discountInput")
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //   discountInput.value = currentValue;
+      //   if (discountInput.value == ".") {
+      //     e.target.value = "";
+      //   }
+      //   if (discountInput.value == "0") {
+      //     e.target.value = "";
+      //   }
+      // })
+      // changeMotrumPriceInput.addEventListener("input", function () {
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //     changeMotrumPriceInput.value = currentValue;
+      //   if (changeMotrumPriceInput.value == ".") {
+      //     e.target.value = "";
+      //   }
+      //   if (changeMotrumPriceInput.value == "0") {
+      //     e.target.value = "";
+      //   }
+      // })
 
-      function changeTotalCost(input1, input2) {
-        input1.addEventListener("input", function (e) {
-          const currentValue = this.value
-            .replace(",", ".")
-            .replace(/[^.\d.-]+/g, "")
-            .replace(/^([^\.]*\.)|\./g, "$1")
-            .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
-              return a + b + c.slice(0, 2);
-            });
-          input1.value = currentValue;
-          if (input2.value) {
-            getDigitsNumber(
-              newItemContainerTotalCost,
-              +input1.value * +input2.value
-            );
-          }
-          changePercent();
-        });
-      }
-      changeTotalCost(priceOnceInput, quantityInput);
-      changeTotalCost(quantityInput, priceOnceInput);
+      // persentSaleInput.addEventListener("input", function () {
+      //   const currentValue = this.value
+      //     .replace(",", ".")
+      //     .replace(/[^.\d.-]+/g, "")
+      //     .replace(/^([^\.]*\.)|\./g, "$1")
+      //     .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //       return a + b + c.slice(0, 2);
+      //     });
+      //   persentSaleInput.value = currentValue;
+      //   if (+persentSaleInput.value > 99.99) {
+      //     persentSaleInput.value = 99.99;
+      //   }
+      //   if (+persentSaleInput.value < -99.99) {
+      //     persentSaleInput.value = -99.99;
+      //   }
+      //   if (
+      //     persentSaleInput.value.length > 1 &&
+      //     persentSaleInput.value.at(-1) === "-"
+      //   ) {
+      //     persentSaleInput.target.value = persentSaleInput.value.slice(0, -1);
+      //   }
+      //   if (persentSaleInput.value == ".") {
+      //     persentSaleInput.target.value = "";
+      //   }
+      //   if (persentSaleInput.value == "0") {
+      //     persentSaleInput.target.value = "";
+      //   }
+      //   changePercent();
+      // });
+
+      // function changeTotalCost(input1, input2) {
+      //   input1.addEventListener("input", function (e) {
+      //     const currentValue = this.value
+      //       .replace(",", ".")
+      //       .replace(/[^.\d.-]+/g, "")
+      //       .replace(/^([^\.]*\.)|\./g, "$1")
+      //       .replace(/(\d+)(\.|,)(\d+)/g, function (o, a, b, c) {
+      //         return a + b + c.slice(0, 2);
+      //       });
+      //     input1.value = currentValue;
+      //     if (input2.value) {
+      //       getDigitsNumber(
+      //         newItemContainerTotalCost,
+      //         +input1.value * +input2.value
+      //       );
+      //     }
+      //     changePercent();
+      //   });
+      // }
+      // changeTotalCost(priceOnceInput, quantityInput);
+      // changeTotalCost(quantityInput, priceOnceInput);
+
       let validate = true;
+
       addNewItemInCartButton.onclick = () => {
-        setPreloaderInButton(addNewItemInCartButton);
+        let addNewItemInCartButtonValidate = true;
         function inputValidate(input) {
-          if (!input.value) {
-            validate = false;
+          if (!input.value || input.value.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
             input.style.border = "1px solid red";
           }
         }
+        function inputValidateVendor(input) {
+          let v = input.getAttribute("vendor_value")
+          if (!v || v.trim().length === 0) {
+            addNewItemInCartButtonValidate = false;
+            input.style.border = "1px solid red";
+          }
+        }
+        setPreloaderInButton(addNewItemInCartButton);
+        // if (!vendorSelectToggle.getAttribute("value")) {
+        //   addNewItemInCartButtonValidate = false;
+        //   vendorSelectToggle.style.borderColor = "red";
+        // }
+
+        // if (!supplierSelectToggle.getAttribute("value")) {
+        //   addNewItemInCartButtonValidate = false;
+        //   supplierSelectToggle.style.borderColor = "red";
+        // }
+
         inputValidate(nameInput);
         inputValidate(articleInput);
-        inputValidate(priceOnceInput);
-        inputValidate(quantityInput);
+        inputValidate(supplierSelectToggle);
+        inputValidateVendor(vendorInput);
+        inputValidate(lotSelectToggle);
+        // inputValidate(priceOnceInput);
+        // inputValidate(quantityInput);
 
-        if (!vendorSelectToggle.getAttribute("value")) {
-          validate = false;
-          vendorSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (!supplierSelectToggle.getAttribute("value")) {
-          validate = false;
-          supplierSelectToggle.style.borderColor = "red";
-        } else {
-          validate = true;
-        }
-
-        if (
-          nameInput.value &&
-          articleInput.value &&
-          priceOnceInput.value &&
-          quantityInput.value &&
-          vendorSelect.getAttribute("value")
-        ) {
-          validate = true;
-        }
-        if (validate == false) {
+        if (addNewItemInCartButtonValidate == false) {
           addNewItemInCartButton.disabled = false;
           addNewItemInCartButton.innerHTML = "";
           addNewItemInCartButton.textContent = "Добавить товар";
         }
 
-        if (validate === true) {
+        if (addNewItemInCartButtonValidate === true) {
           const cartId = getCookie("cart");
           const dataObjNewProduct = {
             product: null,
             product_new: nameInput.value,
             product_new_article: articleInput.value,
-            product_new_price: +priceOnceInput.value,
+            product_new_price: 0,
+            // product_new_price: +priceOnceInput.value,
             cart: +cartId,
-            quantity: +quantityInput.value,
-            product_new_sale_motrum: persentSaleInput.value
-              ? persentSaleInput.value
-              : null,
-            product_new_sale: addPersentSaleInput.value
-              ? addPersentSaleInput.value
-              : null,
-            vendor: vendorSelectToggle.getAttribute("value"),
+            quantity: 1,
+            lot: lotSelectToggle.getAttribute("value"),
+            // quantity: +quantityInput.value,
+            // product_new_sale_motrum: persentSaleInput.value
+            //   ? persentSaleInput.value
+            //   : null,
+            // product_new_sale: addPersentSaleInput.value
+            //   ? addPersentSaleInput.value
+            //   : null,
+            vendor: vendorInput.getAttribute("vendor_value"),
             supplier: supplierSelectToggle.getAttribute("value"),
+            // date_delivery: deliveryDate.value,
+            // sale_client: discountInput.value,
+            // product_price_motrum: changeMotrumPriceInput.value
           };
           const data = JSON.stringify(dataObjNewProduct);
-
+          console.log(dataObjNewProduct);
           fetch(`/api/v1/cart/${cartId}/save-product-new/`, {
             method: "POST",
             body: data,
@@ -416,18 +465,17 @@ function addNewProductLogic(container) {
     function searchProductLogic(cont) {
       const searchProductItems = cont.querySelectorAll(".product_search_item");
 
-      let counterElems = 0;
       searchProductItems.forEach((searchProductItem, i) => {
         searchProductItem.onmouseover = () => {
           searchProductItems.forEach((el) => el.classList.remove("active"));
           searchProductItem.classList.add("active");
-          counterElems = i + 1;
+          // counterElems = i + 1;
         };
         searchProductItem.onmouseout = () => {
           searchProductItem.classList.remove("active");
-          counterElems = 0;
+          // counterElems = 0;
         };
-        const searchButton = searchProductItem.querySelector(".search_button");
+
         const productId = searchProductItem.getAttribute("product-id");
 
         searchProductItem.onclick = () => {

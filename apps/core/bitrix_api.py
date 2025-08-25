@@ -33,7 +33,7 @@ from apps.core.models import Currency, StageDealBx, UpdatedCompanyBX24
 from apps.core.utils import (
     client_info_bitrix,
     create_info_request_order_bitrix,
-    email_manager_after_new_order_site,
+    # email_manager_after_new_order_site,
     save_file_product,
     save_info_bitrix_after_web,
 )
@@ -114,9 +114,15 @@ def get_info_for_order_bitrix(bs_id_order, request):
         order_id_bx = orders_bx["ID"]
         company = orders_bx["COMPANY_ID"]
         name_order_bx = orders_bx["TITLE"]
+        stage = orders_bx["STAGE_ID"]
         # получение контакта битркис
         contsct_order_id_bx = get_contact_order(bx, order_id_bx)
-        if company == "0":
+        if stage not in["C8:PREPARATION","C8:PREPAYMENT_INVOICE","C8:EXECUTING","C8:FINAL_INVOICE","C8:1","C8:LOSE","C8:2","C8:WON"]:
+            error_text = "На этом этапе нельзя открывать заказ. Переведите сделку на этап не ранее: Подготовка расчета (счета)"
+            next_url = "/admin_specification/error-b24/"
+            context = {"error": error_text}
+            return (next_url, context, True)
+        elif company == "0":
             error_text = "К сделке не прикреплена компания"
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
@@ -126,6 +132,7 @@ def get_info_for_order_bitrix(bs_id_order, request):
             next_url = "/admin_specification/error-b24/"
             context = {"error": error_text}
             return (next_url, context, True)
+        
         else:  # ПОЛУЧЕНИЕ ДАННЫХ ПОКУПАТЕЛЯ
 
             company_bx = bx.get_by_ID("crm.company.get", [company])
@@ -353,7 +360,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 middle_name = None
 
             elif type_preset_req == "3":  # ИП
-                legal_entity = f'ИП "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
+                legal_entity = f'ИП {v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}'
                 # tel = v["RQ_PHONE"]
                 type_client = "3"
                 ogrn = v["RQ_OGRNIP"]
@@ -363,7 +370,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 middle_name = v["RQ_SECOND_NAME"]
 
             elif type_preset_req == "5":  # Физ. лицо
-                legal_entity = f'ФИЗ.ЛИЦО "{v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}"'
+                legal_entity = f'ФИЗ.ЛИЦО {v["RQ_LAST_NAME"]} {v["RQ_FIRST_NAME"]} {v["RQ_SECOND_NAME"]}'
                 # tel = v["RQ_PHONE"]
                 kpp = None
                 type_client = "5"
@@ -404,62 +411,106 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 not_web_adrees = True
                 adress_type = 9
                 legal_post_code = adress["POSTAL_CODE"]
+                postal_post_code = adress["POSTAL_CODE"]
                 if legal_post_code == None:
                     return (True, "Индекс в адрес бенефициара не указан", None)
                 bx_city = adress["CITY"]
                 bx_city_post = adress["CITY"]
-
-                if (
-                    adress["PROVINCE"] != ""
-                    or adress["PROVINCE"] != "None"
-                    or adress["PROVINCE"] != None
-                ):
-                    legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                province = adress.get("PROVINCE")
+                city = adress.get("CITY")
+                if province not in ("", "None", None) and city not in ("", "None", None):
+                    postal_city = f"{province}, г.{city}"
+                elif province not in ("", "None", None):
+                    postal_city = f"{province}"
+                elif city not in ("", "None", None):
+                    postal_city = f"г.{city}"
                 else:
-                    legal_city = f"г.{adress['CITY']},"
-
-                if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                    legal_address = f"{adress['ADDRESS_1']}"
+                    postal_city = ""
+                    
+                adress_1 = adress.get("ADDRESS_1")
+                adress_2 = adress.get("ADDRESS_2")
+                
+                if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
+                    postal_address = f"{adress_1}, {adress_2}"
+                elif adress_1 not in ("", "None", None):
+                    postal_address = f"{adress_1}"
+                elif adress_2 not in ("", "None", None):
+                    postal_address = f"{adress_2}"
                 else:
-                    legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                    postal_address = ""
+                # if (
+                #     adress["PROVINCE"] != ""
+                #     or adress["PROVINCE"] != "None"
+                #     or adress["PROVINCE"] != None
+                # ):
+                #     legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                # else:
+                #     legal_city = f"г.{adress['CITY']},"
 
-                postal_post_code = adress["POSTAL_CODE"]
-                postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
+                #     legal_address = f"{adress['ADDRESS_1']}"
+                # else:
+                #     legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
-                if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                    postal_address = f"{adress['ADDRESS_1']}"
-                else:
-                    postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                # postal_post_code = adress["POSTAL_CODE"]
+                # postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+
+                # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
+                #     postal_address = f"{adress['ADDRESS_1']}"
+                # else:
+                #     postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
             if not_web_adrees == False:
                 if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
                     adress_type = 6
                     legal_post_code = adress["POSTAL_CODE"]
+                    postal_post_code = adress["POSTAL_CODE"]
                     if legal_post_code == None:
                         return (True, "Индекс в адрес юридический не указан", None)
                     bx_city = adress["CITY"]
                     bx_city_post = adress["CITY"]
-
-                    if (
-                        adress["PROVINCE"] != ""
-                        or adress["PROVINCE"] != "None"
-                        or adress["PROVINCE"] != None
-                    ):
-                        legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                    province = adress.get("PROVINCE")
+                    city = adress.get("CITY")
+                    if province not in ("", "None", None) and city not in ("", "None", None):
+                        postal_city = f"{province}, {city}"
+                    elif province not in ("", "None", None):
+                        postal_city = f"{province}"
+                    elif city not in ("", "None", None):
+                        postal_city = f"г.{city}"
                     else:
-                        legal_city = f"г.{adress['CITY']},"
-
-                    if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                        legal_address = f"{adress['ADDRESS_1']}"
+                        postal_city = ""
+                        
+                    adress_1 = adress.get("ADDRESS_1")
+                    adress_2 = adress.get("ADDRESS_2")
+                    
+                    if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
+                        postal_address = f"{adress_1}, {adress_2}"
+                    elif adress_1 not in ("", "None", None):
+                        postal_address = f"{adress_1}"
+                    elif adress_2 not in ("", "None", None):
+                        postal_address = f"{adress_2}"
                     else:
-                        legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                        postal_address = ""
+                    # if (
+                    #     adress["PROVINCE"] != ""
+                    #     or adress["PROVINCE"] != "None"
+                    #     or adress["PROVINCE"] != None
+                    # ):
+                    #     legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                    # else:
+                    #     legal_city = f"г.{adress['CITY']},"
 
-                    postal_post_code = adress["POSTAL_CODE"]
-                    postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                    if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                        postal_address = f"{adress['ADDRESS_1']}"
-                    else:
-                        postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                    # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
+                    #     legal_address = f"{adress['ADDRESS_1']}"
+                    # else:
+                    #     legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+
+                    # postal_post_code = adress["POSTAL_CODE"]
+                    # postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
+                    # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
+                    #     postal_address = f"{adress['ADDRESS_1']}"
+                    # else:
+                    #     postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
 
         # банковские реквизиыт привязанные к сделки значение
         req_bank = bx.get_by_ID(
@@ -705,6 +756,10 @@ def add_info_order(request, order, type_save):
                 company_bx = bx.get_by_ID("crm.company.get", [company])
 
                 order_debt = order.bill_sum - order.bill_sum_paid
+                date_update = datetime.datetime.fromisoformat(
+                    order.date_update.isoformat()
+                )
+                
                 data_order = {
                     "id": id_bitrix_order,
                     "fields": {
@@ -712,15 +767,35 @@ def add_info_order(request, order, type_save):
                         "UF_CRM_1734772155723": order.bill_sum_paid,
                         "UF_CRM_1734772173389": order_debt,
                         "UF_CRM_1747900569834":order.marginality,
+                        "UF_CRM_1755609235":date_update,
                     },
                 }
+                if order.marginality_sum:
+                    data_order["fields"]["UF_CRM_1755586068"] = order.marginality_sum
+                if order.bill_name:
+                    bill_name_text = f"{order.bill_name_prefix}-{order.bill_name}"
+                    data_order["fields"]["UF_CRM_1755585927"] = bill_name_text
+                    
+                
+                
+                
+                # data_order = {
+                #     "id": id_bitrix_order,
+                #     "fields": {
+                #         "OPPORTUNITY": order.bill_sum,
+                #         "UF_CRM_1734772155723": order.bill_sum_paid,
+                #         "UF_CRM_1734772173389": order_debt,
+                #         "UF_CRM_1747900569834":order.marginality,
+                #     },
+                # }
                 orders_bx = bx.call("crm.deal.update", data_order)
                 print(orders_bx)
 
                 file_dict = OrderDocumentBill.objects.filter(order=order).order_by("id")
                 file_dict_signed = file_dict.exclude(bill_file="")
                 file_dict_no_signed = file_dict.exclude(bill_file_no_signature="")
-
+               
+                # 'Счёт'
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_signed",
@@ -729,6 +804,8 @@ def add_info_order(request, order, type_save):
                     "crm.deal.update",
                     "UF_CRM_1734772516954",
                 )
+                
+                # 'Счёт без печати',
                 save_multi_file_all_bx(
                     bx,
                     "file_dict_no_signed",
@@ -740,12 +817,22 @@ def add_info_order(request, order, type_save):
 
                 if order.specification.number:
                     document_specification = f"{MEDIA_ROOT}/{ order.specification.file}"
+                    # Спецификация
                     orders_bx = save_file_bx(
                         bx,
                         document_specification,
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
+                    )
+                    # 'Спецификация без печати',
+                    document_specification_nosign = f"{MEDIA_ROOT}/{ order.specification.file_no_signature}"
+                    orders_bx = save_file_bx(
+                        bx,
+                        document_specification_nosign,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1755524330",
                     )
                     spes_file = "счет"
 
@@ -756,6 +843,12 @@ def add_info_order(request, order, type_save):
                         order.id_bitrix,
                         "crm.deal.update",
                         "UF_CRM_1715001959646",
+                    )
+                    orders_bx = remove_file_bx(
+                        bx,
+                        order.id_bitrix,
+                        "crm.deal.update",
+                        "UF_CRM_1755524330",
                     )
                     spes_file = "счет-оферта"
 
@@ -1471,7 +1564,7 @@ def add_new_order_web(order_id):
         )
         order.id_bitrix = int(order_new_bx_id)
         order.save()
-        email_manager_after_new_order_site(order)
+        # email_manager_after_new_order_site(order)
         return ("ok", None)
 
     except Exception as e:
@@ -2333,14 +2426,14 @@ def add_new_order_web_not_info(order_id):
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
-            email_manager_after_new_order_site(order)
+            # email_manager_after_new_order_site(order)
         elif type_save == "old":
             order_new_bx_id = add_new_order_bx(
                 bx, None, None, None, None, client_bx_id, client
             )
             order.id_bitrix = int(order_new_bx_id)
             order.save()
-            email_manager_after_new_order_site(order)
+            # email_manager_after_new_order_site(order)
 
         return ("ok", None)
 

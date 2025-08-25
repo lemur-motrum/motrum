@@ -1,4 +1,5 @@
 import { getCookie } from "/static/core/js/functions.js";
+import { setErrorModal } from "/static/core/js/error_modal.js"
 
 const currentUrl = new URL(window.location.href);
 const urlParams = currentUrl.searchParams;
@@ -160,7 +161,6 @@ window.addEventListener("DOMContentLoaded", () => {
           if (response.status === 200) {
             smallLoader.classList.remove("show");
             loader.classList.add("remove");
-            console.log(finish);
             return response.json();
           } else {
             setErrorModal();

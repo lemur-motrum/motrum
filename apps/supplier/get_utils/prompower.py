@@ -1,11 +1,12 @@
 import datetime
 import os
+import re
 import traceback
 import requests
 import json
 from simple_history.utils import update_change_reason
 from apps import supplier
-from project.settings import IS_PROD, MEDIA_ROOT, NDS
+from project.settings import BASE_DIR, IS_PROD, MEDIA_ROOT, NDS
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
@@ -38,6 +39,7 @@ from apps.supplier.models import (
 
 def prompower_api():
     prompower = Supplier.objects.get(slug="prompower")
+    print(prompower)
     vendors = Vendor.objects.filter(slug="prompower")
     for vendors_item in vendors:
         if vendors_item.slug == "prompower":
@@ -170,6 +172,7 @@ def prompower_api():
 
     # добавление товаров
     def add_products():
+        print(99999)
         url = "https://prompower.ru/api/prod/getProducts"
         payload = json.dumps(
             {
@@ -186,27 +189,27 @@ def prompower_api():
         data = response.json()
 
         # vendor = Vendor.objects.filter(supplier=prompower)
-        vat_catalog = Vat.objects.get(name="20")
+        vat_catalog = Vat.objects.get(name=NDS)
         vat_catalog_int = int(vat_catalog.name)
         currency = Currency.objects.get(words_code="RUB")
         base_adress = "https://prompower.ru"
         vendori = Vendor.objects.get(slug="prompower")
         vendor_item = vendori
         # for vendor_item in vendor:
-        #     
+        #
         #     if vendor_item.slug == "prompower":
-        #        
+        #
         #         vendori = vendor_item
         #     else:
         #         vendori = Vendor.objects.filter(slug="prompower")
 
         i = 0
         for data_item in data:
-           
+
             try:
                 i += 1
                 if data_item["article"] != None:
-                    print("!!!!!!!!!!!!!!!!number",i)
+                    print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
                     print(article_suppliers)
@@ -218,7 +221,7 @@ def prompower_api():
                         supplier=prompower,
                         vendor=vendori,
                     )
-                    print("promo_groupe_okt",promo_groupe_okt[0])
+                    print("promo_groupe_okt", promo_groupe_okt[0])
 
                     if "categoryId" in data_item:
 
@@ -231,7 +234,7 @@ def prompower_api():
                             categ = None
                     else:
                         categ = None
-                    
+
                     # цены
                     price_supplier = int(data_item["price"])
                     vat_include = True
@@ -317,31 +320,66 @@ def prompower_api():
                         for item_doc in data["data"]:
                             doc_item = item_doc["link"]
                             doc_link = f"{base_adress}{doc_item}"
-
-                            doc = ProductDocument.objects.create(product=article)
-                            update_change_reason(doc, "Автоматическое")
-                            doc_list_name = doc_link.split("/")
-                            doc_name = doc_list_name[-1]
-                            images_last_list = doc_link.split(".")
-                            type_file = "." + images_last_list[-1]
-                            link_file = f"{new_dir}/{doc_name}"
-
-                            if os.path.isfile(link_file):
-                                print("Файл существует")
+                            title = item_doc["title"]
+                            # print("doc_link",doc_link)
+                            print("save_document")
+                            if  title:
+                                doc_old =  ProductDocument.objects.filter(
+                                    link=doc_link,product=article,name=title
+                                ).exists()
+                                if doc_old:
+                                    tt = ProductDocument.objects.filter(
+                                        link=doc_link,product=article,hide=False
+                                    ).exclude(name=title).update(hide=True)
+                                    print("tttttt",tt)
+                                    need_upd = True
+                                else:
+                                    need_upd = False
+                                    
+                                
                             else:
-                                r = requests.get(doc_link, stream=True)
-                                with open(os.path.join(link_file), "wb") as ofile:
-                                    ofile.write(r.content)
+                                doc_old = ProductDocument.objects.filter(
+                                        link=doc_link,product=article
+                                    ).exists()
+                                need_upd = False
+                            print("doc_link",doc_old,doc_link)
+                            
+                            if doc_old == False:
+                                print("doc_old == False",doc_link)
+                                
+                                
+                                doc = ProductDocument.objects.create(product=article)
+                                update_change_reason(doc, "Автоматическое")
+                                doc_list_name = doc_link.split("/")
+                                doc_name = doc_list_name[-1]
+                                images_last_list = doc_link.split(".")
+                                type_file = "." + images_last_list[-1]
+                                link_file = f"{new_dir}/{doc_name}"
+                                
+                                if os.path.isfile(link_file):
+                                    print("Файл существует")
+                                    print("need_upd",need_upd)
+                                    if need_upd:
+                                        r = requests.get(doc_link, stream=True)
+                                        with open(os.path.join(link_file), "wb") as ofile:
+                                            ofile.write(r.content)
+                                    #     doc_old =  ProductDocument.objects.filter(
+                                    # link=doc_link,product=article,name=title
+                                # ) 
+                                else:
+                                    r = requests.get(doc_link, stream=True)
+                                    with open(os.path.join(link_file), "wb") as ofile:
+                                        ofile.write(r.content)
 
-                            type_doc = item_doc["type"].capitalize()
+                                type_doc = item_doc["type"].capitalize()
 
-                            doc.document = f"{dir_no_path}/{doc_name}"
-                            doc.link = doc_link
-                            doc.name = item_doc["title"]
-                            doc.type_doc = item_doc["type"].capitalize()
+                                doc.document = f"{dir_no_path}/{doc_name}"
+                                doc.link = doc_link
+                                doc.name = item_doc["title"]
+                                doc.type_doc = item_doc["type"].capitalize()
 
-                            doc.save()
-                            update_change_reason(doc, "Автоматическое")
+                                doc.save()
+                                update_change_reason(doc, "Автоматическое")
 
                         # документы индивидуальные
                         doc_list = data_item["cad"]
@@ -350,22 +388,36 @@ def prompower_api():
                             for doc_item_individual in doc_list:
 
                                 img = f"{base_adress}/catalog/CAD/{doc_item_individual["filename"]}"
-                                image = ProductDocument.objects.create(product=article)
-                                update_change_reason(image, "Автоматическое")
-                                image_path = get_file_path_add(image, img)
+                                doc_old = ProductDocument.objects.filter(
+                                    link=img,product=article
+                                ).exists()
+                                if doc_old == False:
+                                    image = ProductDocument.objects.create(product=article)
+                                    update_change_reason(image, "Автоматическое")
+                                    image_path = get_file_path_add(image, img)
 
-                                p = save_file_product(img, image_path)
-                                image.photo = image_path
-                                image.link = img
-                                image.document = image_path
-                                image.link = img
-                                image.name = doc_item_individual["title"]
-                                image.type_doc = "Other"
-                                image.save()
-                                update_change_reason(image, "Автоматическое")
+                                    p = save_file_product(img, image_path)
+                                    image.photo = image_path
+                                    image.link = img
+                                    image.document = image_path
+                                    image.link = img
+                                    
+                                    if doc_item_individual["title"] == "" or doc_item_individual["title"] ==" ":
+                                        result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc_item_individual["filename"])
+                                    
+                                    else:
+                                        result_name = doc_item_individual["title"]
+                                        
+                                    
+                                    image.name = result_name
+                                    print(image.name)
+                                    image.type_doc = "Other"
+                                    image.save()
+                                    update_change_reason(image, "Автоматическое")
 
                     # если товар без категории и 0 цена не сохранять
                     if price_supplier != "0" and categ != None:
+                        print(article_suppliers)
                         price_supplier = price_supplier + (price_supplier / 100 * NDS)
                         try:
                             # если товар есть в бд
@@ -374,22 +426,39 @@ def prompower_api():
                                 vendor=vendori,
                                 article_supplier=article_suppliers,
                             )
+                            print(article)
+                            print("обновление характеристик")
+                            # обновление характеристик 
+                            for prop in data_item["props"]:
+                                property_product,created = ProductProperty.objects.get_or_create(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                if created:
+                                    update_change_reason(
+                                        property_product, "Автоматическое"
+                                    )
+                            
+                            
                             if IS_PROD:
+                                save_document(categ, article)
                                 # если у товара не было совсем дококв из пропсов
-                                props = ProductProperty.objects.filter(
-                                    product=article
-                                ).exists()
-                                if props == False:
-                                    for prop in data_item["props"]:
-                                        property_product = ProductProperty(
-                                            product=article,
-                                            name=prop["name"],
-                                            value=prop["value"],
-                                        )
-                                        property_product.save()
-                                        update_change_reason(
-                                            property_product, "Автоматическое"
-                                        )
+                                # props = ProductProperty.objects.filter(
+                                #     product=article
+                                # ).exists()
+                                
+                                # if props == False:
+                                #     for prop in data_item["props"]:
+                                #         property_product = ProductProperty(
+                                #             product=article,
+                                #             name=prop["name"],
+                                #             value=prop["value"],
+                                #         )
+                                #         property_product.save()
+                                #         update_change_reason(
+                                #             property_product, "Автоматическое"
+                                #         )
 
                                 image = ProductImage.objects.filter(
                                     product=article
@@ -397,11 +466,11 @@ def prompower_api():
                                 if image == False:
                                     save_image(article)
 
-                                doc = ProductDocument.objects.filter(
-                                    product=article
-                                ).exists()
-                                if doc == False:
-                                    save_document(categ, article)
+                                # doc = ProductDocument.objects.filter(
+                                #     product=article
+                                # ).exists()
+                                # if doc == False:
+                                #     save_document(categ, article)
 
                             save_update_product_attr_all(
                                 article,
@@ -434,18 +503,20 @@ def prompower_api():
                             article.save()
                             update_change_reason(article, "Автоматическое")
                             if IS_PROD:
-                            
+
                                 save_image(article)
                                 save_document(categ, article)
 
-                                for prop in data_item["props"]:
-                                    property_product = ProductProperty(
-                                        product=article,
-                                        name=prop["name"],
-                                        value=prop["value"],
-                                    )
-                                    property_product.save()
-                                    update_change_reason(property_product, "Автоматическое")
+                            for prop in data_item["props"]:
+                                property_product = ProductProperty(
+                                    product=article,
+                                    name=prop["name"],
+                                    value=prop["value"],
+                                )
+                                property_product.save()
+                                update_change_reason(
+                                    property_product, "Автоматическое"
+                                )
 
                         # цены товара
                         try:
@@ -480,11 +551,11 @@ def prompower_api():
                             stock_prod._change_reason = "Автоматическое"
                             stock_prod.save()
                             # update_change_reason(stock_prod, "Автоматическое")
-                            
+
                         article.promo_groupe = promo_groupe_okt[0]
                         article._change_reason = "Автоматическое"
                         article.save()
-                        
+
             except Exception as e:
                 print(e)
                 tr = traceback.format_exc()
@@ -492,14 +563,16 @@ def prompower_api():
                 location = "Загрузка фаилов Prompower"
                 info = f"ошибка при чтении товара артикул: {data_item["article"]}. Тип ошибки:{e}{tr}"
                 e = error_alert(error, location, info)
-            
+
             finally:
                 continue
+
 
     add_category_groupe()
     add_category()
     add_products()
-
+    # add_products_promo_group()
+    # upd_document_pp()
 
 
 def export_prompower_prod_for_1c():
@@ -524,8 +597,183 @@ def export_prompower_prod_for_1c():
         article_motrum = getattr(product, "article", "")
         article_vendor = getattr(product, "article_supplier", "")
         name = getattr(product, "name", "")
-        promo_groupe = getattr(product.promo_groupe, "name", "") if product.promo_groupe else ""
+        promo_groupe = (
+            getattr(product.promo_groupe, "name", "") if product.promo_groupe else ""
+        )
         ws.append([article_motrum, article_vendor, name, promo_groupe])
 
     file_path = os.path.join(MEDIA_ROOT, "prompower.xlsx")
     wb.save(file_path)
+
+
+def pp_aup_doc_name():
+    product = Product.objects.filter(vendor__slug="prompower").values_list('id',flat=True)
+    print("product",product)
+    name = ['',' ']
+    documents = ProductDocument.objects.filter(product_id__in=product,name__in=name)
+    print("documents",documents)
+    
+    for doc in documents:
+        # Удаляем префикс и расширение
+        result_name = re.sub(r"^https://prompower\.ru/catalog/CAD/|(\.[^.]+)$", "",  doc.link)
+        doc.name = result_name
+        doc.save()
+
+    
+def upd_document_pp():
+    
+    prod_doc = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False).distinct('link').iterator(chunk_size=50)
+    for prod_d in prod_doc:
+        try:
+        
+
+            local_file_path  = prod_d.document.path
+
+            if os.path.isfile(local_file_path):
+                local_file_size = os.path.getsize(local_file_path)  # в байтах
+            else:
+                local_file_size = None
+            
+            url = prod_d.link
+            response = requests.head(url, allow_redirects=True)
+            remote_file_size = int(response.headers.get('content-length', 0))
+            
+            if local_file_size is not None and remote_file_size > 0:
+                if local_file_size == remote_file_size:
+                    print("Файлы одинакового размера")
+                else:
+                    print("Размеры отличаются")# в байтах 
+                
+                    r = requests.get(url, stream=True)
+                    with open(os.path.join(local_file_path), "wb") as ofile:
+                        ofile.write(r.content)  
+            else:
+                prod_d.hide = True
+                prod_d.save()
+                print("local_file_size is not None and remote_file_size > 0")    
+                
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Загрузка фаилов Prompower -upd_document_pp"
+            info = f" {prod_d}. Тип ошибки:{e}{tr}"
+            e = error_alert(error, location, info)
+        finally:
+            # --- ОЧИСТКА ПАМЯТИ ---
+            
+            if 'response' in locals():
+                try:
+                    response.close()
+                except Exception:
+                    pass
+                del response
+            if 'r' in locals():
+                try:
+                    r.close()
+                except Exception:
+                    pass
+                del r
+            if "ofile" in locals():
+                try:
+                    ofile.close()
+                except Exception:
+                    pass
+                del ofile
+            if 'url' in locals():
+                del url
+            if 'local_file_path' in locals():
+                del local_file_path
+            if 'local_file_size' in locals():
+                del local_file_size
+            if 'remote_file_size' in locals():
+                del remote_file_size
+
+
+def add_products_promo_group():
+    prompower = Supplier.objects.get(slug="prompower")
+    url = "https://prompower.ru/api/prod/getProducts"
+    payload = json.dumps(
+        {
+            "email": os.environ.get("PROMPOWER_API_EMAIL"),
+            "key": os.environ.get("PROMPOWER_API_KEY"),
+        }
+    )
+    headers = {
+        "Content-type": "application/json",
+        "Cookie": "nuxt-session-id=s%3Anp9ngMJIwPPIJnpKt1Xow9DA50eUD5OQ.IwH2nwSHFODHMKNUx%2FJRYeOVF9phtKXSV6dg6QQebAU",
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = response.json()
+
+    # vendor = Vendor.objects.filter(supplier=prompower)
+    vat_catalog = Vat.objects.get(name="20")
+    vat_catalog_int = int(vat_catalog.name)
+    currency = Currency.objects.get(words_code="RUB")
+    base_adress = "https://prompower.ru"
+    vendori = Vendor.objects.get(slug="prompower")
+    vendor_item = vendori
+
+    i = 0
+    for data_item in data:
+
+        try:
+            i += 1
+            if data_item["article"] != None:
+                print("!!!!!!!!!!!!!!!!number", i)
+                # основная инфа
+                article_suppliers = data_item["article"]
+                print(article_suppliers)
+                name = data_item["title"]
+                description = data_item["description"]
+                promo_groupe = data_item["pg"]
+                promo_groupe_okt = SupplierPromoGroupe.objects.get_or_create(
+                    name=promo_groupe,
+                    supplier=prompower,
+                    vendor=vendori,
+                )
+                print("promo_groupe_okt", promo_groupe_okt[0])
+
+                if "categoryId" in data_item:
+
+                    category_all = data_item["categoryId"]
+                    if category_all != 35:
+                        categ = get_category_prompower(
+                            prompower, vendori, category_all
+                        )
+                    else:
+                        categ = None
+                else:
+                    categ = None
+                    
+                price_supplier = int(data_item["price"])
+                # если товар без категории и 0 цена не сохранять
+                if price_supplier != "0" and categ != None:
+                    price_supplier = price_supplier + (price_supplier / 100 * NDS)
+                    try:
+                        # если товар есть в бд
+                        article = Product.objects.get(
+                            supplier=prompower,
+                            vendor=vendori,
+                            article_supplier=article_suppliers,
+                        )
+                        article.promo_groupe = promo_groupe_okt[0]
+                        article._change_reason = "Автоматическое"
+                        article.save()
+
+                    except Product.DoesNotExist:
+                        # если товара нет в бд
+                        pass
+
+        except Exception as e:
+            print(e)
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Загрузка фаилов Prompower2"
+            info = f"ошибка при чтении товара артикул2: {data_item["article"]}. Тип ошибки:{e}{tr}"
+            e = error_alert(error, location, info)
+
+        finally:
+            continue
+

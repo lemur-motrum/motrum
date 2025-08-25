@@ -13,7 +13,10 @@ from apps.supplier.models import Supplier, Vendor
 from apps.user.models import AdminUser
 import uuid
 # Create your models here.
-
+TYPE_SPES_NAME = (
+    ("Д", "Д"),
+    
+)
 
 class Specification(models.Model):
 
@@ -25,7 +28,11 @@ class Specification(models.Model):
         "Номер спецификации",default=None,
         null=True,
     )
-    
+    name_prefix = models.CharField(
+        "Префикс номера",
+        max_length=100, choices=TYPE_SPES_NAME, default="Д",blank=True,
+        null=True,
+    )
     date = models.DateField(default=datetime.date.today, verbose_name="Дата добавления")
     date_update = models.DateField(auto_now=True, verbose_name="Дата обновления")
     date_create_pdf = models.DateField(verbose_name="Дата создания пдф", null=True, default=None)
@@ -40,7 +47,10 @@ class Specification(models.Model):
         default=None,
     )
     file = models.FileField(
-        "Фаил", upload_to=get_document_path, null=True, default=None
+        "Фаил", upload_to=get_document_path, null=True, default=None, max_length=1000
+    )
+    file_no_signature  = models.FileField(
+        "Фаил без печатей", upload_to=get_document_path, null=True, default=None, max_length=1000
     )
     is_prepay = models.BooleanField("Предоплата", default=False)
     cart = models.OneToOneField(
@@ -65,6 +75,11 @@ class Specification(models.Model):
     )
     marginality = models.FloatField(
         "Маржинальность заказа в %",
+        blank=True,
+        null=True,
+    )
+    marginality_sum = models.FloatField(
+        "Маржинальность заказа в рублях",
         blank=True,
         null=True,
     )

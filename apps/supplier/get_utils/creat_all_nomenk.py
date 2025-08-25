@@ -9,7 +9,7 @@ def export_all_prod_for_1c():
     import os
     try:
         products = Product.objects.filter(category__isnull=True
-        ).order_by("vendor")
+        ).order_by("vendor")[:100]
         
         title = [
             "Артикул мотрум",
@@ -20,7 +20,10 @@ def export_all_prod_for_1c():
             "Описание товара",
             "Категории товара от поставщиков",
             "Группа товара от поставщиков",
-            "Подгруппа категории товара от поставщиков"
+            "Подгруппа категории товара от поставщиков",
+            "Видимость на сайте",
+            "КАТЕГОРИЯ МОТРУМ",
+            "ГРУППА МОТРУМ",
         ]
 
         wb = openxl.Workbook()

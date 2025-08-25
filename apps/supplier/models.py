@@ -174,7 +174,8 @@ class SupplierCategoryProduct(models.Model):
         null=True,
     )
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
-
+    is_view_website = models.BooleanField("Видимость на сайте товаров раздела", default=True)
+     
     class Meta:
         verbose_name = "Категория товара у поставщика"
         verbose_name_plural = "Категории товаров у поставщика"
@@ -213,11 +214,14 @@ class SupplierCategoryProduct(models.Model):
                 if self.group_catalog:
                     product_one.group = self.group_catalog
 
+                if self.is_view_website == False:
+                    product_one.in_view_website = False
                 # product_one._change_reason = "Автоматическое"
                 product_one.save(
                     update_fields=[
                         "category",
                         "group",
+                        "in_view_website",
                     ]
                 )
                 product_one._change_reason = "Автоматическое"
@@ -279,6 +283,7 @@ class SupplierGroupProduct(models.Model):
     )
 
     autosave_tag = models.BooleanField("Автоматическая загрузка", default=True)
+    is_view_website = models.BooleanField("Видимость на сайте товаров раздела", default=True)
 
     class Meta:
         verbose_name = "Группа товара у поставщика"
@@ -309,8 +314,9 @@ class SupplierGroupProduct(models.Model):
                     if product_one.group_supplier is not None:
                         if product_one.group_supplier.vendor is not None:
                             product_one.vendor = product_one.group_supplier.vendor
-
-                product_one.save(update_fields=["category", "group", "vendor"])
+                if self.is_view_website == False:
+                    product_one.in_view_website = False
+                product_one.save(update_fields=["category", "group", "vendor", "in_view_website"])
                 # product_one._change_reason = "Автоматическое"
                 # product_one.save()
                 try:
@@ -390,12 +396,29 @@ class SupplierCategoryProductAll(models.Model):
     autosave_tag = models.BooleanField("автоматическая загрузка", default=True)
     is_correct = models.BooleanField("Группа есть в каталоге", default=True)
     is_need = models.BooleanField("Неоюходима для загрузки в окт", default=True)
+    is_view_website = models.BooleanField("Видимость на сайте товаров раздела", default=True)
 
     class Meta:
         verbose_name = "Подгруппы поставщиков"
         verbose_name_plural = "Подгруппы поставщиков"
 
     def __str__(self):
+        def background_task():
+            # Долгосрочная фоновая задача
+            for product_one in product:
+             
+                if self.is_view_website == False:
+                    product_one.in_view_website = False
+                product_one.save(update_fields=["category", "group", "vendor", "in_view_website"])
+         
+                try:
+                    update_change_reason(product_one, "Автоматическое")
+                except AttributeError:
+                    pass
+
+        daemon_thread = threading.Thread(target=background_task)
+        daemon_thread.setDaemon(True)
+        daemon_thread.start()
         return f"{self.name}"
         # return f"{self.name} {self.article_name}| Поставщик:{self.supplier} Вендор:{self.vendor}"
 

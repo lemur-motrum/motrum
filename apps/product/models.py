@@ -168,16 +168,7 @@ class Product(models.Model):
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-        # # добавление производителя из групп вендора если нет своего
-        # if self.vendor == None:
-        #     if self.category_supplier_all is not None:
-        #         if self.category_supplier_all.vendor is not None:
-        #             self.vendor = self.category_supplier_all.vendor
-
-        #     elif self.group_supplier is not None:
-        #         if self.group_supplier.vendor is not None:
-        #             self.vendor = self.group_supplier.vendor
-        #     print(self.vendor)
+  
 
         # удалить лишние пробелы
         if self.description != None:
@@ -199,7 +190,7 @@ class Product(models.Model):
             e = error_alert(error, location, info)
 
         need_for_promo_work = True
-        print(need_for_promo_work)
+    
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки

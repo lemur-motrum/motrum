@@ -1055,8 +1055,6 @@ def save_update_product_attr(
 
         if product.vendor == None or product.vendor == "":
             product.vendor = vendor
-        if product.vendor == None or product.vendor == "":
-            product.vendor = vendor
 
         if (
             product.additional_article_supplier == None
@@ -1071,26 +1069,16 @@ def save_update_product_attr(
 
         if product.category_supplier_all == None or product.category_supplier_all == "":
             product.category_supplier_all = category_supplier_all
-        if product.category_supplier_all == None or product.category_supplier_all == "":
-            product.category_supplier_all = category_supplier_all
 
-        if product.group_supplier == None or product.group_supplier == "":
-            product.group_supplier = group_supplier
         if product.group_supplier == None or product.group_supplier == "":
             product.group_supplier = group_supplier
 
         if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
-        if product.category_supplier == None or product.category_supplier == "":
-            product.category_supplier = category_supplier
 
         if product.description == None or product.description == "":
             product.description = description
-        if product.description == None or product.description == "":
-            product.description = description
 
-        if product.name == None or product.name == "":
-            product.name = name
         if product.name == None or product.name == "":
             product.name = name
         
@@ -1154,15 +1142,24 @@ def save_update_product_attr_all(
             or product.additional_article_supplier == ""
         ):
             product.additional_article_supplier = additional_article_supplier
-
-        if category_supplier_all:
+        
+        if product.category_supplier_all == None or product.category_supplier_all == "":
             product.category_supplier_all = category_supplier_all
 
-        if group_supplier:
+        if product.group_supplier == None or product.group_supplier == "":
             product.group_supplier = group_supplier
 
-        if category_supplier:
+        if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
+            
+        # if category_supplier_all:
+        #     product.category_supplier_all = category_supplier_all
+
+        # if group_supplier:
+        #     product.group_supplier = group_supplier
+
+        # if category_supplier:
+        #     product.category_supplier = category_supplier
 
         if product.description == None or product.description == "":
             product.description = description
@@ -4483,3 +4480,20 @@ def revert_cart_changes(cart_id, specification_id=None):
         
     except Cart.DoesNotExist:
         return False
+
+
+
+def chek_wiev_in_website(category_supplier,group_supplier,category_supplier_all):
+    chek = True
+    if category_supplier_all and category_supplier_all.is_view_website == False:
+        chek = False
+    elif group_supplier and group_supplier.is_view_website == False:
+        chek = False
+    elif category_supplier and category_supplier.is_view_website == False:
+        chek = False
+    else:
+        chek = True
+    return chek
+
+
+

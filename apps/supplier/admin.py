@@ -370,7 +370,7 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
-        "is_view_website",
+        
         # "category_catalog",
     )
     list_display_links = [
@@ -384,6 +384,7 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         "name",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
 
     def get_readonly_fields(self, request, obj=None):

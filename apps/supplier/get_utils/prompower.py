@@ -2,6 +2,7 @@ import datetime
 import os
 import re
 import traceback
+from unicodedata import category
 import requests
 import json
 from simple_history.utils import update_change_reason
@@ -13,6 +14,7 @@ from apps.core.utils import (
     create_article_motrum,
     get_category_prompower,
     get_file_path_add,
+    get_motrum_category,
     save_file_product,
     save_update_product_attr,
     save_update_product_attr_all,
@@ -128,6 +130,7 @@ def prompower_api():
                         slug=data_item["slug"],
                     )
                     grope.save()
+                check_group_prompower(data_item["id"],grope,None,None)
         # конечная группа
         for data_item_all in data:
 
@@ -169,7 +172,7 @@ def prompower_api():
                         slug=data_item_all["slug"],
                     )
                     all_groupe.save()
-
+                check_group_prompower(None,None,data_item_all["id"],all_groupe)
     # добавление товаров
     def add_products():
         print(99999)
@@ -262,12 +265,13 @@ def prompower_api():
                                 update_change_reason(image, "Автоматическое")
 
                     def save_document(categ, product):
+                        print("save_document",categ)
                         # документы категории
                         base_dir = "products"
                         path_name = "document_group"
                         base_dir_supplier = product.supplier.slug
                         base_dir_vendor = product.vendor.slug
-
+                        print("categ",categ)
                         if categ[1] != None:
                             group_name = categ[1].slug
                             url = f"https://prompower.ru/api/docfiles?dir={group_name}&filenameFilter"
@@ -321,6 +325,7 @@ def prompower_api():
                             doc_item = item_doc["link"]
                             doc_link = f"{base_adress}{doc_item}"
                             title = item_doc["title"]
+                            name_doc = item_doc["name"].split(".")[0]
                             # print("doc_link",doc_link)
                             print("save_document")
                             if  title:
@@ -346,8 +351,6 @@ def prompower_api():
                             
                             if doc_old == False:
                                 print("doc_old == False",doc_link)
-                                
-                                
                                 doc = ProductDocument.objects.create(product=article)
                                 update_change_reason(doc, "Автоматическое")
                                 doc_list_name = doc_link.split("/")
@@ -375,12 +378,27 @@ def prompower_api():
 
                                 doc.document = f"{dir_no_path}/{doc_name}"
                                 doc.link = doc_link
-                                doc.name = item_doc["title"]
+                                if  item_doc["title"] != None or item_doc["title"] != "":
+                                    doc.name = item_doc["title"]
+                                else:
+                                    
+                                    doc.name = name_doc
                                 doc.type_doc = item_doc["type"].capitalize()
 
                                 doc.save()
                                 update_change_reason(doc, "Автоматическое")
-
+                            else:
+                                doc_old_t = ProductDocument.objects.filter(
+                                        link=doc_link,product=article)
+                                for doc_old_item in doc_old_t:
+                                    if doc_old_item.name == None or doc_old_item.name == "":
+                                        if title:
+                                            doc_old_item.name = title
+                                        else:
+                                            doc_old_item.name = name_doc
+                                        doc_old_item.save()
+                                        update_change_reason(doc_old_item, "Автоматическое")
+                                        
                         # документы индивидуальные
                         doc_list = data_item["cad"]
                         if len(doc_list) > 0:
@@ -439,26 +457,11 @@ def prompower_api():
                                     update_change_reason(
                                         property_product, "Автоматическое"
                                     )
-                            
-                            
+                            print("article",article)
+                            save_document(categ, article) 
                             if IS_PROD:
                                 save_document(categ, article)
-                                # если у товара не было совсем дококв из пропсов
-                                # props = ProductProperty.objects.filter(
-                                #     product=article
-                                # ).exists()
                                 
-                                # if props == False:
-                                #     for prop in data_item["props"]:
-                                #         property_product = ProductProperty(
-                                #             product=article,
-                                #             name=prop["name"],
-                                #             value=prop["value"],
-                                #         )
-                                #         property_product.save()
-                                #         update_change_reason(
-                                #             property_product, "Автоматическое"
-                                #         )
 
                                 image = ProductImage.objects.filter(
                                     product=article
@@ -466,11 +469,7 @@ def prompower_api():
                                 if image == False:
                                     save_image(article)
 
-                                # doc = ProductDocument.objects.filter(
-                                #     product=article
-                                # ).exists()
-                                # if doc == False:
-                                #     save_document(categ, article)
+                                
 
                             save_update_product_attr_all(
                                 article,
@@ -776,4 +775,70 @@ def add_products_promo_group():
 
         finally:
             continue
-
+        
+        
+def check_group_prompower(article_name_group,group,article_name_group_all,categ_all):
+    prompower = Supplier.objects.get(slug="prompower")
+    vendors = Vendor.objects.filter(slug="prompower").first()
+    
+    if article_name_group != None:
+        
+        all_groupe = SupplierCategoryProductAll.objects.filter(
+        supplier=prompower,
+        vendor=vendors,
+        article_name=article_name_group,
+    )
+        if all_groupe.count() > 0:
+            for all_groupe_item in all_groupe:
+                products = Product.objects.filter(
+                    supplier=prompower,
+                    vendor=vendors,
+                    category_supplier_all=all_groupe_item,
+                )
+                if products.count() > 0:
+                    for product in products:
+                        
+                        product.category_supplier_all = None
+                        product.group_supplier = group
+                        product.category_supplier = group.category_supplier
+                        product.save()
+                        filter_catalog = get_motrum_category(product)
+                        product.category = filter_catalog[0]
+                        product.group = filter_catalog[1]
+                        product.save()
+                else:
+                    pass
+                
+                all_groupe_item.delete()
+            
+        
+        
+        
+    if article_name_group_all != None:
+        groupe_all = SupplierGroupProduct.objects.filter(
+            supplier=prompower,
+            vendor=vendors,
+            article_name=article_name_group_all,
+        )
+        
+        if groupe_all.count() > 0:
+            for groupe_all_item in groupe_all:
+                products = Product.objects.filter(
+                    supplier=prompower,
+                    vendor=vendors,
+                    group_supplier=groupe_all_item,
+                )
+                if products.count() > 0:
+                    for product in products:
+                        product.category_supplier_all = categ_all
+                        product.group_supplier = categ_all.group_supplier
+                        product.category_supplier = categ_all.category_supplier
+                        product.save()
+                        filter_catalog = get_motrum_category(product)
+                        product.category = filter_catalog[0]
+                        product.group = filter_catalog[1]
+                        product.save()
+                else:
+                    pass
+                
+                groupe_all_item.delete()

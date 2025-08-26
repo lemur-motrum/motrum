@@ -211,7 +211,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None and data_item["article"] == "KJ112D04PADS1250LY":
+                if data_item["article"] != None:
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -458,7 +458,7 @@ def prompower_api():
                                         property_product, "Автоматическое"
                                     )
                             print("article",article)
-                            save_document(categ, article) 
+                       
                             if IS_PROD:
                                 save_document(categ, article)
                                 

@@ -211,7 +211,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "KJ112D04PADS1250LY":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -842,3 +842,87 @@ def check_group_prompower(article_name_group,group,article_name_group_all,categ_
                     pass
                 
                 groupe_all_item.delete()
+
+
+def upd_document_pp_2():
+    prod_doc = ProductDocument.objects.filter(
+        product__vendor__slug="prompower",
+        hide=False
+    ).distinct('link').iterator(chunk_size=50)
+    for prod_d in prod_doc:
+        print("--------------------------------")
+        print("prod_d",prod_d)
+        print("prod_d.document",prod_d.document)
+        print("prod_d.link",prod_d.link)
+        local_file_path = None
+        try:
+            local_file_path = prod_d.document.path
+            url = prod_d.link
+            # --- 1. Проверяем локальный файл ---
+            if os.path.isfile(local_file_path):
+                local_file_size = os.path.getsize(local_file_path)
+                print("local_file_size",local_file_size)
+            else:
+                print("local_file_size is not None")
+                local_file_size = None
+                prod_d.hide = True
+                prod_d.save()
+            
+            if local_file_size is not None:
+                # --- 2. Проверяем удаленный файл ---
+                try:
+                    response = requests.head(url, allow_redirects=True, timeout=10)
+                    response.raise_for_status()
+                    remote_file_size = int(response.headers.get('content-length', 0))
+                except Exception as e:
+                    print(f"HEAD failed for {url}: {e}")
+                    # Можно попробовать GET без stream, чтобы хотя бы получить размер
+                    with requests.get(url, stream=True, timeout=30) as r:
+                        r.raise_for_status()
+                        remote_file_size = int(r.headers.get('content-length', 0))
+                if remote_file_size == 0:
+                    print(f"Неизвестный размер файла {url}, скачиваем без проверки.")
+                else:
+                    print(f"Размер удалённого файла: {remote_file_size / (1024*1024):.2f} МБ")
+                
+                if local_file_size is not None and remote_file_size > 0:
+                    if local_file_size == remote_file_size:
+                        print("Файлы одинакового размера — пропускаем.")
+                        continue
+                print(f"Скачиваем файл: {url} -> {local_file_path}")
+                
+                # --- 4. Потоковая загрузка (ключевой момент!) ---
+                with requests.get(url, stream=True, timeout=60) as r:
+                    r.raise_for_status()
+
+                    # Убедимся, что директория существует
+                    os.makedirs(os.path.dirname(local_file_path), exist_ok=True)
+
+                    # Пишем по чанкам, не используя память
+                    with open(local_file_path, 'wb') as ofile:
+                        for chunk in r.iter_content(chunk_size=8192):  # 8 КБ
+                            if chunk:  # filter out keep-alive chunks
+                                ofile.write(chunk)
+
+                print(f"Успешно обновлён: {local_file_path}")
+                
+        except requests.exceptions.Timeout:
+            print(f"Таймаут при скачивании: {url}")
+            # Можно попробовать повторить позже
+        except requests.exceptions.ConnectionError as e:
+            print(f"Ошибка соединения: {url} | {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"Ошибка HTTP: {e}")
+            prod_d.hide = True
+            prod_d.save()
+        except OSError as e:
+            print(f"Ошибка файловой системы (диск полон?): {e}")
+            # prod_d.hide = True
+            # prod_d.save()
+        except Exception as e:
+            print(f"Неизвестная ошибка: {e}")
+            tr = traceback.format_exc()
+            error = "file_api_error"
+            location = "Обновление документов Prompower - upd_document_pp"
+            info = f"Документ: {prod_d}. Ошибка: {e}\n{tr}"
+            error_alert(error, location, info)

@@ -128,6 +128,7 @@ from apps.supplier.get_utils.prompower import (
     check_group_prompower,
     export_prompower_prod_for_1c,
     pp_aup_doc_name, pp_aup_doc_name, prompower_api,
+    upd_document_pp_2,
 )
 
 from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, save_categories_to_excel, veda_api
@@ -168,7 +169,7 @@ def add_iek(request):
     # # order = Order.objects.get(id_bitrix=12020)
     # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
     # print(orders_bx)
-    prompower_api()
+    upd_document_pp_2()
     
     
     

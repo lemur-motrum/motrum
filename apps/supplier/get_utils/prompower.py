@@ -130,6 +130,7 @@ def prompower_api():
                         slug=data_item["slug"],
                     )
                     grope.save()
+                check_group_prompower(data_item["id"],grope,None,None)
         # конечная группа
         for data_item_all in data:
 
@@ -171,7 +172,7 @@ def prompower_api():
                         slug=data_item_all["slug"],
                     )
                     all_groupe.save()
-
+                check_group_prompower(None,None,data_item_all["id"],all_groupe)
     # добавление товаров
     def add_products():
         print(99999)
@@ -210,7 +211,7 @@ def prompower_api():
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PKLB100P":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -264,12 +265,13 @@ def prompower_api():
                                 update_change_reason(image, "Автоматическое")
 
                     def save_document(categ, product):
+                        print("save_document",categ)
                         # документы категории
                         base_dir = "products"
                         path_name = "document_group"
                         base_dir_supplier = product.supplier.slug
                         base_dir_vendor = product.vendor.slug
-
+                        print("categ",categ)
                         if categ[1] != None:
                             group_name = categ[1].slug
                             url = f"https://prompower.ru/api/docfiles?dir={group_name}&filenameFilter"
@@ -323,6 +325,7 @@ def prompower_api():
                             doc_item = item_doc["link"]
                             doc_link = f"{base_adress}{doc_item}"
                             title = item_doc["title"]
+                            name_doc = item_doc["name"].split(".")[0]
                             # print("doc_link",doc_link)
                             print("save_document")
                             if  title:
@@ -348,8 +351,6 @@ def prompower_api():
                             
                             if doc_old == False:
                                 print("doc_old == False",doc_link)
-                                
-                                
                                 doc = ProductDocument.objects.create(product=article)
                                 update_change_reason(doc, "Автоматическое")
                                 doc_list_name = doc_link.split("/")
@@ -380,13 +381,24 @@ def prompower_api():
                                 if  item_doc["title"] != None or item_doc["title"] != "":
                                     doc.name = item_doc["title"]
                                 else:
-                                    name_doc = item_doc["name"].split(".")[0]
+                                    
                                     doc.name = name_doc
                                 doc.type_doc = item_doc["type"].capitalize()
 
                                 doc.save()
                                 update_change_reason(doc, "Автоматическое")
-
+                            else:
+                                doc_old_t = ProductDocument.objects.filter(
+                                        link=doc_link,product=article)
+                                for doc_old_item in doc_old_t:
+                                    if doc_old_item.name == None or doc_old_item.name == "":
+                                        if title:
+                                            doc_old_item.name = title
+                                        else:
+                                            doc_old_item.name = name_doc
+                                        doc_old_item.save()
+                                        update_change_reason(doc_old_item, "Автоматическое")
+                                        
                         # документы индивидуальные
                         doc_list = data_item["cad"]
                         if len(doc_list) > 0:
@@ -445,8 +457,8 @@ def prompower_api():
                                     update_change_reason(
                                         property_product, "Автоматическое"
                                     )
-                            
-                            
+                            print("article",article)
+                            save_document(categ, article) 
                             if IS_PROD:
                                 save_document(categ, article)
                                 
@@ -555,8 +567,8 @@ def prompower_api():
                 continue
 
 
-    add_category_groupe()
-    add_category()
+    # add_category_groupe()
+    # add_category()
     add_products()
     # add_products_promo_group()
     # upd_document_pp()

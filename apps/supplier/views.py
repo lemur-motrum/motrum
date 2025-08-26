@@ -169,7 +169,7 @@ def add_iek(request):
     # # order = Order.objects.get(id_bitrix=12020)
     # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
     # print(orders_bx)
-    upd_document_pp_2()
+    prompower_api()
     
     
     

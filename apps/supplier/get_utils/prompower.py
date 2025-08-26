@@ -799,12 +799,10 @@ def check_group_prompower(article_name_group,group,article_name_group_all,categ_
                     for product in products:
                         
                         product.category_supplier_all = None
-                        product.group_supplier = group
-                        product.category_supplier = group.category_supplier
-                        product.save()
-                        filter_catalog = get_motrum_category(product)
-                        product.category = filter_catalog[0]
-                        product.group = filter_catalog[1]
+                        product.group_supplier = None
+                        product.category_supplier = None
+                        # product.category = None
+                        # product.group = None
                         product.save()
                 else:
                     pass
@@ -830,13 +828,11 @@ def check_group_prompower(article_name_group,group,article_name_group_all,categ_
                 )
                 if products.count() > 0:
                     for product in products:
-                        product.category_supplier_all = categ_all
-                        product.group_supplier = categ_all.group_supplier
-                        product.category_supplier = categ_all.category_supplier
-                        product.save()
-                        filter_catalog = get_motrum_category(product)
-                        product.category = filter_catalog[0]
-                        product.group = filter_catalog[1]
+                        product.category_supplier_all = None
+                        product.group_supplier = None
+                        product.category_supplier = None
+                        # product.category = None
+                        # product.group = None
                         product.save()
                 else:
                     pass

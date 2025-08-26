@@ -126,8 +126,10 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
 from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import (
+    check_group_prompower,
     export_prompower_prod_for_1c,
     pp_aup_doc_name, pp_aup_doc_name, prompower_api,
+    upd_document_pp_2,
 )
 
 from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, save_categories_to_excel, veda_api

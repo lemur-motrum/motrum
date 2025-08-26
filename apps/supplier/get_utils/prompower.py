@@ -2,6 +2,7 @@ import datetime
 import os
 import re
 import traceback
+from unicodedata import category
 import requests
 import json
 from simple_history.utils import update_change_reason
@@ -776,4 +777,61 @@ def add_products_promo_group():
 
         finally:
             continue
-
+        
+        
+def check_group_prompower(article_name_group,group,article_name_group_all,categ_all):
+    prompower = Supplier.objects.get(slug="prompower")
+    vendors = Vendor.objects.filter(slug="prompower").first()
+    
+    if article_name_group != None:
+        
+        all_groupe = SupplierCategoryProductAll.objects.filter(
+        supplier=prompower,
+        vendor=vendors,
+        article_name=article_name_group,
+    )
+        if all_groupe.count() > 0:
+            for all_groupe_item in all_groupe:
+                products = Product.objects.filter(
+                    supplier=prompower,
+                    vendor=vendors,
+                    category_supplier_all=all_groupe_item,
+                )
+                if products.count() > 0:
+                    for product in products:
+                        product.category_supplier_all = None
+                        product.group_supplier = group
+                        product.category_supplier = group.category_supplier
+                        product.save()
+                else:
+                    pass
+                
+                all_groupe_item.delete()
+            
+        
+        
+        
+    if article_name_group_all != None:
+        groupe_all = SupplierGroupProduct.objects.filter(
+            supplier=prompower,
+            vendor=vendors,
+            article_name=article_name_group_all,
+        )
+        
+        if groupe_all.count() > 0:
+            for groupe_all_item in groupe_all:
+                products = Product.objects.filter(
+                    supplier=prompower,
+                    vendor=vendors,
+                    group_supplier=groupe_all_item,
+                )
+                if products.count() > 0:
+                    for product in products:
+                        product.category_supplier_all = categ_all
+                        product.group_supplier = categ_all.group_supplier
+                        product.category_supplier = categ_all.category_supplier
+                        product.save()
+                else:
+                    pass
+                
+                groupe_all_item.delete()

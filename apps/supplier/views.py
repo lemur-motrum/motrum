@@ -125,6 +125,7 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
 from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import (
+    check_group_prompower,
     export_prompower_prod_for_1c,
     pp_aup_doc_name, pp_aup_doc_name, prompower_api,
 )
@@ -161,12 +162,167 @@ def add_iek(request):
     # import logging
     # logging.getLogger('fast_bitrix24').addHandler(logging.StreamHandler())
 
-    webhook = BITRIX_WEBHOOK
-    bx = Bitrix(webhook)
-    # bs_id_order = 12020
-    # order = Order.objects.get(id_bitrix=12020)
-    orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
-    print(orders_bx)
+    # webhook = BITRIX_WEBHOOK
+    # bx = Bitrix(webhook)
+    # # bs_id_order = 12020
+    # # order = Order.objects.get(id_bitrix=12020)
+    # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
+    # print(orders_bx)
+    prompower = Supplier.objects.get(slug="prompower")
+    print(prompower)
+    vendors = Vendor.objects.filter(slug="prompower")
+    for vendors_item in vendors:
+        if vendors_item.slug == "prompower":
+            vendoris = vendors_item
+
+    
+        # ОБЩАЯ КАТЕГОРИЯ
+    def add_category_groupe():
+        url = "https://prompower.ru/api/getCategoryGroups"
+        headers = {
+            "Cookie": "auth.strategy=local; nuxt-session-id=s%3AVh_wHm_Gp554xfQDqHV6CDxDRMUx5ZH6.NDr1rbwGm%2Boj%2FzU5JLtPnug2OErY%2BhDm9%2FCTOi9r0bM"
+        }
+        response = requests.request(
+            "GET",
+            url,
+            headers=headers,
+        )
+        data = response.json()
+
+        for data_item in data:
+
+            try:
+                categ = SupplierCategoryProduct.objects.get(
+                    supplier=prompower,
+                    vendor=vendoris,
+                    article_name=data_item["id"],
+                )
+                if categ.name != data_item["title"]:
+                    categ.name = data_item["title"]
+                    categ.save()
+
+            except SupplierCategoryProduct.DoesNotExist:
+                categ = SupplierCategoryProduct(
+                    supplier=prompower,
+                    vendor=vendoris,
+                    article_name=data_item["id"],
+                    name=data_item["title"],
+                )
+                categ.save()
+
+    # получение всех категорий для каталога
+    def add_category():
+        url = "https://prompower.ru/api/categories"
+        headers = {
+            "Cookie": "nuxt-session-id=s%3ArUFByHT7pVHJLlRaku2tG74R7byS_LuK.hVBBCnWUOXqkuHRB8%2FgmCu%2BXk1ZLjQMNeYcrdoBb6O8"
+        }
+        response = requests.request("GET", url, headers=headers)
+        data = response.json()
+
+        # категория\группа
+        for data_item in data:
+            if data_item["groupId"] is not None and data_item["parentId"] is None:
+                categ = SupplierCategoryProduct.objects.get(
+                    supplier=prompower,
+                    vendor=vendoris,
+                    article_name=data_item["groupId"],
+                )
+
+                # группа
+                try:
+                    grope = SupplierGroupProduct.objects.get(
+                        supplier=prompower,
+                        vendor=vendoris,
+                        article_name=data_item["id"],
+                        # category_supplier=categ,
+                        # name=data_item["title"],
+                        # slug=data_item["slug"],
+                    )
+                    if grope.category_supplier != categ:
+                        grope.category_supplier = categ
+
+                    if grope.slug != data_item["title"]:
+                        grope.name = data_item["title"]
+
+                    if grope.name != data_item["slug"]:
+                        grope.slug = data_item["slug"]
+
+                    grope.save()
+
+                except SupplierGroupProduct.DoesNotExist:
+                    grope = SupplierGroupProduct(
+                        supplier=prompower,
+                        vendor=vendoris,
+                        article_name=data_item["id"],
+                        category_supplier=categ,
+                        name=data_item["title"],
+                        slug=data_item["slug"],
+                    )
+                    grope.save()
+            check_group_prompower(data_item["id"],grope,None,None)
+        # конечная группа
+        for data_item_all in data:
+
+            if data_item_all["parentId"] is not None:
+                grope = SupplierGroupProduct.objects.get(
+                    supplier=prompower,
+                    vendor=vendoris,
+                    article_name=data_item_all["parentId"],
+                )
+
+                try:
+                    all_groupe = SupplierCategoryProductAll.objects.get(
+                        supplier=prompower,
+                        vendor=vendoris,
+                        article_name=data_item_all["id"],
+                        # name=data_item_all["title"],
+                        # slug=data_item_all["slug"],
+                    )
+                    if all_groupe.name != data_item_all["title"]:
+                        all_groupe.name = data_item_all["title"]
+
+                    if all_groupe.slug != data_item_all["slug"]:
+                        all_groupe.slug = data_item_all["slug"]
+
+                    if all_groupe.group_supplier != data_item_all["parentId"]:
+                        all_groupe.group_supplier = grope
+                        all_groupe.category_supplier_id = grope.category_supplier.id
+
+                    all_groupe.save()
+
+                except SupplierCategoryProductAll.DoesNotExist:
+                    all_groupe = SupplierCategoryProductAll(
+                        supplier=prompower,
+                        vendor=vendoris,
+                        name=data_item_all["title"],
+                        article_name=data_item_all["id"],
+                        category_supplier=grope.category_supplier,
+                        group_supplier=grope,
+                        slug=data_item_all["slug"],
+                    )
+                    all_groupe.save()
+            check_group_prompower(None,None,data_item_all["id"],all_groupe)
+
+    
+    
+    
+    add_category_groupe()
+    add_category()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     result = 1
     title = "TEST"

@@ -168,7 +168,12 @@ def add_iek(request):
     # # order = Order.objects.get(id_bitrix=12020)
     # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
     # print(orders_bx)
-    prompower_api()
+    def background_task():
+        prompower_api()
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+    
     
     
     

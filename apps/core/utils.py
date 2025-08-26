@@ -1151,7 +1151,11 @@ def save_update_product_attr_all(
 
         if product.category_supplier == None or product.category_supplier == "":
             product.category_supplier = category_supplier
-            
+        
+        filter_catalog = get_motrum_category(product)
+        product.category = filter_catalog[0]
+        product.group = filter_catalog[1]
+        product.save()    
         # if category_supplier_all:
         #     product.category_supplier_all = category_supplier_all
 
@@ -1172,6 +1176,10 @@ def save_update_product_attr_all(
         product.autosave_tag = True
         product._change_reason = "Автоматическое"
         product.save()
+        filter_catalog = get_motrum_category(product)
+        product.category = filter_catalog[0]
+        product.group = filter_catalog[1]
+        product.save() 
     except Exception as e:
         print(e)
         tr = traceback.format_exc()

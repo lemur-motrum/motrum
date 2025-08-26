@@ -14,6 +14,7 @@ from apps.core.utils import (
     create_article_motrum,
     get_category_prompower,
     get_file_path_add,
+    get_motrum_category,
     save_file_product,
     save_update_product_attr,
     save_update_product_attr_all,
@@ -376,7 +377,11 @@ def prompower_api():
 
                                 doc.document = f"{dir_no_path}/{doc_name}"
                                 doc.link = doc_link
-                                doc.name = item_doc["title"]
+                                if  item_doc["title"] != None or item_doc["title"] != "":
+                                    doc.name = item_doc["title"]
+                                else:
+                                    name_doc = item_doc["name"].split(".")[0]
+                                    doc.name = name_doc
                                 doc.type_doc = item_doc["type"].capitalize()
 
                                 doc.save()
@@ -444,22 +449,7 @@ def prompower_api():
                             
                             if IS_PROD:
                                 save_document(categ, article)
-                                # если у товара не было совсем дококв из пропсов
-                                # props = ProductProperty.objects.filter(
-                                #     product=article
-                                # ).exists()
                                 
-                                # if props == False:
-                                #     for prop in data_item["props"]:
-                                #         property_product = ProductProperty(
-                                #             product=article,
-                                #             name=prop["name"],
-                                #             value=prop["value"],
-                                #         )
-                                #         property_product.save()
-                                #         update_change_reason(
-                                #             property_product, "Автоматическое"
-                                #         )
 
                                 image = ProductImage.objects.filter(
                                     product=article
@@ -467,11 +457,7 @@ def prompower_api():
                                 if image == False:
                                     save_image(article)
 
-                                # doc = ProductDocument.objects.filter(
-                                #     product=article
-                                # ).exists()
-                                # if doc == False:
-                                #     save_document(categ, article)
+                                
 
                             save_update_product_attr_all(
                                 article,
@@ -799,9 +785,14 @@ def check_group_prompower(article_name_group,group,article_name_group_all,categ_
                 )
                 if products.count() > 0:
                     for product in products:
+                        
                         product.category_supplier_all = None
                         product.group_supplier = group
                         product.category_supplier = group.category_supplier
+                        product.save()
+                        filter_catalog = get_motrum_category(product)
+                        product.category = filter_catalog[0]
+                        product.group = filter_catalog[1]
                         product.save()
                 else:
                     pass
@@ -830,6 +821,10 @@ def check_group_prompower(article_name_group,group,article_name_group_all,categ_
                         product.category_supplier_all = categ_all
                         product.group_supplier = categ_all.group_supplier
                         product.category_supplier = categ_all.category_supplier
+                        product.save()
+                        filter_catalog = get_motrum_category(product)
+                        product.category = filter_catalog[0]
+                        product.group = filter_catalog[1]
                         product.save()
                 else:
                     pass

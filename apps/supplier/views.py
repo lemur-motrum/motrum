@@ -259,7 +259,7 @@ def add_iek(request):
                         slug=data_item["slug"],
                     )
                     grope.save()
-            check_group_prompower(data_item["id"],grope,None,None)
+                check_group_prompower(data_item["id"],grope,None,None)
         # конечная группа
         for data_item_all in data:
 
@@ -301,7 +301,7 @@ def add_iek(request):
                         slug=data_item_all["slug"],
                     )
                     all_groupe.save()
-            check_group_prompower(None,None,data_item_all["id"],all_groupe)
+                check_group_prompower(None,None,data_item_all["id"],all_groupe)
 
     
     

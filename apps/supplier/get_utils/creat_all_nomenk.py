@@ -9,7 +9,7 @@ def export_all_prod_for_1c():
     import os
     try:
         products = Product.objects.filter(category__isnull=True
-        ).order_by("vendor")[:100]
+        ).exclude(vendor__slug__in=["prompower","unimat"],in_view_website=False).order_by("vendor")
         
         title = [
             "Артикул мотрум",
@@ -21,9 +21,10 @@ def export_all_prod_for_1c():
             "Категории товара от поставщиков",
             "Группа товара от поставщиков",
             "Подгруппа категории товара от поставщиков",
-            "Видимость на сайте",
+  
             "КАТЕГОРИЯ МОТРУМ",
             "ГРУППА МОТРУМ",
+            "СНЯТЬ С ПОКАЗА НА САЙТЕ",
         ]
 
         wb = openxl.Workbook()
@@ -42,6 +43,7 @@ def export_all_prod_for_1c():
             category_supplier = getattr(product.category_supplier, "name", "") if product.category_supplier else ""
             group_supplier = getattr(product.group_supplier, "name", "") if product.group_supplier else ""
             category_supplier_all = getattr(product.category_supplier_all, "name", "") if product.category_supplier_all else ""
+            # in_view_website = "да" if bool(getattr(product, "in_view_website", False)) else "нет"
             ws.append([
                 article_motrum,
                 supplier,
@@ -51,7 +53,8 @@ def export_all_prod_for_1c():
                 description,
                 category_supplier,
                 group_supplier,
-                category_supplier_all
+                category_supplier_all,  
+                # in_view_website
             ])
 
         file_path = os.path.join(MEDIA_ROOT, "all_none_categ_nomenk.xlsx")

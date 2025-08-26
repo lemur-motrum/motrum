@@ -64,7 +64,7 @@ from apps.supplier.get_utils.motrum_filters import (
     xlsx_to_csv_one_sheet,
 )
 from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
-from apps.supplier.get_utils.creat_all_nomenk import export_all_prod_for_1c
+from apps.supplier.get_utils.creat_all_nomenk import export_all_prod_for_1c as export_all_prod_for_1c_util
 from apps.supplier.get_utils.unimat_pp import (
     export_unimat_prod_for_1c,
     unimat_prompower_api,
@@ -219,6 +219,27 @@ def unimat_prod_for_1c(request):
         # Долгосрочная фоновая задача
         export_unimat_prod_for_1c()
         # get_motrum_nomenclature()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+
+
+# выгрузка всех товаров без категории для 1С
+def export_all_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        try:
+            # вызываем утилитарную функцию без аргументов
+            export_all_prod_for_1c_util()
+        except Exception:
+            # проглатывать нельзя — логгер сработает внутри
+            pass
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)

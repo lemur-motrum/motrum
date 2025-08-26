@@ -9,7 +9,7 @@ def export_all_prod_for_1c():
     import os
     try:
         products = Product.objects.filter(category__isnull=True
-        ).exclude(vendor__slug__in=["prompower","unimat"],in_view_website=False).order_by("vendor")
+        ) .exclude(in_view_website=False).exclude(vendor__slug__in=["prompower","unimat"]).order_by('supplier','vendor')
         
         title = [
             "Артикул мотрум",

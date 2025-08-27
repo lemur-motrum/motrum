@@ -18,6 +18,7 @@ from fast_bitrix24.server_response import ErrorInServerResponseException
 from apps.client.api.serializers import OrderSerializer
 from apps.client.models import (
     STATUS_ORDER_BITRIX,
+    TYPE_ADDRESS,
     AccountRequisites,
     Client,
     ClientRequisites,
@@ -305,6 +306,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
     
     print("req_bx_order", req_bx_order)
     req_bx_id = req_bx_order["REQUISITE_ID"]
+    print("req_bx_id", req_bx_id)
     req_acc_bx_id = req_bx_order["BANK_DETAIL_ID"]
     # адреса привязанные к рекуизитам
     adress_bx = bx.get_all(
@@ -343,6 +345,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
             params={
                 "filter": {"ID": req_bx_id},
                 "select": ["UF_CRM_1736854096", "UF_CRM_1737611994"],
+                # "select": ["UF_CRM_1736854096", "UF_CRM_1737611994","НОВОЕ_ПОЛЕ_ТРУ_ФОЛС"],
             },
         )
 
@@ -385,10 +388,32 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
             if tel == "" or tel == None or tel == "None":
                 tel = None
             id_req = int(v["ID"])
-
+        print("adress_bx", adress_bx)
         contract = req_bx_user_feld[0]["UF_CRM_1736854096"]
         contract_date = req_bx_user_feld[0]["UF_CRM_1737611994"]
+        # contract_adress_eqval = req_bx_user_feld[0]["НОВОЕ_ПОЛЕ_ТРУ_ФОЛС"]
+        contract_adress_eqval = "Y"
+        print("contract_adress_eqval", contract_adress_eqval)
+        fiz_adress_bx = None
         
+        print(type(adress_bx), len(adress_bx))
+        print([ (item.get('TYPE_ID'), type(item.get('TYPE_ID'))) for item in adress_bx ])
+        if contract_adress_eqval == "Y":
+            # берем юр адрес как физ
+            fiz_adress_bx = TYPE_ADDRESS[6]
+            has_type_1 = True
+            
+        elif contract_adress_eqval == "N":
+            # берем физ адрес как юр
+            fiz_adress_bx = TYPE_ADDRESS[1]
+            has_type_1 = any(item.get('TYPE_ID') in (1, '1') for item in adress_bx)
+        else:
+            # берем физ адлряес отдельно
+            fiz_adress_bx = TYPE_ADDRESS[1]
+            has_type_1 = any(item.get('TYPE_ID') in (1, '1') for item in adress_bx)
+            
+        if has_type_1 == False:
+            return (True, "Адрес физический, или выбор адрес юридический = адрес фактический", None)
         # получение данных из адресов
         adress_type = None
         company_adress_all = []
@@ -405,6 +430,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 "address1": adress["ADDRESS_1"],
                 "address2": adress["ADDRESS_2"],
             }
+            
             company_adress_all.append(company_adress)
 
             if adress["TYPE_ID"] == "9" or adress["TYPE_ID"] == 9:
@@ -412,6 +438,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 adress_type = 9
                 legal_post_code = adress["POSTAL_CODE"]
                 postal_post_code = adress["POSTAL_CODE"]
+                physical_post_code = adress["POSTAL_CODE"]
                 if legal_post_code == None:
                     return (True, "Индекс в адрес бенефициара не указан", None)
                 bx_city = adress["CITY"]
@@ -427,6 +454,8 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                 else:
                     postal_city = ""
                     
+                physical_city = postal_city
+                
                 adress_1 = adress.get("ADDRESS_1")
                 adress_2 = adress.get("ADDRESS_2")
                 
@@ -438,33 +467,15 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                     postal_address = f"{adress_2}"
                 else:
                     postal_address = ""
-                # if (
-                #     adress["PROVINCE"] != ""
-                #     or adress["PROVINCE"] != "None"
-                #     or adress["PROVINCE"] != None
-                # ):
-                #     legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                # else:
-                #     legal_city = f"г.{adress['CITY']},"
-
-                # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                #     legal_address = f"{adress['ADDRESS_1']}"
-                # else:
-                #     legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
-
-                # postal_post_code = adress["POSTAL_CODE"]
-                # postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-
-                # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                #     postal_address = f"{adress['ADDRESS_1']}"
-                # else:
-                #     postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
+                
+                physical_address = postal_address
 
             if not_web_adrees == False:
                 if adress["TYPE_ID"] == "6" or adress["TYPE_ID"] == 6:
                     adress_type = 6
                     legal_post_code = adress["POSTAL_CODE"]
                     postal_post_code = adress["POSTAL_CODE"]
+                    physical_post_code = adress["POSTAL_CODE"]
                     if legal_post_code == None:
                         return (True, "Индекс в адрес юридический не указан", None)
                     bx_city = adress["CITY"]
@@ -479,6 +490,7 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                         postal_city = f"г.{city}"
                     else:
                         postal_city = ""
+                    physical_city = postal_city
                         
                     adress_1 = adress.get("ADDRESS_1")
                     adress_2 = adress.get("ADDRESS_2")
@@ -491,39 +503,86 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
                         postal_address = f"{adress_2}"
                     else:
                         postal_address = ""
-                    # if (
-                    #     adress["PROVINCE"] != ""
-                    #     or adress["PROVINCE"] != "None"
-                    #     or adress["PROVINCE"] != None
-                    # ):
-                    #     legal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                    # else:
-                    #     legal_city = f"г.{adress['CITY']},"
-
-                    # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                    #     legal_address = f"{adress['ADDRESS_1']}"
-                    # else:
-                    #     legal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
-
-                    # postal_post_code = adress["POSTAL_CODE"]
-                    # postal_city = f"{adress['PROVINCE']}, г.{adress['CITY']}"
-                    # if adress["ADDRESS_2"] == None or adress["ADDRESS_2"] == "None":
-                    #     postal_address = f"{adress['ADDRESS_1']}"
-                    # else:
-                    #     postal_address = f"{adress['ADDRESS_1']},{ adress['ADDRESS_2']}"
-
+                    physical_address = postal_address
+              
+            
+                
+        if fiz_adress_bx == TYPE_ADDRESS[1]:
+             for adress in adress_bx:
+                if adress["TYPE_ID"] == "1" or adress["TYPE_ID"] == 1 :
+                    adress_type = 1
+                    f_post_code = adress["POSTAL_CODE"]
+                    f_post_code = adress["POSTAL_CODE"]
+                    physical_post_code = adress["POSTAL_CODE"]
+                    
+                    f_city = adress["CITY"]
+                    f_city_post = adress["CITY"]
+                    province = adress.get("PROVINCE")
+                    city = adress.get("CITY")
+                    if province not in ("", "None", None) and city not in ("", "None", None):
+                        f_city = f"{province}, г.{city}"
+                    elif province not in ("", "None", None):
+                        f_city = f"{province}"
+                    elif city not in ("", "None", None):
+                        f_city = f"г.{city}"
+                    else:
+                        f_city = ""
+                        
+                    physical_city = f_city
+                    
+                    adress_1 = adress.get("ADDRESS_1")
+                    adress_2 = adress.get("ADDRESS_2")
+                    
+                    if adress_1 not in ("", "None", None) and adress_2 not in ("", "None", None):
+                        f_address = f"{adress_1}, {adress_2}"
+                    elif adress_1 not in ("", "None", None):
+                        f_address = f"{adress_1}"
+                    elif adress_2 not in ("", "None", None):
+                        f_address = f"{adress_2}"
+                    else:
+                        f_address = ""
+                    
+                    physical_address = f_address
+                    
+                
+        elif fiz_adress_bx == TYPE_ADDRESS[6]:
+            print("company_adress_all1", company_adress_all)
+            print("fiz_adress_bx == TYPE_ADDRESS[6]")
+            # берем юр адрес как физ: копируем адреса TYPE_ID 6 как TYPE_ID 1
+            for adress_item in list(company_adress_all):
+                if adress_item.get("type_address_bx") in (6, "6"):
+                    new_item = dict(adress_item)
+                    new_item["type_address_bx"] = 1
+                    # если уже есть type_address_bx == 1, заменяем; иначе добавляем
+                    replaced = False
+                    for idx, existing in enumerate(company_adress_all):
+                        if str(existing.get("type_address_bx")).strip() == "1":
+                            company_adress_all[idx] = new_item
+                            replaced = True
+                            break
+                    if not replaced:
+                        company_adress_all.append(new_item)
+            print("company_adress_all2", company_adress_all) 
+                    
+        else:
+            for adress_item in list(company_adress_all):
+                if adress_item.get("type_address_bx") in (1, "1"):
+                    return (True, "Адрес физический, или выбор адрес юридический = адрес фактический", None)
+        
         # банковские реквизиыт привязанные к сделки значение
         req_bank = bx.get_by_ID(
             "crm.requisite.bankdetail.get",
             [req_acc_bx_id],
         )
-
+        print("req_bank", req_bank)
         account_requisites = req_bank["RQ_ACC_NUM"]
+        print("account_requisites", account_requisites)
         bank = req_bank["RQ_BANK_NAME"]
         ks = req_bank["RQ_COR_ACC_NUM"]
         bic = req_bank["RQ_BIK"]
         #  id_compane_req_inn = f"{company_bx_id}{req_bx_id}"
         # req.id_bitrix = int(id_compane_req_inn)
+        
         company = {
             "contact_bd_arr": contact_bd_arr,
             "adress_type": adress_type,
@@ -542,6 +601,9 @@ def get_req_info_bx(bs_id_order, manager, company, contsct_order_id_bx):
             "legal_post_code": legal_post_code,
             "legal_city": postal_city,
             "legal_address": postal_address,
+            "physical_post_code": physical_post_code,
+            "physical_city": physical_city,
+            "physical_address": physical_address,
             "postal_post_code": postal_post_code,
             "postal_city": postal_city,
             "postal_address": postal_address,

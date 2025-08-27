@@ -314,6 +314,20 @@ class RequisitesOtherKpp(models.Model):
         "Юридический адрес : адрес",
         max_length=1000,
     )
+    physical_post_code = models.PositiveIntegerField(
+        "Физический адрес :индекс",
+        null=True,
+    )
+    physical_city = models.CharField(
+        "Физический адрес : город",
+        max_length=1000,
+        null=True,
+    )
+    physical_address = models.CharField(
+        "Физический адрес : адрес",
+        max_length=1000,
+        null=True,
+    )
     postal_post_code = models.CharField(
         "Почтовый адрес :индекс",
         max_length=150,

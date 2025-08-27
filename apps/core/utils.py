@@ -2481,6 +2481,9 @@ def client_info_bitrix(data, company_adress):
                 "postal_city": data["postal_city"],
                 "postal_address": data["postal_address"],
                 "tel": data["tel"],
+                "physical_post_code": data["physical_post_code"],
+                "physical_city": data["physical_city"],
+                "physical_address": data["physical_address"],
             },
         )
     )
@@ -2780,6 +2783,11 @@ def create_info_request_order_1c(order, order_products):
             "legal_post_code": order.account_requisites.requisitesKpp.legal_post_code,
             "legal_city": order.account_requisites.requisitesKpp.legal_city,
             "legal_address": order.account_requisites.requisitesKpp.legal_address,
+
+            "physical_post_code": order.account_requisites.requisitesKpp.physical_post_code,
+            "physical_city": order.account_requisites.requisitesKpp.physical_city,
+            "physical_address": order.account_requisites.requisitesKpp.physical_address,
+
             # "postal_post_code": order.account_requisites.requisitesKpp.postal_post_code,
             # "postal_city": order.account_requisites.requisitesKpp.postal_city,
             # "postal_address": order.account_requisites.requisitesKpp.postal_address,

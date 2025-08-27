@@ -40,9 +40,11 @@ from apps.core.bitrix_api import (
     get_manager_info,
     get_order_carrency_up,
     get_product_price_up,
+    get_req_info_bx,
     get_stage_info_bx,
     get_status_order,
     get_upd_clirnt_manager,
+    order_info_check,
     remove_file_bx,
     save_file_bx,
     save_new_doc_bx,
@@ -84,6 +86,7 @@ from apps.core.tasks import (
 )
 from apps.core.utils import (
     add_new_photo_adress_prompower,
+    client_info_bitrix,
     create_file_props_in_vendor_props2,
     create_time_stop_specification,
     delete_everything_in_folder,
@@ -166,11 +169,41 @@ def add_iek(request):
 
     webhook = BITRIX_WEBHOOK
     bx = Bitrix(webhook)
-    # bs_id_order = 12020
-    # order = Order.objects.get(id_bitrix=12020)
-    # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
-    # print(orders_bx)
-    export_all_prod_for_1c()
+    
+    bs_id_order = 12020
+    order = Order.objects.get(id_bitrix=12020)
+    orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
+    print(orders_bx)
+    bs_id_order = 12020
+    orders_bx = bx.get_by_ID("crm.deal.get", [12020])
+    order_id_bx = orders_bx["ID"]
+    company = orders_bx["COMPANY_ID"]
+    company_bx = bx.get_by_ID("crm.company.get", [company])
+    manager_company = company_bx["ASSIGNED_BY_ID"]
+    contsct_order_id_bx = get_contact_order(bx, order_id_bx)
+    manager = AdminUser.objects.get(bitrix_id=manager_company)
+    data = {
+                "order": {
+                    "id_bitrix": bs_id_order,
+                    "manager": manager_company,
+                    "status": orders_bx["STAGE_ID"],
+                },
+            }
+    req_error, place, data_company = get_req_info_bx(
+                bs_id_order, manager, company, contsct_order_id_bx
+            )
+    print("req_error", req_error )
+    print("place", place)
+    print("data_company", data_company)
+    error_company, error_order = order_info_check(
+                data_company["data_commpany"], data["order"]
+            )
+    
+    client_req, acc_req = client_info_bitrix(
+                    data_company["data_commpany"], data_company["company_adress"]
+                )
+    print("client_req", client_req)
+    print("acc_req", acc_req)
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}

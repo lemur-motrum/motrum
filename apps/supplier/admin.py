@@ -213,6 +213,7 @@ class SupplierCategoryProductAllAdmin(admin.ModelAdmin):
         "group_supplier",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
     # list_editable = ("category_catalog", "group_catalog")
     readonly_fields = (
@@ -330,6 +331,7 @@ class SupplierCategoryProductAdmin(admin.ModelAdmin):
         "article_name",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
 
     def get_readonly_fields(self, request, obj=None):
@@ -368,6 +370,7 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         "supplier",
         "vendor",
         "article_name",
+        
         # "category_catalog",
     )
     list_display_links = [
@@ -381,6 +384,7 @@ class SupplierGroupProductAdmin(admin.ModelAdmin):
         "name",
         "category_catalog",
         "group_catalog",
+        "is_view_website",
     )
 
     def get_readonly_fields(self, request, obj=None):

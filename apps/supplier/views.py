@@ -64,6 +64,7 @@ from apps.supplier.get_utils.motrum_filters import (
     xlsx_to_csv_one_sheet,
 )
 from apps.supplier.get_utils.replace_newlines_with_commas import xlsx_props
+from apps.supplier.get_utils.creat_all_nomenk import export_all_prod_for_1c as export_all_prod_for_1c_util
 from apps.supplier.get_utils.unimat_pp import (
     export_unimat_prod_for_1c,
     unimat_prompower_api,
@@ -125,8 +126,10 @@ from apps.supplier.get_utils.motrum_nomenclatur import (
 from apps.supplier.get_utils.innovert import get_innovert_xml, save_stock_innovert
 from apps.supplier.get_utils.motrum_storage import get_motrum_storage
 from apps.supplier.get_utils.prompower import (
+    check_group_prompower,
     export_prompower_prod_for_1c,
     pp_aup_doc_name, pp_aup_doc_name, prompower_api,
+    upd_document_pp_2,
 )
 
 from apps.supplier.get_utils.veda import parse_drives_ru_category, parse_drives_ru_products, save_categories_to_excel, veda_api
@@ -165,9 +168,9 @@ def add_iek(request):
     bx = Bitrix(webhook)
     # bs_id_order = 12020
     # order = Order.objects.get(id_bitrix=12020)
-    orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
-    print(orders_bx)
-    
+    # orders_bx = bx.get_by_ID("crm.deal.fields", [12020])
+    # print(orders_bx)
+    export_all_prod_for_1c()
     result = 1
     title = "TEST"
     context = {"title": title, "result": result}
@@ -218,6 +221,27 @@ def unimat_prod_for_1c(request):
         # Долгосрочная фоновая задача
         export_unimat_prod_for_1c()
         # get_motrum_nomenclature()
+
+    daemon_thread = threading.Thread(target=background_task)
+    daemon_thread.setDaemon(True)
+    daemon_thread.start()
+
+    result = 1
+    title = "TEST"
+    context = {"title": title, "result": result}
+    return render(request, "supplier/supplier.html", context)
+
+
+# выгрузка всех товаров без категории для 1С
+def export_all_prod_for_1c(request):
+    def background_task():
+        # Долгосрочная фоновая задача
+        try:
+            # вызываем утилитарную функцию без аргументов
+            export_all_prod_for_1c_util()
+        except Exception:
+            # проглатывать нельзя — логгер сработает внутри
+            pass
 
     daemon_thread = threading.Thread(target=background_task)
     daemon_thread.setDaemon(True)

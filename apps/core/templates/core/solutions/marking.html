@@ -6,11 +6,9 @@
     </div>
     {% if seo_meta and seo_meta.meta_h1 %}
         <h1 class="title">{{ seo_meta.meta_h1 }}</h1>
-                
     {% else %}
         <h1 class="title">Маркировка</h1>
     {% endif %}
-    
     <div class="solution_one_slider">
         <div class="swiper-wrapper">
             <div class="swiper-slide information_slide">
@@ -18,6 +16,18 @@
                 <div class="information_description">
                     Поставка программно-аппаратных комплексов для решения задач по маркировке и прослеживаемости продукции.
                     Предложим решения по маркировке для различных товарных групп.
+                </div>
+            </div>
+            <div class="swiper-slide marking_slider_elem">
+                <div class="description">
+                    мясная
+                    <br />
+                    продукция
+                </div>
+                <div class="img_container">
+                    <img src="{% static "core/images/solutions/marking_meat.png" %}"
+                         alt="img"
+                         loading="lazy" />
                 </div>
             </div>
             <div class="swiper-slide marking_slider_elem">
@@ -104,7 +114,6 @@
             </div>
         </div>
     </div>
-    
     <div class="marking_competition">
         <div class="solution_will_allow">
             <div class="title">НАШИ КОМПЕТЕНЦИИ</div>

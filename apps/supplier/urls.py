@@ -34,7 +34,7 @@ urlpatterns = [
     path("unimat_prod_for_1c/", views.unimat_prod_for_1c, name="unimat_prod_for_1c"),
     path("add_props_motrum/", views.add_props_motrum, name="add_props_motrum"),
     path("create_xlsx_props_vendor/", views.create_xlsx_props_vendor, name="create_xlsx_props_vendor"),
-    
+    path("export_all_prod_for_1c/", views.export_all_prod_for_1c, name="export_all_prod_for_1c"),
     
     # url для автозаполнения
     url(

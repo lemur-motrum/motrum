@@ -14,6 +14,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.core.models import Currency, Vat
 from apps.core.utils import (
+    chek_wiev_in_website,
     create_article_motrum,
     get_file_path_add,
     get_lot,
@@ -168,16 +169,10 @@ class Product(models.Model):
             self.category = filter_catalog[0]
         if self.group == None:
             self.group = filter_catalog[1]
-        # # добавление производителя из групп вендора если нет своего
-        # if self.vendor == None:
-        #     if self.category_supplier_all is not None:
-        #         if self.category_supplier_all.vendor is not None:
-        #             self.vendor = self.category_supplier_all.vendor
 
-        #     elif self.group_supplier is not None:
-        #         if self.group_supplier.vendor is not None:
-        #             self.vendor = self.group_supplier.vendor
-        #     print(self.vendor)
+        if self.category_supplier_all or self.group_supplier or self.category_supplier:
+            check_view =  chek_wiev_in_website(self.category_supplier_all,self.group_supplier,self.category_supplier) 
+            self.in_view_website = check_view
 
         # удалить лишние пробелы
         if self.description != None:
@@ -199,7 +194,7 @@ class Product(models.Model):
             e = error_alert(error, location, info)
 
         need_for_promo_work = True
-        print(need_for_promo_work)
+    
         super().save(*args, **kwargs)
 
         # обновление цен товаров потому что могли заменить группы для скидки

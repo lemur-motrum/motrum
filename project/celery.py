@@ -82,11 +82,11 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=22, hour=0, day_of_week=6),
     },
     
-    # апдейт доков промповер
-    "prompower_upd_doc": {
-        "task": "apps.supplier.tasks.prompower_upd_doc",
-        "schedule": crontab(minute=22, hour=0, day_of_week=5),
-    },
+    # # апдейт доков промповер
+    # "prompower_upd_doc": {
+    #     "task": "apps.supplier.tasks.prompower_upd_doc",
+    #     "schedule": crontab(minute=22, hour=0, day_of_week=5),
+    # },
     # ТАСКИ ежемесячные
     # расписание рабочих дней этого года + в 12 месяц берет на след год
     "year_holidays": {
@@ -101,6 +101,10 @@ app.conf.beat_schedule = {
         "task": "apps.core.tasks.up_int_task_skafy",
         "schedule": crontab(minute=1, hour=0, day_of_month=1),
     },
+    "add_veda_parse_web": {
+        "task": "apps.supplier.tasks.add_veda_parse_web",
+        "schedule":  crontab(minute=10, hour=21, day_of_month=13),
+    },
     # ТАСКИ раз  в год
     # обнуление счетчиков счетов
     "counter_bill_new_year": {
@@ -108,10 +112,7 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=45, hour=0, day_of_month=1, month_of_year=1),
     },
     
-    "add_veda_parse_web": {
-        "task": "apps.supplier.tasks.add_veda_parse_web",
-        "schedule":  crontab(minute=10, hour=21, day_of_month=13),
-    },
+    
     
     # "add_veda_parse_web": {
     #     "task": "apps.supplier.tasks.add_veda_parse_web",

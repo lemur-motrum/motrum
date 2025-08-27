@@ -198,20 +198,14 @@ def prompower_api():
         base_adress = "https://prompower.ru"
         vendori = Vendor.objects.get(slug="prompower")
         vendor_item = vendori
-        # for vendor_item in vendor:
-        #
-        #     if vendor_item.slug == "prompower":
-        #
-        #         vendori = vendor_item
-        #     else:
-        #         vendori = Vendor.objects.filter(slug="prompower")
+
 
         i = 0
         for data_item in data:
 
             try:
                 i += 1
-                if data_item["article"] != None:
+                if data_item["article"] != None and data_item["article"] == "PH1070SFE":
                     print("!!!!!!!!!!!!!!!!number", i)
                     # основная инфа
                     article_suppliers = data_item["article"]
@@ -458,7 +452,7 @@ def prompower_api():
                                         property_product, "Автоматическое"
                                     )
                             print("article",article)
-                       
+                            save_document(categ, article)
                             if IS_PROD:
                                 save_document(categ, article)
                                 
@@ -861,8 +855,15 @@ def upd_document_pp_2():
             else:
                 print("local_file_size is not None")
                 local_file_size = None
-                prod_d.hide = True
-                prod_d.save()
+                all_docunt_link = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False,link=url)
+                for doc in all_docunt_link:
+                    doc.hide = True
+                    doc.save()
+ 
+                error = "info_error"
+                location = "Обновление документов Prompower - upd_document_pp"
+                info = f"Документ: {url} у товара {prod_d.product.article_supplier} Локальный файл не найден"
+                error_alert(error, location, info)
             
             if local_file_size is not None:
                 # --- 2. Проверяем удаленный файл ---
@@ -899,20 +900,42 @@ def upd_document_pp_2():
                         for chunk in r.iter_content(chunk_size=8192):  # 8 КБ
                             if chunk:  # filter out keep-alive chunks
                                 ofile.write(chunk)
+                    error = "info_error"
+                    location = "Обновление документов Prompower - upd_document_pp"
+                    info = f"Документ: {url} у товара {prod_d.product.article_supplier} Перекачали"
+                    error_alert(error, location, info)
 
                 print(f"Успешно обновлён: {local_file_path}")
                 
         except requests.exceptions.Timeout:
             print(f"Таймаут при скачивании: {url}")
+            error = "info_error"
+            location = "Обновление документов Prompower - upd_document_pp"
+            info = f"Документ: {url} у товара {prod_d.product.article_supplier} Таймаут при скачивании"
+            error_alert(error, location, info)
             # Можно попробовать повторить позже
         except requests.exceptions.ConnectionError as e:
             print(f"Ошибка соединения: {url} | {e}")
+            error = "info_error"
+            location = "Обновление документов Prompower - upd_document_pp"
+            info = f"Документ: {url} у товара {prod_d.product.article_supplier} Ошибка соединения"
+            error_alert(error, location, info)
         except requests.exceptions.RequestException as e:
             print(f"Ошибка HTTP: {e}")
-            prod_d.hide = True
-            prod_d.save()
+            all_docunt_link = ProductDocument.objects.filter(product__vendor__slug="prompower",hide=False,link=url)
+            for doc in all_docunt_link:
+                doc.hide = True
+                doc.save()
+            error = "info_error"
+            location = "Обновление документов Prompower - upd_document_pp"
+            info = f"Документ: {url} у товара {prod_d.product.article_supplier} Ошибка HTTP"
+            error_alert(error, location, info)
         except OSError as e:
             print(f"Ошибка файловой системы (диск полон?): {e}")
+            error = "info_error"
+            location = "Обновление документов Prompower - upd_document_pp"
+            info = f"Документ: {url} у товара {prod_d.product.article_supplier} Ошибка файловой системы"
+            error_alert(error, location, info)
             # prod_d.hide = True
             # prod_d.save()
         except Exception as e:
@@ -920,5 +943,5 @@ def upd_document_pp_2():
             tr = traceback.format_exc()
             error = "file_api_error"
             location = "Обновление документов Prompower - upd_document_pp"
-            info = f"Документ: {prod_d}. Ошибка: {e}\n{tr}"
+            info = f"Документ: {url}. Ошибка: {e}\n{tr}"
             error_alert(error, location, info)

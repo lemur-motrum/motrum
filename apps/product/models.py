@@ -170,8 +170,25 @@ class Product(models.Model):
         if self.group == None:
             self.group = filter_catalog[1]
 
-        if self.category_supplier_all or self.group_supplier or self.category_supplier:
-            check_view =  chek_wiev_in_website(self.category_supplier_all,self.group_supplier,self.category_supplier) 
+        # вычислять видимость на сайте только если при сохранении явно не передавали поле in_view_website
+        should_compute_in_view = True
+        update_fields = kwargs.get("update_fields")
+        if update_fields and "in_view_website" in update_fields:
+            should_compute_in_view = False
+        elif self.pk:
+            try:
+                prev_in_view = Product.objects.only("in_view_website").get(pk=self.pk).in_view_website
+                if self.in_view_website != prev_in_view:
+                    should_compute_in_view = False
+            except Product.DoesNotExist:
+                pass
+        else:
+            # при создании: если явно задано отличное от дефолта True, не пересчитывать
+            if self.in_view_website is not None and self.in_view_website is False:
+                should_compute_in_view = False
+
+        if should_compute_in_view and (self.category_supplier_all or self.group_supplier or self.category_supplier):
+            check_view =  chek_wiev_in_website(self.category_supplier_all,self.group_supplier,self.category_supplier)
             self.in_view_website = check_view
 
         # удалить лишние пробелы

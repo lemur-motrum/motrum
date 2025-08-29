@@ -20,7 +20,7 @@ from apps.supplier.models import (
     SupplierCategoryProductAll,
     Vendor,
 )
-from project.settings import BASE_DIR, MEDIA_ROOT
+from project.settings import BASE_DIR, MEDIA_ROOT, NDS
 
 
 def get_category_avangard(name, supplier, vendor):
@@ -48,7 +48,7 @@ def get_price_avangard(vendor, supplier, article, price_supplier, category_item)
 
     currency = Currency.objects.get(words_code="CNY")
     vat_include = True
-    vat = Vat.objects.get(name=20)
+    vat = Vat.objects.get(name=NDS)
 
     try:
         price_product = Price.objects.get(prod=article)
@@ -57,21 +57,32 @@ def get_price_avangard(vendor, supplier, article, price_supplier, category_item)
         price_product = Price(prod=article)
 
     finally:
-        price_product.currency = currency
-        price_product.price_supplier = price_supplier
-        price_product.vat = vat
-        price_product.vat_include = True
-        price_product.extra_price = False
-        price_product._change_reason = "Автоматическое"
-        price_product.save()
-        # update_change_reason(price_product, "Автоматическое")
+        if price_supplier == "снят с производства":
+            price_product.currency = currency
+            price_product.vat = vat
+            price_product.vat_include = True
+            price_product.extra_price = True
+            price_product._change_reason = "Автоматическое"
+            price_product.save()
+
+            article.in_view_website = False
+            article.save()
+        else:
+            price_product.currency = currency
+            price_product.price_supplier = price_supplier
+            price_product.vat = vat
+            price_product.vat_include = True
+            price_product.extra_price = False
+            price_product._change_reason = "Автоматическое"
+            price_product.save()
+            # update_change_reason(price_product, "Автоматическое")
 
 
 def get_avangard_file(new_file, obj):
     try:
         supplier = Supplier.objects.get(slug="avangard")
         vendor = Vendor.objects.get( slug="odot")
-        vat = Vat.objects.get(name="20")
+        vat = Vat.objects.get(name=NDS)
         currency = Currency.objects.get(words_code="CNY")
 
         file_path = "{0}/{1}".format(MEDIA_ROOT, new_file)
@@ -128,12 +139,24 @@ def get_avangard_file(new_file, obj):
                 ):
                     article_supplier = sheet[f"A{i}"].value
                     price_supplier_noval = sheet[f"C{i}"].value
-                    if price_supplier_noval == "":
-                        price_supplier_noval = 0
-                    price_supplier_sub = re.sub(
-                        "[^0-9.,]", "", price_supplier_noval
-                    ).replace(",", ".")
-                    price_supplier = float(price_supplier_sub)
+                    
+                    
+                    if price_supplier_noval in (None, ""):
+                        price_supplier = 0
+                    elif isinstance(price_supplier_noval, (int, float)):
+                        price_supplier = float(price_supplier_noval)
+                    elif str(price_supplier_noval).strip().lower() in (
+                        "снят с производства!",
+                        "снят с производства",
+                    ):
+                        price_supplier = "снят с производства"
+                    else:
+                        price_supplier_sub = re.sub(
+                            "[^0-9.,]", "", str(price_supplier_noval)
+                        ).replace(",", ".")
+                        price_supplier = float(price_supplier_sub) if price_supplier_sub else 0
+                        
+                        
                     name = sheet[f"B{i}"].value
 
                     try:
@@ -159,11 +182,12 @@ def get_avangard_file(new_file, obj):
 
                         article.save()
                         update_change_reason(article, "Автоматическое")
-                    print(article)
-
+                    
+                        
                     price = get_price_avangard(
                         vendor, supplier, article, price_supplier, category_item
                     )
+                
 
                     try:
                         stock_prod = Stock.objects.get(prod=article)
